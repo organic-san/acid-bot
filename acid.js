@@ -2162,12 +2162,12 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     if( ( !oldfileimage || !newfileimage ) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor(message.author.tag, message.author.displayAvatarURL({dynamic: true}))
+        .setAuthor(oldMessage.author.tag, oldMessage.author.displayAvatarURL({dynamic: true}))
         .setColor(process.env.EMBEDCOLOR)
         .addField("Old Message:", oldMessage.content ?? "(nothing)")
         .addField("New Message:", newMessage.content ?? "(nothing)")
-        .setFooter(`${message.guild.name} • #${message.channel.name}`,
-            `https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}.jpg`)
+        .setFooter(`#${oldMessage.channel.name}`,
+            `https://cdn.discordapp.com/icons/${oldMessage.guild.id}/${oldMessage.guild.icon}.jpg`)
         .setTimestamp(message.createdAt);
 
 
