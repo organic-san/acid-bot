@@ -2132,6 +2132,7 @@ client.on("guildDelete", guild => {
 });
 //#endregion
 
+//#region 機器人編輯、刪除訊息觸發事件guildCreate、messageDelete
 client.on('messageDelete', async message => {
     if (!message.guild) return;
 
@@ -2152,4 +2153,27 @@ client.on('messageDelete', async message => {
         { embed.setImage(fileimage.url); }
     }
     //TODO: 刪除訊息管理
+})
+
+client.on('messageUpdate', async (oldMessage, newMessage) => {
+    if (!message.guild) return;
+
+    const oldfileimage = oldMessage.attachments.first();
+    if( ( !oldfileimage || !newfileimage ) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return
+
+    const embed = new Discord.MessageEmbed()
+        .setAuthor(message.author.tag, message.author.displayAvatarURL({dynamic: true}))
+        .setColor(process.env.EMBEDCOLOR)
+        .addField("Old Message:", oldMessage.content ?? "(nothing)")
+        .addField("New Message:", newMessage.content ?? "(nothing)")
+        .setFooter(`${message.guild.name} • #${message.channel.name}`,
+            `https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}.jpg`)
+        .setTimestamp(message.createdAt);
+
+
+    if (oldfileimage){
+        if (oldfileimage.height || oldfileimage.width)
+        { embed.setImage(oldfileimage.url); }
+    }
+    //TODO: 編輯訊息管理
 })
