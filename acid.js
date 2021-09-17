@@ -2168,7 +2168,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .addField("New Message:", newMessage.content ?? "(nothing)")
         .setFooter(`#${oldMessage.channel.name}`,
             `https://cdn.discordapp.com/icons/${oldMessage.guild.id}/${oldMessage.guild.icon}.jpg`)
-        .setTimestamp(message.createdAt);
+        .setTimestamp(oldMessage.createdAt);
 
 
     if (oldfileimage){
