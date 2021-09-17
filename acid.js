@@ -2156,7 +2156,7 @@ client.on('messageDelete', async message => {
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
-    if (!message.guild) return;
+    if (!oldMessage.guild) return;
 
     const oldfileimage = oldMessage.attachments.first();
     if( ( !oldfileimage || !newfileimage ) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return

@@ -126,6 +126,7 @@ class GuildInformation {
     static async toGuildInformation(obj, guild) {
         let newGI = new GuildInformation(guild ,[]);
         newGI.joinMessage = obj.joinMessage ?? false;
+        newGI.leaveMessage = obj.leaveMessage ?? false;
         newGI.joinMessageContent = obj.joinMessageContent ?? "";
         newGI.joinChannel = obj.joinChannel ?? "";
         newGI.leaveChannel = obj.leaveChannel ?? "";
