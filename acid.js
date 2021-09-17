@@ -259,7 +259,6 @@ client.on('messageCreate', async msg =>{
 
         if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.SEND_MESSAGES)) 
             return console.log("isCommand: sendless");
-
         
         //#region 前輟定義與發送isCommand確認
         var isCommand = false;
