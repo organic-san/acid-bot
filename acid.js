@@ -46,7 +46,7 @@ client.on('ready', () =>{
     console.log(`登入成功: ${client.user.tag} 於 ${month}/${date} ${hours}:${minutes}:${sec}`);
     client.user.setActivity('%help'/*, { type: 'PLAYING' }*/);
 
-    fs.readFile("./data/guildinfo/guildlist.json", (err,word) => {
+    fs.readFile("./data/guildInfo/guildlist.json", (err,word) => {
         if(err) throw err;
         var parseJsonlist = JSON.parse(word);
         parseJsonlist.forEach(element => {
@@ -73,7 +73,7 @@ client.on('ready', () =>{
         isReady = true;
     }, 2000);
     setInterval(() => {
-        fs.writeFile("./data/guildinfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), function (err){
+        fs.writeFile("./data/guildInfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), function (err){
             if (err)
                 console.log(err);
         });
@@ -2009,7 +2009,7 @@ client.on('messageCreate', async msg =>{
                     case "save":
                     case "s":
                         //#region 更新伺服器資料
-                        fs.writeFile("./data/guildinfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), (err) => {
+                        fs.writeFile("./data/guildInfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), (err) => {
                             if (err)
                                 console.log(err);
                         });
@@ -2062,6 +2062,8 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
+    console.log(`${member.user.tag} 加入了 ${member.guild.name}。`);
+    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage){return;}
     if(!element.joinChannel){
@@ -2081,6 +2083,8 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('guildMemberRemove', member => {
+    console.log(`${member.user.tag} 已自 **${member.guild.name}** 離開。`);
+    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage){return;}
     if(!element.leaveChannel){
@@ -2156,19 +2160,19 @@ client.on('messageDelete', async message => {
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
-    if (!message.guild) return;
+    if (!oldMessage.guild) return;
 
     const oldfileimage = oldMessage.attachments.first();
-    if( ( !oldfileimage || !newfileimage ) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return
+    if( ( !oldfileimage) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor(message.author.tag, message.author.displayAvatarURL({dynamic: true}))
+        .setAuthor(oldMessage.author.tag, oldMessage.author.displayAvatarURL({dynamic: true}))
         .setColor(process.env.EMBEDCOLOR)
         .addField("Old Message:", oldMessage.content ?? "(nothing)")
         .addField("New Message:", newMessage.content ?? "(nothing)")
-        .setFooter(`${message.guild.name} • #${message.channel.name}`,
-            `https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}.jpg`)
-        .setTimestamp(message.createdAt);
+        .setFooter(`#${oldMessage.channel.name}`,
+            `https://cdn.discordapp.com/icons/${oldMessage.guild.id}/${oldMessage.guild.icon}.jpg`)
+        .setTimestamp(oldMessage.createdAt);
 
 
     if (oldfileimage){

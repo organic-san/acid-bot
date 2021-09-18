@@ -214,7 +214,7 @@ module.exports = {
         const filter = (reaction, user) => reaction.emoji.name === '❌' && user.id === author.id;
         sent.awaitReactions({filter, max: 1, time: 10 * 1000, errors: ['time'] })
         .then(() => sent.delete()) 
-        .catch(() => sent.reactions.cache.get('❌').users.remove())
+        .catch(() => sent.reactions.cache.get('❌').users.remove().catch((err)=>console.log(err)))
     },
     //#endregion
     
