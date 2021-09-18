@@ -2062,6 +2062,8 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
+    console.log(`${member.user.tag} 加入了 ${member.guild.name}。`);
+    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage){return;}
     if(!element.joinChannel){
@@ -2081,6 +2083,8 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('guildMemberRemove', member => {
+    console.log(`${member.user.tag} 已自 **${member.guild.name}** 離開。`);
+    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage){return;}
     if(!element.leaveChannel){
