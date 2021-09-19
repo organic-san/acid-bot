@@ -91,8 +91,6 @@ module.exports = {
     time: function(time, preset){
         //#region 現在時刻
         let char = "";
-        let utc = "";
-        let utcp = '+';
         switch(time.getDay()){
             case 0: char = "日"; break;
             case 1: char = "一"; break;
@@ -102,14 +100,9 @@ module.exports = {
             case 5: char = "五"; break;
             case 6: char = "六"; break;
         }
-        if (Math.abs(time.getUTCHours() - time.getHours())>12){
-            utc = time.getHours() - time.getUTCHours() + 24
-        }else{utc = time.getHours() - time.getUTCHours()}
-        if(utc<0){utp = '-';}
-        utc = Math.abs(utc);
         return `${preset}：${time.getFullYear()}年 ${time.getMonth()+1}月 ${time.getDate()
         }日 星期${char} ${time.getHours()}點 ${time.getMinutes()}分 ${time.getSeconds()
-        }秒 (UTC${utcp}${utc})`;
+        }秒 (UTC${time.getTimezoneOffset()/60 <= 0 ? "+" : "-" }${Math.abs(time.getTimezoneOffset()/60)})`;
     },
     //#endregion
 
