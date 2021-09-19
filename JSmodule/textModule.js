@@ -629,8 +629,7 @@ module.exports = {
                 `所查詢之結果不一定完全代表該單字的所有含意，請包涵。\n另外請用單字的原形搜尋。`)
             .addField(`同型指令`,
                 `\`${defpre}search\` 的同型指令：\`${defpre}搜尋\`, \`${defpre}s\`\n` +
-                `\`${defpre}levels\` 的同型指令：\`${defpre}每日單字\`, \`${defpre}dc\`\n`+
-                `\`${defpre}noDM\` 的同型指令：\`${defpre}DM\`\n`)
+                `\`${defpre}dailycharacters\` 的同型指令：\`${defpre}每日單字\`, \`${defpre}dc\``)
         return embedhelp;
     },
     //#endregion

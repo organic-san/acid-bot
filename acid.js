@@ -821,6 +821,7 @@ client.on('messageCreate', async msg =>{
                     case '投票':
                     case 'p':
                         //#region 投票
+                        //TODO: 投票系統放到textModule
                         const emojis = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿', '⭕', '❌'];
                         const emojisSelect = new Array();
                         const fileimagep = msg.attachments.first();
@@ -913,7 +914,7 @@ client.on('messageCreate', async msg =>{
                     case '統計':
                     case 'sp':
                         //#region 投票統計
-
+                        //TODO: 投票統計系統放到textModule
                         if(!cmd[1]){
                             const embedhelp = new Discord.MessageEmbed()
                                 .setColor(process.env.EMBEDCOLOR)
@@ -1000,6 +1001,7 @@ client.on('messageCreate', async msg =>{
                     case 'search':
                     case '搜尋':
                     case 's':
+                        //TODO: 單字搜尋系統放到textModule
                         if(!cmd[1]) return;
                         let index = characters.findIndex(element => element.character.toLowerCase() === cmd[1].toLowerCase());
                         if(index < 0){index = characters.findIndex(element => element.character.toLowerCase().includes(cmd[1].toLowerCase()));}
@@ -1015,6 +1017,7 @@ client.on('messageCreate', async msg =>{
                     case 'dailycharacters':
                     case '每日單字':
                     case 'dc':
+                        //TODO: 美日單字系統放到textModule
                         const charactersMax = cmd[2] ?? 30;
                         const rank = cmd[1] ?? '1-7';
                         const rankset = rank.split('-');
@@ -1163,6 +1166,16 @@ client.on('messageCreate', async msg =>{
                             case 'i':
                                 msg.channel.send({embeds: [textCommand.helpInformation(defpre, embedhelp, client.user)]});
                                 break;
+
+                            case '搜尋':
+                            case 's':
+                            case 'dc':
+                            case 'dailycharacters':
+                            case '每日單字':
+                            case 'search':
+                                msg.channel.send({embeds: [textCommand.helpCharacters(defpre, embedhelp, client.user)]});
+                                break;
+                            
                                 
                             case 'poll':
                             case '投票':
@@ -2059,6 +2072,7 @@ client.on('messageCreate', async msg =>{
         console.log('OnMessageError', err); 
     }
 });
+//#endregion
 
 //#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
@@ -2181,3 +2195,4 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     }
     //TODO: 編輯訊息管理
 })
+//#endregion
