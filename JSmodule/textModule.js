@@ -138,7 +138,9 @@ module.exports = {
         let secs = seconds % 60;
         if(mins < 10){mins = "0" + mins}
         if(secs < 10){secs = "0" + secs}
-        channel.send(`已設定一個 ${hours}:${mins}:${secs} 的計時器，將在 ${goal.getHours()}點${goal.getMinutes()}分${goal.getSeconds()}秒 時通知`);
+        channel.send(`已設定一個 ${hours}:${mins}:${secs} 的計時器，` + 
+            `將在 ${goal.getHours()}點${goal.getMinutes()}分${goal.getSeconds()}秒` + 
+            `(UTC${goal.getTimezoneOffset()/60 <= 0 ? "+" : "-" }${Math.abs(goal.getTimezoneOffset()/60)}) 時通知`);
         setTimeout(() => {
             if(!cmd[2]){
                 channel.send(`叮叮叮！${user}，倒數 ${hours}:${mins}:${secs} 結束！`);
