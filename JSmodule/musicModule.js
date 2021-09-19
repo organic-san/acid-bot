@@ -87,6 +87,7 @@ module.exports = {
                 return msg.reply('影片太短了！請至少大於2秒！')
             }
             //判斷bot是否已經連到語音頻道 是:將歌曲加入歌單 不是:進入語音頻道並且播放歌曲
+            musicList.channel = msg.channel;
             if(!Voice.getVoiceConnection(msg.guild.id)){
                 msg.channel.send(`請稍等，即將進入語音頻道...`);
 
@@ -98,10 +99,6 @@ module.exports = {
                     selfMute: false
                 })
 
-                //創建播放器
-                musicList.createPlayer();
-                Voice.getVoiceConnection(msg.guild.id).subscribe(musicList.player);
-
                 //將歌曲加入歌單
                 musicList.songPush(new musicbase.SongUnit(
                     info.videoDetails.title, 
@@ -111,12 +108,19 @@ module.exports = {
                     msg.author
                 ))
 
-                //讀取資源
-                this.resourcePlay(musicList);
+                setTimeout(() => {
+                    //創建播放器
+                    musicList.createPlayer();
+                    Voice.getVoiceConnection(msg.guild.id).subscribe(musicList.player);
 
-                //啟動被踢出偵測器與音樂播放偵測器
-                this.connectionCheck(musicList);
-                this.playerCheck(musicList, msg.channel);
+                    //讀取資源
+                    this.resourcePlay(musicList);
+
+                    //啟動被踢出偵測器與音樂播放偵測器
+                    this.connectionCheck(musicList);
+                    this.playerCheck(musicList);
+                }, 1500);
+                
             }else{
 
                 //將歌曲加入歌單
@@ -145,7 +149,7 @@ module.exports = {
                 .addField('音樂長度', `${longmin}:${longsec}`, true)
                 .addField('歌曲位置', `${musicList.songlength - 1}`, true)
                 .setThumbnail(musicList.lastSong.getThumbnail())
-            msg.channel.send({embeds: [embed]});
+            musicList.channel.send({embeds: [embed]});
         }catch(err){
             console.log(err, 'playMusicError');
         }
@@ -177,6 +181,26 @@ module.exports = {
                 const resource = Voice.createAudioResource(stream, streamOptions);
                 resource.volume.volume = 0.8;
                 musicList.player.play(resource);
+
+                musicList.playerPause();
+                await musicList.channel.sendTyping();
+                const title = musicList.firstSong.title;
+                const longsec = musicList.firstSong.longsec;
+                const longmin = musicList.firstSong.longmin;
+                const embed = new Discord.MessageEmbed()
+                        .setColor(process.env.EMBEDCOLOR)
+                        .setAuthor('現正播放', `${musicList.getClientUserAvatar()}`)
+                        .setTitle(`${title} [${longmin}分 ${longsec}秒]`)
+                        .setURL(`${musicList.firstSong.url}`)
+                        .setThumbnail(musicList.lastSong.getThumbnail())
+                        .setFooter(`由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
+                                `${musicList.firstSong.getPlayerAvatar()}`);
+                await musicList.channel.send({embeds: [embed]}).then(message => {
+                    if(musicList.songlength > 0){
+                        musicList.setPlayingMessage(message);
+                        musicList.playerUnpause();
+                    }
+                });
             }
         }catch(err){
             console.log(err, 'playingMusicError');
@@ -189,32 +213,7 @@ module.exports = {
      * @param {musicbase.MusicList} musicList 
      * @param {Discord.TextChannel} channel 
      */
-    playerCheck: function(musicList, channel){
-        //檢測開始播放，發送正在播放的音樂的資訊
-        musicList.player.on(Voice.AudioPlayerStatus.Playing, async (oldState) => {
-            if(oldState.status !== Voice.AudioPlayerStatus.Paused){
-                //暫停直到訊息發送完畢 -> 保障短音樂時已經發送完訊息
-                musicList.playerPause();
-                await channel.sendTyping();
-                const title = musicList.firstSong.title;
-                const longsec = musicList.firstSong.longsec;
-                const longmin = musicList.firstSong.longmin;
-                const embed = new Discord.MessageEmbed()
-                        .setColor(process.env.EMBEDCOLOR)
-                        .setAuthor('現正播放', `${musicList.getClientUserAvatar()}`)
-                        .setTitle(`${title} [${longmin}分 ${longsec}秒]`)
-                        .setURL(`${musicList.firstSong.url}`)
-                        .setThumbnail(musicList.lastSong.getThumbnail())
-                        .setFooter(`由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
-                                `${musicList.firstSong.getPlayerAvatar()}`);
-                await channel.send({embeds: [embed]}).then(message => {
-                    if(musicList.songlength > 0){
-                        musicList.setPlayingMessage(message);
-                        musicList.playerUnpause();
-                    }
-                });
-            }
-        })
+    playerCheck: function(musicList){
 
         //檢測音樂播放結束
         musicList.player.on(Voice.AudioPlayerStatus.Idle, (oldState) =>{
@@ -335,7 +334,7 @@ module.exports = {
                 let longsec = musicList.song[i].longsec;
                 let longmin = musicList.song[i].longmin;
                 if(title.length > 40){title = title.substring(0,40) + `...`;}
-                message = message + `\n\n${i}. [${title}](${url}) | [${longmin}:${longsec}] [播放者：${musicList.song[i].userPlayer}]]`;
+                message = message + `\n\n${i}. [${title}](${url}) | [${longmin}:${longsec}] [播放者：${musicList.song[i].userPlayer}]`;
                 songqueue = songqueue + message;
             }
             if(musicList.songlength > 1){
@@ -416,7 +415,7 @@ module.exports = {
                 .setTitle(`${title}`)
                 .setURL(`${musicList.firstSong.url}`)
                 .setThumbnail(musicList.lastSong.getThumbnail())
-                .setDescription(`[播放者：${musicList.firstSong.author}]`) 
+                .setDescription(`[播放者：${musicList.firstSong.userPlayer}]`) 
                 .addField(`[ ${nowLongmin}:${nowLongsec} / ${longmin}:${longsec} ]`,`${timebar}`,false)
                 .setFooter(footer);
                 msg.channel.send({embeds: [embed]});

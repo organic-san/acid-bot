@@ -1291,8 +1291,8 @@ client.on('messageCreate', async msg =>{
                             
                             collector.on('end', () => {
                                 if(!book.deleted){
-                                    book.reactions.cache.get('▶️').users.remove()
-                                    book.reactions.cache.get('◀️').users.remove()
+                                    book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
+                                    book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
                                 }
                             });
                         });

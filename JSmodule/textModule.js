@@ -408,6 +408,8 @@ module.exports = {
                 `\`${defpre}我的頭像 [@對象]\` - 顯示自己或對象頭像的照片\n` + 
                 `\`${defpre}生日快樂 <@對象>\` - 幫對象唱一首生日快樂歌\n` + 
                 `\`${defpre}匿名訊息 <訊息>\` - 隱藏自我，由機器人代為發送訊息\n\n` + 
+                `\`${defpre}search <單字>\` - 學測分科用單字蒐尋器，等級是教育部分的\n` + 
+                `\`${defpre}dailycharacters [等級區間] [數量]\` - 每日背單字工具，等級區間請用\`1-6\`格式\n\n` + 
                 `\`${defpre}poll <標題> [表情符號1] [選項1] [表情符號2] [選項2]...\` - 舉行投票\n` + 
                 `\`${defpre}sumpoll <訊息ID>\` - 統計投票\n\n` + 
                 `\`${defpre}rank\` - 查看自己的等級與排名\n` +
@@ -606,6 +608,29 @@ module.exports = {
             .addField('關鍵字列表', '[**伺服器**]\n顯示幕前的伺服器的資訊\n同型指令:\`server\`, \`guild\`, \`s\`, \`g\`\n\n' +
                 `[**機器人**]\n顯示 ${user} 的相關資訊\n同型指令:\`bot\`, \`b\``)
             .addField('同型指令', `\`${defpre}infornmation\`, \`${defpre}info\`, \`${defpre}i\``)
+        return embedhelp;
+    },
+    //#endregion
+
+    /**
+     * 單字幫助清單
+     * @param {string} defpre 前輟
+     * @param {Discord.MessageEmbed} embedhelp 幫助清單模板
+     * @returns 包含幫助清單的Discord.MessageEmbed
+     */
+     helpCharacters: function(defpre, embedhelp){
+        //#region h/單字
+        embedhelp.setTitle(`文字指令清單/${defpre}單字系統`)
+            .setDescription(`<此為必填項> [此為選填項]`)
+            .addField(`關於單字的指令`,
+                `\`${defpre}search <單字>\` 查找這個單字的意思\n` +
+                `\`${defpre}dailycharacters\` - 查看整個伺服器的排行\n`)
+            .addField('單字系統說明', `單字與解釋來源取自台灣測驗中心。\n單字的範圍為學測與分科會出現的6000單字。\n` + 
+                `所查詢之結果不一定完全代表該單字的所有含意，請包涵。\n另外請用單字的原形搜尋。`)
+            .addField(`同型指令`,
+                `\`${defpre}search\` 的同型指令：\`${defpre}搜尋\`, \`${defpre}s\`\n` +
+                `\`${defpre}levels\` 的同型指令：\`${defpre}每日單字\`, \`${defpre}dc\`\n`+
+                `\`${defpre}noDM\` 的同型指令：\`${defpre}DM\`\n`)
         return embedhelp;
     },
     //#endregion

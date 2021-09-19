@@ -9,8 +9,9 @@ class MusicList {
      * @param {Discord.Guild} guild 清單所屬的伺服器
      * @param {Array<SongUnit>} song 音樂清單，格式請參造 songUnit
      * @param {Voice.AudioPlayer} player 客戶端的用戶
+     * @param {Discord.TextChannel} channel 要發送相關訊息的頻道
      */
-    constructor(clientUser, guild, song, player) {
+    constructor(clientUser, guild, song, channel, player) {
         this.isLoop = false;
         this.isLoopList = false;
         this.isReplay = false;
@@ -19,6 +20,7 @@ class MusicList {
         this.guild = guild;
         this.player = player;
         this.song = song;
+        this.channel = channel;
     }
 
     /**
@@ -35,7 +37,7 @@ class MusicList {
     deletePlayingMessage(){
         if(this.playingMessage){
             if(!this.playingMessage.deleted){
-                this.playingMessage.delete();
+                this.playingMessage.delete().catch((err) => console.log(err));
             }
         }
     }
