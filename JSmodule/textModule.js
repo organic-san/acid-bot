@@ -393,7 +393,31 @@ module.exports = {
             ` / #${element.reactionsMuch}`);
 
         element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
-            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆： ${element.reply}`, true);
+            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆：${element.reply}`, true);
+        })
+
+        return levelembed;
+    },
+    //#endregion
+
+    /**
+         * 顯示整個伺服器的經驗值排名
+         * @param {Discord.Guild} guild 該伺服器的Discord資料
+         * @param {guildInfo.GuildInformation} element 該伺服器的資訊
+         * @param {number} page 頁數
+         * @param {number} pageShowHax 單頁上限 
+         * @returns 包含排名的Discord.MessageEmbed
+         */
+     reactionsShow: function(guild, element, page, pageShowHax){
+        //#region 等級排行顯示清單 
+        let levelembed = new Discord.MessageEmbed()
+            .setTitle(`${guild.name} 的專屬伺服器反映`)
+            .setColor(process.env.EMBEDCOLOR)                                
+            .setThumbnail(`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.jpg`)
+            .setDescription(`#${page * pageShowHax + 1} ~ #${Math.min(page * pageShowHax + pageShowHax, element.reactionsMuch)}` + 
+            ` / #${element.reactionsMuch}`);
+        element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
+            if(element) levelembed.addField(`\u200B`, `訊息：${element.react}\n回覆：${element.reply}`, true);
         })
 
         return levelembed;
@@ -428,6 +452,7 @@ module.exports = {
                 `\`${defpre}匿名訊息 <訊息>\` - 隱藏自我，由機器人代為發送訊息\n\n` + 
                 `\`${defpre}search <單字>\` - 學測分科用單字蒐尋器，等級是教育部分的\n` + 
                 `\`${defpre}dailycharacters [等級區間] [數量]\` - 每日背單字工具，等級區間請用\`1-6\`格式\n\n` + 
+                `\`${defpre}reactions\` - 查詢自動回應系統的反應文字\n\n` + 
                 `\`${defpre}poll <標題> [表情符號1] [選項1] [表情符號2] [選項2]...\` - 舉行投票\n` + 
                 `\`${defpre}sumpoll <訊息ID>\` - 統計投票\n\n` + 
                 `\`${defpre}rank\` - 查看自己的等級與排名\n` +
@@ -636,7 +661,7 @@ module.exports = {
      * @param {Discord.MessageEmbed} embedhelp 幫助清單模板
      * @returns 包含幫助清單的Discord.MessageEmbed
      */
-     helpCharacters: function(defpre, embedhelp){
+    helpCharacters: function(defpre, embedhelp){
         //#region h/單字
         embedhelp.setTitle(`文字指令清單/${defpre}單字系統`)
             .setDescription(`<此為必填項> [此為選填項]`)
@@ -648,6 +673,25 @@ module.exports = {
             .addField(`同型指令`,
                 `\`${defpre}search\` 的同型指令：\`${defpre}搜尋\`, \`${defpre}s\`\n` +
                 `\`${defpre}dailycharacters\` 的同型指令：\`${defpre}每日單字\`, \`${defpre}dc\``)
+        return embedhelp;
+    },
+    //#endregion
+
+    /**
+         * 反應顯示清單
+         * @param {string} defpre 前輟
+         * @param {Discord.MessageEmbed} embedhelp 幫助清單模板
+         * @param {string} defprea 權限指令前輟
+         * @returns 包含幫助清單的Discord.MessageEmbed
+         */
+    helpReaction: function(defpre, embedhelp, defprea){
+        //#region h/反應
+        embedhelp.setTitle(`文字指令清單/${defpre}自動回應系統`)
+            .addField(`${defpre}reactions`, `顯示機器人會自動回應的文字清單`)
+            .addField(`${defprea}reactions`, `顯示或設定自動回應的文字，說明請看\`${defprea}help reactions\``)
+            .addField('自動回應系統說明', `管理員可以設定自動回應的文字，讓機器人在接收到特定文字時自動回應。`)
+            .addField(`同型指令`,
+                `\`${defpre}reactions\` 的同型指令：\`${defpre}reaction\`, \`${defpre}reactions\`, \`${defpre}re\`\n`);
         return embedhelp;
     },
     //#endregion
@@ -715,8 +759,6 @@ module.exports = {
             .addField('[笑死]', '\u200B')
             .addField('[晚安]', '同型指令: [晚ㄢ]')
             .addField('[快樂光線]', '同型指令: [happybeam], [happy beam], [happylight], [happy light]')
-            .addField('[嘟嘟嘟嘟答答答]', '\u200B')
-            .addField('[rick roll]', '\u200B')
         return embedhelp;
     },
     //#endregion

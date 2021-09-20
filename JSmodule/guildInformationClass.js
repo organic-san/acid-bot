@@ -229,6 +229,11 @@ class GuildInformation {
         return this.reaction[Id].reply;
     }
 
+    clearReaction() {
+        this.reaction = [];
+        this.reactionsCount = 0;
+    }
+
     /**
      * 
      * @param {string} userId 用戶ID 

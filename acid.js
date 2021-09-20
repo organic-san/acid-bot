@@ -265,16 +265,6 @@ client.on('messageCreate', async msg =>{
                 }
                 break;
             
-            case '嘟嘟嘟嘟答答答':
-                await msg.channel.sendTyping();
-                msg.reply("https://www.youtube.com/watch?v=vTIIMJ9tUc8");
-                break;
-            
-            case 'rick roll':
-                await msg.channel.sendTyping();
-                msg.reply("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-                break;
-            
             case '快樂光線':
             case 'happybeam':
             case 'happy beam':
@@ -1028,6 +1018,49 @@ client.on('messageCreate', async msg =>{
                     case '邀請':
                         msg.channel.send({embeds: [textCommand.invite(client.user, msg.channel)]});
                         break;
+                    
+                    case 'reactions':
+                    case '反應':
+                    case 'reaction':
+                    case 're':
+                        //#region 反應清單
+                        const reactionsElement = guildInformation.getGuild(msg.guild.id);
+                        if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('著個伺服器並沒有設定專屬反應。');
+                        const pageShowHaxR = 12;
+                        let page2 = 0;
+                        const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
+                        msg.channel.send({embeds: [reactionsEmbed]}).then(book => {
+                            book.react("◀️");
+                            book.react("▶️");
+    
+                            const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
+                            const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
+                            
+                            collector.on('collect', async r => {
+                                if(r.emoji.name === "▶️"){ if(page2 * pageShowHaxR + pageShowHaxR < reactionsElement.reactionsMuch - 1){page++;} }
+                                if(r.emoji.name === "◀️"){ if(page2 > 0){page2--;} }
+                                const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
+                                book.edit({embeds: [reactionsEmbed]});
+                                collector.resetTimer({ time: 60 * 1000 });
+                            });
+                            
+                            collector.on('remove', async r => {
+                                if(r.emoji.name === "▶️"){ if(page2 * pageShowHaxR + pageShowHaxR < reactionsElement.reactionsMuch - 1){page++;} }
+                                if(r.emoji.name === "◀️"){ if(page2 > 0){page2--;} }
+                                const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
+                                book.edit({embeds: [reactionsEmbed]});
+                                collector.resetTimer({ time: 60 * 1000 });
+                            });
+                            
+                            collector.on('end', () => {
+                                if(!book.deleted){
+                                    book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
+                                    book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
+                                }
+                            });
+                        });
+                        break;
+                        //#endregion
 
                     case 'help':
                     case 'h':
@@ -1133,9 +1166,15 @@ client.on('messageCreate', async msg =>{
                             case 'dailycharacters':
                             case '每日單字':
                             case 'search':
-                                msg.channel.send({embeds: [textCommand.helpCharacters(defpre, embedhelp, client.user)]});
+                                msg.channel.send({embeds: [textCommand.helpCharacters(defpre, embedhelp)]});
                                 break;
                             
+                            case 'reactions':
+                            case '反應':
+                            case 'reaction':
+                            case 're':
+                                msg.channel.send({embeds: [textCommand.helpReaction(defpre, embedhelp, defprea)]});
+                                break;
                                 
                             case 'poll':
                             case '投票':
@@ -1668,6 +1707,7 @@ client.on('messageCreate', async msg =>{
                         break;
                     
                     case 'levels':
+                    case 'level':
                         //#region 等級設定
                         if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
                             return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
@@ -1765,20 +1805,22 @@ client.on('messageCreate', async msg =>{
                         //#endregion
 
                     case 'reactions': 
+                    case 'reaction': 
                         //#region 自訂回應
                         if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
                             return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
                         }
                         const reactionsElement = guildInformation.getGuild(msg.guild.id);
                         switch(commands[1]){
-                            case undefined: //show
+                            case undefined:
+                                msg.channel.send(`詳細系統說明請查看 \`${defprea}help reactions\``);
+                            
                             case 'show': //show
-                                if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('著個伺服器並沒有設定專屬反應。');
+                                if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('這個伺服器並沒有設定專屬反應。');
                                 const pageShowHax = 12;
                                 let page = 0;
 
                                 const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
-                                console.log(reactionsEmbed);
                                 msg.channel.send({embeds: [reactionsEmbed]}).then(book => {
                                     book.react("◀️");
                                     book.react("▶️");
@@ -1851,7 +1893,10 @@ client.on('messageCreate', async msg =>{
                                 break;
 
                             case 'remove': 
-                                msg.channel.send(`請在下面直接輸入要刪除的ID(用${defprea}reactions show查詢)，或者輸入cancel以取消：`);
+                                if(reactionsElement.reactionsMuch <= 0){
+                                    return msg.channel.send('這個伺服器並沒有設定專屬自動回應。請使用 \`' + defprea + 'reactions add\` 新增。');
+                                }
+                                msg.channel.send(`請在下面直接輸入要刪除的ID(用 \`${defprea}reactions show\` 查詢)，或者輸入cancel以取消：`);
                                 const collected3 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const response2 = collected3.first();
                                 await msg.channel.sendTyping();
@@ -1861,6 +1906,23 @@ client.on('messageCreate', async msg =>{
                                 const successed = reactionsElement.deleteReaction(parseInt(response2));
                                 if(successed.s) msg.channel.send(`成功移除反應：\n\n訊息：\`${successed.r}\`\n回覆：\`${successed.p}\``);
                                 else msg.channel.send('無法找到該ID的反應。請確認是否為存在的ID。')
+                                break;
+
+                            case 'reset':
+                                if(reactionsElement.reactionsMuch <= 0){
+                                    return msg.channel.send('目前伺服器自動回應清單是空的。請使用 \`' + defprea + 'reactions add\` 新增。');
+                                }
+                                msg.channel.send("確定要清除所有自動回應嗎？此動作無法復原。\n輸入\`yes\`即清除資料，否則取消清除");
+                                const collectedrs = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
+                                const responserrs = collectedrs.first();
+                                await msg.channel.sendTyping();
+                                if (!responserrs) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
+                                if (['yes'].includes(responserrs.content.toLowerCase())){
+                                    reactionsElement.clearReaction();
+                                    msg.channel.send("已清除所有自動回應。");
+                                }else{
+                                    msg.channel.send("已取消清除所有自動回應。");
+                                }
                                 break;
 
                             default:
@@ -1966,6 +2028,27 @@ client.on('messageCreate', async msg =>{
                                 break;
                                 //#endregion
 
+                            //#region h/reactions
+                            case 'reactions':
+                                const embed6 = new Discord.MessageEmbed()
+                                    .setColor(process.env.EMBEDCOLOR)
+                                    .setTitle(`管理權限指令清單/reactions(自動回應系統)：前輟[${defprea}](需要管理員權限)`)
+                                    .setDescription(`關於reactions：專屬於伺服器的機器人自動回應系統\n` +
+                                                    `以下列出有關指令[\`${defprea}reactions\`]可以做的事，本權限全程需要管理員權限\n` + 
+                                                    `<此為必填項> [此為選填項]`)
+                                    .addField(`${defprea}reactions`, `顯示目前的回應清單`)
+                                    .addField(`${defprea}reactions show`, '顯示目前的回應清單')
+                                    .addField(`${defprea}reactions add`, '新增回應的項目')
+                                    .addField(`${defprea}reactions remove`, `刪除特定回應的項目(項目ID請用 \`${defprea}reactions show\` 查詢)`)
+                                    .addField(`${defprea}reactions reset`, '清空所有回應項目')
+                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
+                                                `https://discord.gg/hveXGk5Qmz`)
+                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
+                                    msg.channel.send({embeds: [embed6]});
+                                break;
+                                //#endregion
+
+
                             default:
                                 //#region h/預設
                                 const embed = new Discord.MessageEmbed()
@@ -1976,6 +2059,7 @@ client.on('messageCreate', async msg =>{
                                     .addField('管理權限指令', 
                                     `\`${defprea}joinMessage\` - 歡迎/道別訊息的設定，請先閱讀\`${defprea}help joinMessage\`\n` + 
                                     `\`${defprea}levels\` - 等級系統設定，請先閱讀\`${defprea}help levels\`\n` + 
+                                    `\`${defprea}reactions\` - 反應系統設定，請先閱讀\`${defprea}help reactions\`\n` + 
                                     `\`${defprea}kick <@用戶> [理由]\` - 踢出指定用戶並向該用戶告知\n` +
                                     `\`${defprea}ban <@用戶> [理由]\` - 停權指定用戶並向該用戶告知\n\n` +
                                     `\`${defprea}help <指令>\` - 召喚詳細的幫助清單，例如\`${defprea}help joinMessage\``)
@@ -2219,6 +2303,7 @@ client.on("guildDelete", guild => {
 //#region 機器人編輯、刪除訊息觸發事件guildCreate、messageDelete
 client.on('messageDelete', async message => {
     if (!message.guild) return;
+    if (!message.author) return;
 
     const fileimage = message.attachments.first();
     if(!fileimage && message.content.length < 3) return
@@ -2227,7 +2312,7 @@ client.on('messageDelete', async message => {
         .setAuthor(message.author.tag, message.author.displayAvatarURL({dynamic: true}))
         .setColor(process.env.EMBEDCOLOR)
         .setDescription(message.content)
-        .setFooter(`${message.guild.name} • #${message.channel.name}`,
+        .setFooter(`#${message.channel.name}`,
             `https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}.jpg`)
         .setTimestamp(message.createdAt);
 
@@ -2241,6 +2326,7 @@ client.on('messageDelete', async message => {
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!oldMessage.guild) return;
+    if (!oldMessage.author) return;
 
     const oldfileimage = oldMessage.attachments.first();
     if( ( !oldfileimage) && (oldMessage.content.length < 3 || newMessage.content.length < 3)) return
@@ -2248,8 +2334,8 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     const embed = new Discord.MessageEmbed()
         .setAuthor(oldMessage.author.tag, oldMessage.author.displayAvatarURL({dynamic: true}))
         .setColor(process.env.EMBEDCOLOR)
-        .addField("Old Message:", oldMessage.content ?? "(nothing)")
-        .addField("New Message:", newMessage.content ?? "(nothing)")
+        .addField("Old Message:", oldMessage.content ?? "(empty)")
+        .addField("New Message:", newMessage.content ?? "(empty)")
         .setFooter(`#${oldMessage.channel.name}`,
             `https://cdn.discordapp.com/icons/${oldMessage.guild.id}/${oldMessage.guild.icon}.jpg`)
         .setTimestamp(oldMessage.createdAt);
