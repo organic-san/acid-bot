@@ -97,7 +97,7 @@ let numberingList = new Map();
 let musicList = new Map();
 
 // 當 Bot 接收到訊息時的事件
-//#region 文字事件反映
+//#region 文字事件反應
 client.on('messageCreate', async msg =>{
     try{
         if(!isReady) return;
@@ -757,7 +757,7 @@ client.on('messageCreate', async msg =>{
                         let page = 0;
                         guildLevelsElement.sortUser();
 
-                        const levels = await textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
+                        const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
                         msg.channel.send({embeds: [levels]}).then(book => {
                             book.react("◀️");
                             book.react("▶️");
@@ -769,7 +769,7 @@ client.on('messageCreate', async msg =>{
                                 if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildLevelsElement.usersMuch){page++;} }
                                 if(r.emoji.name === "◀️"){ if(page > 0){page--;} }                        
                                 guildLevelsElement.sortUser();
-                                const levels = await textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
+                                const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
                                 book.edit({embeds: [levels]});
                                 collector.resetTimer({ time: 60 * 1000 });
                             });
@@ -778,7 +778,7 @@ client.on('messageCreate', async msg =>{
                                 if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildLevelsElement.usersMuch){page++;} }
                                 if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
                                 guildLevelsElement.sortUser();
-                                const levels = await textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
+                                const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
                                 book.edit({embeds: [levels]});
                                 collector.resetTimer({ time: 60 * 1000 });
                             });
@@ -1803,6 +1803,96 @@ client.on('messageCreate', async msg =>{
                         }
                         break;
                         //#endregion
+
+                    case 'reactions':
+                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
+                            return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
+                        }
+                        const reactionsElement = guildInformation.getGuild(msg.guild.id);
+                        switch(commands[1]){
+                            case undefined: //show
+                            case 'show': //show
+                                if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('著個伺服器並沒有設定專屬反應。');
+                                const pageShowHax = 12;
+                                let page = 0;
+
+                                const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
+                                console.log(reactionsEmbed);
+                                msg.channel.send({embeds: [reactionsEmbed]}).then(book => {
+                                    book.react("◀️");
+                                    book.react("▶️");
+            
+                                    const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
+                                    const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
+                                    
+                                    collector.on('collect', async r => {
+                                        if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < reactionsElement.reactionsMuch - 1){page++;} }
+                                        if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
+                                        const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
+                                        book.edit({embeds: [reactionsEmbed]});
+                                        collector.resetTimer({ time: 60 * 1000 });
+                                    });
+                                    
+                                    collector.on('remove', async r => {
+                                        if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < reactionsElement.reactionsMuch - 1){page++;} }
+                                        if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
+                                        const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
+                                        book.edit({embeds: [reactionsEmbed]});
+                                        collector.resetTimer({ time: 60 * 1000 });
+                                    });
+                                    
+                                    collector.on('end', () => {
+                                        if(!book.deleted){
+                                            book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
+                                            book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
+                                        }
+                                    });
+                                });
+                                break;
+                                
+                            case 'add':
+                                msg.channel.send(`請在下面直接輸入要起反應的文字，例如：\`快樂光線\` 或者輸入cancel以取消：`);
+                                const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
+                                const response = collected.first();
+                                await msg.channel.sendTyping();
+                                if (!response) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
+                                if (['cancel'].includes(response.content.toLowerCase())) 
+                                    return response.reply(`設定結束：取消設定`);
+                                if (response.content.length > 50) 
+                                    return response.reply(`設定失敗：文字過長，請縮短文字長度。`);
+
+                                msg.channel.send('請在下面直接輸入機器人要回應的文字，例如：\`(/  ≧▽≦)/===============)))\` 或者輸入cancel以取消：');
+                                const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
+                                const responseSC = collected2.first();
+                                await msg.channel.sendTyping();
+                                if (!responseSC) return response.reply(`設定失敗：輸入逾時，請重新設定`);
+                                if (['cancel'].includes(responseSC.content.toLowerCase())) 
+                                    return responseSC.reply(`設定結束：取消設定`);
+                                if (responseSC.content.length > 50) 
+                                    return responseSC.reply(`設定失敗：文字過長，請縮短文字長度。`);
+                                
+                                reactionsElement.addReaction(response.content, responseSC.content);
+                                msg.channel.send(`設定完成，已新增已下反應：\n\n訊息：\`${response.content}\`\n回覆：\`${responseSC.content}\``);
+                                break;
+
+                            case 'remove':
+                                msg.channel.send(`請在下面直接輸入要刪除的ID(用${defprea}reactions show查詢)，或者輸入cancel以取消：`);
+                                const collected3 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
+                                const response2 = collected3.first();
+                                await msg.channel.sendTyping();
+                                if (!response2) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
+                                if (['cancel'].includes(response2.content.toLowerCase())) 
+                                    return response2.reply(`設定結束：取消設定`);
+                                const successed = reactionsElement.deleteReaction(parseInt(response2));
+                                if(successed.s) msg.channel.send(`成功移除反應：\n\n訊息：\`${successed.r}\`\n回覆：\`${successed.p}\``);
+                                else msg.channel.send('無法找到該ID的反應。請確認是否為存在的ID。')
+                                break;
+
+                            default:
+                                msg.channel.send(`請在 \`${defprea}reactions\` 後方使用指定關鍵字：\`show\`、\`add\` 或 \`remove\`。`);
+                                break;
+                        }
+                        break;
 
                     case 'help':
                     case 'h':

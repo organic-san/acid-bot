@@ -115,6 +115,7 @@ class GuildInformation {
         this.recordAt = new Date(Date.now());
         this.users = users;
         this.reaction = [];
+        this.reactionsCount = 1;
     }
 
     /**
@@ -136,6 +137,7 @@ class GuildInformation {
         newGI.joinedAt = obj.joinedAt ?? new Date(Date.now());
         newGI.recordAt = obj.recordAt ?? new Date(Date.now());
         newGI.reaction = obj.reaction ?? [];
+        newGI.reactionsCount = obj.reactionsCount ?? 1;
         obj.users.forEach(user => {
             const newUser = new User(user.id ?? 0, user.tag ?? "undefined#0000");
             newUser.DM = user.DM ?? true;
@@ -152,6 +154,10 @@ class GuildInformation {
 
     get usersMuch() {
         return this.users.length;
+    }
+
+    get reactionsMuch() {
+        return this.reaction.length;
     }
 
     /**
@@ -179,6 +185,34 @@ class GuildInformation {
 
     addUser(userUnit) {
         this.users.push(userUnit);
+    }
+
+    /**
+     * 
+     * @param {string} word 
+     * @param {string} react 
+     */
+    addReaction(word, react) {
+        this.reaction.push({
+            "id": this.reactionsCount,
+            "react": word,
+            "reply": react
+        })
+        this.reactionsCount++;
+    }
+
+    /**
+     * 
+     * @param {number} Id 
+     */
+     deleteReaction(Id) {
+        const deletedReaction = this.reaction.findIndex(element => element.id == Id);
+        if(deletedReaction < 0) return {"s": false, "r": undefined, "p": undefined};
+        else{
+            const removed = {"s": true, "r": this.reaction[deletedReaction].react, "p": this.reaction[deletedReaction].reply};
+            this.reaction.splice(deletedReaction, 1);
+            return removed;
+        }
     }
 
     /**

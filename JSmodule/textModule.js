@@ -330,7 +330,7 @@ module.exports = {
      * @param {number} pageShowHax 單頁上限 
      * @returns 包含排名的Discord.MessageEmbed
      */
-    levels: async function(guild, element, page, pageShowHax){
+    levels: function(guild, element, page, pageShowHax){
         //#region 等級排行顯示清單
         let levelembed = new Discord.MessageEmbed()
             .setTitle(`${guild.name} 的等級排行`)
@@ -375,7 +375,30 @@ module.exports = {
     },
     //#endregion
 
+    /**
+         * 顯示整個伺服器的經驗值排名
+         * @param {Discord.Guild} guild 該伺服器的Discord資料
+         * @param {guildInfo.GuildInformation} element 該伺服器的資訊
+         * @param {number} page 頁數
+         * @param {number} pageShowHax 單頁上限 
+         * @returns 包含排名的Discord.MessageEmbed
+         */
+     authReactionsShow: function(guild, element, page, pageShowHax){
+        //#region 等級排行顯示清單
+        let levelembed = new Discord.MessageEmbed()
+            .setTitle(`${guild.name} 的專屬伺服器反映`)
+            .setColor(process.env.EMBEDCOLOR)                                
+            .setThumbnail(`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.jpg`)
+            .setDescription(`#${page * pageShowHax + 1} ~ #${Math.min(page * pageShowHax + pageShowHax, element.reactionsMuch)}` + 
+            ` / #${element.reactionsMuch}`);
 
+        element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
+            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆：${element.reply}`, true);
+        })
+
+        return levelembed;
+    },
+    //#endregion
 
     //#region help
 
