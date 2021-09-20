@@ -218,20 +218,21 @@ class GuildInformation {
     /**
      * 
      * @param {string} content 要起反應的文字
-     * @returns 反應ID
+     * @returns 反應ID or -1
      */
     findReaction(content) {
         const index = this.reaction.findIndex(element => element.react === content);
-        return index >= 0 ? this.reaction[index].id - 1 : index;
+        return index >= 0 ? this.reaction[index].id : index;
     }
 
     getReaction(Id) {
-        return this.reaction[Id].reply;
+        const index = this.reaction.findIndex(element => element.id === Id);
+        return this.reaction[index].reply;
     }
 
     clearReaction() {
         this.reaction = [];
-        this.reactionsCount = 0;
+        this.reactionsCount = 1;
     }
 
     /**
