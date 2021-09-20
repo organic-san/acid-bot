@@ -384,7 +384,7 @@ module.exports = {
          * @returns 包含排名的Discord.MessageEmbed
          */
      authReactionsShow: function(guild, element, page, pageShowHax){
-        //#region 等級排行顯示清單
+        //#region 等級排行顯示清單 
         let levelembed = new Discord.MessageEmbed()
             .setTitle(`${guild.name} 的專屬伺服器反映`)
             .setColor(process.env.EMBEDCOLOR)                                
@@ -732,7 +732,6 @@ module.exports = {
             .setDescription(`<只要包含此文字> [只能有此文字]`)
             .addField('🎉', '[成功], [成功!], [成功！], [成功了], [成功了!], [成功了！]')
             .addField('🐢🐔🥛', '[龜雞奶], [樓上龜雞奶], [樓下龜雞奶]')
-            .addField('↖️', '[樓上自肥], [樓下自肥]')
         return embedhelp;
     }
     //#endregion

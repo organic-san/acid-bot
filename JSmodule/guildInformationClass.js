@@ -189,9 +189,9 @@ class GuildInformation {
 
     /**
      * 
-     * @param {string} word 
-     * @param {string} react 
-     */
+     * @param {string} word 要起反應的文字
+     * @param {string} react 要回應的文字
+     */ 
     addReaction(word, react) {
         this.reaction.push({
             "id": this.reactionsCount,
@@ -203,7 +203,7 @@ class GuildInformation {
 
     /**
      * 
-     * @param {number} Id 
+     * @param {number} Id 反應ID
      */
      deleteReaction(Id) {
         const deletedReaction = this.reaction.findIndex(element => element.id == Id);
@@ -213,6 +213,20 @@ class GuildInformation {
             this.reaction.splice(deletedReaction, 1);
             return removed;
         }
+    }
+
+    /**
+     * 
+     * @param {string} content 要起反應的文字
+     * @returns 反應ID
+     */
+    findReaction(content) {
+        const index = this.reaction.findIndex(element => element.react === content);
+        return index >= 0 ? this.reaction[index].id - 1 : index;
+    }
+
+    getReaction(Id) {
+        return this.reaction[Id].reply;
     }
 
     /**

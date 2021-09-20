@@ -207,54 +207,6 @@ client.on('messageCreate', async msg =>{
                 }
             }
         }
-
-        if (msg.content.includes('上自肥') && msg.content.includes('樓')){
-            const regex = /上/g;
-
-            if(msg.content.match(regex).length <= 100){
-                const beforeMessage = await msg.channel.messages.fetch({ before: msg.id, limit: msg.content.match(regex).length })
-                .then(messages => messages.last())
-                .catch(console.error)
-
-                if(beforeMessage){
-                    if(!beforeMessage.deleted){
-                        beforeMessage.react('↖️');
-                    }else{
-                        if(!msg.deleted){
-                            msg.react('😢');
-                        }
-                    }
-                }
-                
-            }else{
-                if(!msg.deleted){
-                    msg.react('😢');
-                }
-            }
-        }
-
-        if (msg.content.includes('下自肥') && msg.content.includes('樓')){
-            const regex = /下/g;
-
-            if(msg.content.match(regex).length <= 100){
-                const collected = await msg.channel.awaitMessages({
-                    max: msg.content.match(regex).length, time: 30 * 60 * 1000 
-                });
-                const responser = collected.last();
-
-                if(responser !== undefined){
-                    responser.react('↖️');
-                }else{
-                    if(!msg.deleted){
-                        msg.react('😢');
-                    }
-                }
-            }else{
-                if(!msg.deleted){
-                    msg.react('😢');
-                }
-            }
-        }
         //#endregion
 
         if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.SEND_MESSAGES)) 
@@ -348,6 +300,14 @@ client.on('messageCreate', async msg =>{
                     msg.guild.members.cache.get(msg.author.id).roles.add('848903846990577674');
                     msg.delete();
                 }
+        }
+        //#endregion
+
+        //#region 伺服器指定文字判定回應
+        isReaction = guildInformation.getGuild(msg.guild.id).findReaction(msg.content);
+        if(isReaction >= 0) {
+            await msg.channel.sendTyping();
+            msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
         }
         //#endregion
 
@@ -1804,7 +1764,8 @@ client.on('messageCreate', async msg =>{
                         break;
                         //#endregion
 
-                    case 'reactions':
+                    case 'reactions': 
+                        //#region 自訂回應
                         if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
                             return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
                         }
@@ -1907,6 +1868,7 @@ client.on('messageCreate', async msg =>{
                                 break;
                         }
                         break;
+                        //#endregion
 
                     case 'help':
                     case 'h':
