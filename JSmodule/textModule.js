@@ -386,7 +386,7 @@ module.exports = {
      authReactionsShow: function(guild, element, page, pageShowHax){
         //#region 等級排行顯示清單 
         let levelembed = new Discord.MessageEmbed()
-            .setTitle(`${guild.name} 的專屬伺服器反映`)
+            .setTitle(`${guild.name} 的專屬伺服器自動回應清單`)
             .setColor(process.env.EMBEDCOLOR)                                
             .setThumbnail(`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.jpg`)
             .setDescription(`#${page * pageShowHax + 1} ~ #${Math.min(page * pageShowHax + pageShowHax, element.reactionsMuch)}` + 
@@ -417,7 +417,7 @@ module.exports = {
             .setDescription(`#${page * pageShowHax + 1} ~ #${Math.min(page * pageShowHax + pageShowHax, element.reactionsMuch)}` + 
             ` / #${element.reactionsMuch}`);
         element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
-            if(element) levelembed.addField(`\u200B`, `訊息：${element.react}\n回覆：${element.reply}`, true);
+            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆：${element.reply}`, true);
         })
 
         return levelembed;

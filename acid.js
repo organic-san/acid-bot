@@ -228,7 +228,7 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
-        //#region 特殊文字判定回應 推 笑死 晚安 快樂光線 嘟嘟嘟嘟答答答 rick roll
+        //#region 特殊文字判定回應 推 笑死 晚安 快樂光線
         switch(msg.content){
             case '推':
             case 'push':
@@ -1859,9 +1859,12 @@ client.on('messageCreate', async msg =>{
                                 const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const response = collected.first();
                                 await msg.channel.sendTyping();
+                                //檢測
                                 if (!response) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
                                 if (['cancel'].includes(response.content.toLowerCase())) 
                                     return response.reply(`設定結束：取消設定`);
+                                if (!response.content) 
+                                    return response.reply(`設定失敗：請輸入文字。`);
                                 if (response.content.length > 50) 
                                     return response.reply(`設定失敗：文字過長，請縮短文字長度。`);
                                 //是否為指令
@@ -1870,15 +1873,20 @@ client.on('messageCreate', async msg =>{
                                 if(responseIsprefix >= 0){  responseIsCommand = true; }
                                 if (responseIsCommand) 
                                     return response.reply(`設定失敗：請不要使用包含指令的文字。`);
+                                if(reactionsElement.findReaction(response.content) >= 0)
+                                    return response.reply(`設定失敗：該關鍵字已被使用，請重新設定。`)
 
                                 //輸入機器人要回應的文字
                                 msg.channel.send('請在下面直接輸入機器人要回應的文字，例如：\`(/  ≧▽≦)/===============)))\` 或者輸入cancel以取消：');
                                 const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const responseSC = collected2.first();
                                 await msg.channel.sendTyping();
+                                //檢測
                                 if (!responseSC) return response.reply(`設定失敗：輸入逾時，請重新設定`);
                                 if (['cancel'].includes(responseSC.content.toLowerCase())) 
                                     return responseSC.reply(`設定結束：取消設定`);
+                                if (!responseSC.content) 
+                                    return responseSC.reply(`設定失敗：請輸入文字。`);
                                 if (responseSC.content.length > 50) 
                                     return responseSC.reply(`設定失敗：文字過長，請縮短文字長度。`);
                                 //是否為指令
@@ -2300,6 +2308,7 @@ client.on("guildDelete", guild => {
 });
 //#endregion
 
+/*
 //#region 機器人編輯、刪除訊息觸發事件guildCreate、messageDelete
 client.on('messageDelete', async message => {
     if (!message.guild) return;
@@ -2334,7 +2343,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     const embed = new Discord.MessageEmbed()
         .setAuthor(oldMessage.author.tag, oldMessage.author.displayAvatarURL({dynamic: true}))
         .setColor(process.env.EMBEDCOLOR)
-        .addField("Old Message:", oldMessage.content ?? "(empty)")
+        .addField("Old Message:", oldMessage.content ?? "(empty)") //TODO: 編輯訊息：這裡似乎有些問題，再看一下
         .addField("New Message:", newMessage.content ?? "(empty)")
         .setFooter(`#${oldMessage.channel.name}`,
             `https://cdn.discordapp.com/icons/${oldMessage.guild.id}/${oldMessage.guild.icon}.jpg`)
@@ -2348,3 +2357,4 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     //TODO: 編輯訊息管理
 })
 //#endregion
+*/
