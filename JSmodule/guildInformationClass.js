@@ -196,7 +196,7 @@ class GuildInformation {
         this.reaction.push({
             "id": this.reactionsCount,
             "react": word,
-            "reply": react
+            "reply": react 
         })
         this.reactionsCount++;
     }

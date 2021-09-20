@@ -393,7 +393,7 @@ module.exports = {
             ` / #${element.reactionsMuch}`);
 
         element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
-            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆：${element.reply}`, true);
+            if(element) levelembed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆： ${element.reply}`, true);
         })
 
         return levelembed;

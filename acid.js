@@ -1851,6 +1851,7 @@ client.on('messageCreate', async msg =>{
                                 break;
                                 
                             case 'add':
+                                //輸入要起反應的文字
                                 msg.channel.send(`請在下面直接輸入要起反應的文字，例如：\`快樂光線\` 或者輸入cancel以取消：`);
                                 const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const response = collected.first();
@@ -1860,7 +1861,14 @@ client.on('messageCreate', async msg =>{
                                     return response.reply(`設定結束：取消設定`);
                                 if (response.content.length > 50) 
                                     return response.reply(`設定失敗：文字過長，請縮短文字長度。`);
+                                //是否為指令
+                                let responseIsprefix = prefixED.findIndex(element => prefix[element].Value === response.content.substring(0, prefix[element].Value.length));
+                                var responseIsCommand = false;
+                                if(responseIsprefix >= 0){  responseIsCommand = true; }
+                                if (responseIsCommand) 
+                                    return response.reply(`設定失敗：請不要使用包含指令的文字。`);
 
+                                //輸入機器人要回應的文字
                                 msg.channel.send('請在下面直接輸入機器人要回應的文字，例如：\`(/  ≧▽≦)/===============)))\` 或者輸入cancel以取消：');
                                 const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const responseSC = collected2.first();
@@ -1870,12 +1878,18 @@ client.on('messageCreate', async msg =>{
                                     return responseSC.reply(`設定結束：取消設定`);
                                 if (responseSC.content.length > 50) 
                                     return responseSC.reply(`設定失敗：文字過長，請縮短文字長度。`);
+                                //是否為指令
+                                let responseSCIsprefix = prefixED.findIndex(element => prefix[element].Value === responseSC.content.substring(0, prefix[element].Value.length));
+                                var responseSCIsCommand = false;
+                                if(responseSCIsprefix >= 0){  responseSCIsCommand = true; }
+                                if (responseSCIsCommand) 
+                                    return responseSC.reply(`設定失敗：請不要使用包含指令的文字。`);
                                 
                                 reactionsElement.addReaction(response.content, responseSC.content);
                                 msg.channel.send(`設定完成，已新增已下反應：\n\n訊息：\`${response.content}\`\n回覆：\`${responseSC.content}\``);
                                 break;
 
-                            case 'remove':
+                            case 'remove': 
                                 msg.channel.send(`請在下面直接輸入要刪除的ID(用${defprea}reactions show查詢)，或者輸入cancel以取消：`);
                                 const collected3 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const response2 = collected3.first();
