@@ -212,7 +212,7 @@ client.on('messageCreate', async msg =>{
         if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.SEND_MESSAGES)) 
             return console.log("isCommand: sendless");
         
-        //#region 前輟定義與發送isCommand確認
+        //#region 前輟定義與發送isCommand確認、機器人自動回應
         var isCommand = false;
 
         const prefixED = Object.keys(prefix); //前綴符號定義
@@ -224,7 +224,12 @@ client.on('messageCreate', async msg =>{
             const key = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText);
             console.log("isCommand: " + isCommand + ": " + prefix[tempPrefix].Value + key[0]);
         }else{
-            console.log("isCommand: " + isCommand);
+            const isReaction = guildInformation.getGuild(msg.guild.id).findReaction(msg.content);
+            if(isReaction >= 0) {
+                await msg.channel.sendTyping();
+                msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
+                console.log("isCommand: " + isCommand + ": isReaction");
+            }else console.log("isCommand: " + isCommand);
         }
         //#endregion
 
@@ -290,14 +295,6 @@ client.on('messageCreate', async msg =>{
                     msg.guild.members.cache.get(msg.author.id).roles.add('848903846990577674');
                     msg.delete();
                 }
-        }
-        //#endregion
-
-        //#region 伺服器指定文字判定回應
-        isReaction = guildInformation.getGuild(msg.guild.id).findReaction(msg.content);
-        if(isReaction >= 0) {
-            await msg.channel.sendTyping();
-            msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
         }
         //#endregion
 
@@ -1866,7 +1863,7 @@ client.on('messageCreate', async msg =>{
                                 if (!response.content) 
                                     return response.reply(`設定失敗：請輸入文字。`);
                                 if (response.content.length > 50) 
-                                    return response.reply(`設定失敗：文字過長，請縮短文字長度。`);
+                                    return response.reply(`設定失敗：文字過長，請縮短文字長度至50字以下。`);
                                 //是否為指令
                                 let responseIsprefix = prefixED.findIndex(element => prefix[element].Value === response.content.substring(0, prefix[element].Value.length));
                                 var responseIsCommand = false;
@@ -1887,8 +1884,8 @@ client.on('messageCreate', async msg =>{
                                     return responseSC.reply(`設定結束：取消設定`);
                                 if (!responseSC.content) 
                                     return responseSC.reply(`設定失敗：請輸入文字。`);
-                                if (responseSC.content.length > 50) 
-                                    return responseSC.reply(`設定失敗：文字過長，請縮短文字長度。`);
+                                if (responseSC.content.length > 200) 
+                                    return responseSC.reply(`設定失敗：文字過長，請縮短文字長度至200字以下。`);
                                 //是否為指令
                                 let responseSCIsprefix = prefixED.findIndex(element => prefix[element].Value === responseSC.content.substring(0, prefix[element].Value.length));
                                 var responseSCIsCommand = false;
