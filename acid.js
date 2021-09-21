@@ -1874,7 +1874,7 @@ client.on('messageCreate', async msg =>{
                                 if (responseIsCommand) 
                                     return response.reply(`設定失敗：請不要使用包含指令的文字。`);
                                 if(reactionsElement.findReaction(response.content) >= 0)
-                                    return response.reply(`設定失敗：該關鍵字已被使用，請重新設定。`)
+                                    return response.reply(`設定失敗：該關鍵字已被使用，請重新設定。`);
 
                                 //輸入機器人要回應的文字
                                 msg.channel.send('請在下面直接輸入機器人要回應的文字，例如：\`(/  ≧▽≦)/===============)))\` 或者輸入cancel以取消：');
