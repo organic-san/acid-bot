@@ -24,7 +24,7 @@ const options = {
 };
 
 const client = new Discord.Client(options);
-client.login(process.env.DCKEY_ACIDBOT);
+client.login(process.env.DCKEY_TOKEN);
 
 let guildInformation = new guild.GuildInformationArray([], []); //所有資料的中樞(會將檔案的資料撈出來放這裡)
 let isReady = false;
@@ -69,7 +69,7 @@ client.on('ready', () =>{
     });
     setTimeout(() => {
         console.log(`設定成功: ${new Date(Date.now())}`);
-        client.channels.fetch("874621012828889099").then(channel => channel.send(`登入成功: ${time}`));
+        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: ${time}`));
         isReady = true;
     }, 2000);
     setInterval(() => {
@@ -86,7 +86,7 @@ client.on('ready', () =>{
         });
         time = new Date(Date.now());
         console.log(`Saved in ${time}`);
-        client.channels.fetch("874621012828889099").then(channel => channel.send(`自動存檔: ${time}`)).catch(err => console.log(err));
+        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: ${time}`)).catch(err => console.log(err));
     },10 * 60 * 1000)
 });
 //#endregion
@@ -108,7 +108,7 @@ client.on('messageCreate', async msg =>{
             thisGI = new guild.GuildInformation(msg.guild, []);
             guildInformation.addGuild(thisGI);
             console.log(client.user.tag + '加入了' + msg.guild.name + ' (缺少伺服器資料觸發)');
-                client.channels.fetch("874621012828889099")
+                client.channels.fetch(process.env.CHECK_CH_ID)
                     .then(channel => channel.send(`${client.user.tag} 加入了 **${msg.guild.name}** (缺少伺服器資料觸發)`));
         }
         guildInformation.updateGuild(msg.guild);
@@ -133,7 +133,7 @@ client.on('messageCreate', async msg =>{
                 const newuser = new guild.User(msg.author.id, msg.author.tag);
                 element.addUser(newuser);
                 console.log(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`);
-                client.channels.fetch("874621012828889099")
+                client.channels.fetch(process.env.CHECK_CH_ID)
                     .then(channel => channel.send(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`));
             }else{
                 element.getUser(msg.author.id).tag = msg.author.tag;
@@ -2086,7 +2086,7 @@ client.on('messageCreate', async msg =>{
             case '6':
             case '7':
                 //#region 有機酸專用指令(全)
-                if(msg.author.id !== "810382984958967808" && msg.author.id !== "820655640502206496"){return;}
+                if(msg.author.id !== process.env.OWNER1ID && msg.author.id !== process.env.OWNER2ID){return;}
                 const text = msg.content.substring(prefix[6].Value.length).split(splitText);
                 if(msg.deletable && !msg.deleted){msg.delete().catch(console.error);}
                 switch(text[0]){
@@ -2190,7 +2190,7 @@ client.on('messageCreate', async msg =>{
                         });
                         time = new Date(Date.now());
                         console.log(`Saved in ${time} (手動)`);
-                        client.channels.fetch("874621012828889099").then(channel => channel.send(`手動存檔: ${time}`));
+                        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`手動存檔: ${time}`));
                         break;
                         //#endregion
                     
@@ -2232,7 +2232,7 @@ client.on('messageCreate', async msg =>{
 //#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
     console.log(`${member.user.tag} 加入了 ${member.guild.name}。`);
-    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage){return;}
     if(!element.joinChannel){
@@ -2253,7 +2253,7 @@ client.on('guildMemberAdd', member => {
 
 client.on('guildMemberRemove', member => {
     console.log(`${member.user.tag} 已自 **${member.guild.name}** 離開。`);
-    client.channels.fetch("874621012828889099").then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage){return;}
     if(!element.leaveChannel){
@@ -2275,7 +2275,7 @@ client.on("guildCreate", guild2 => {
     }
     var a = 0;
     console.log(client.user.tag + '加入了' + guild2.name + ' (新增事件觸發)');
-    client.channels.fetch("874621012828889099").then(channel => channel.send(`${client.user.tag} 加入了 **${guild2.name}** (新增事件觸發)`));
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${client.user.tag} 加入了 **${guild2.name}** (新增事件觸發)`));
     guild2.channels.cache.forEach((val, key) => {
         client.channels.fetch(key).then(channel => {
             if(a !== 0){return;}
@@ -2297,7 +2297,7 @@ client.on("guildCreate", guild2 => {
 
 client.on("guildDelete", guild => {
     console.log(`${client.user.tag} 從 ${guild.name} 中被踢出了`);
-    client.channels.fetch("874621012828889099").then(channel => channel.send(`${client.user.tag} 從 **${guild.name}** 中被踢出了`));
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${client.user.tag} 從 **${guild.name}** 中被踢出了`));
     fs.unlink(`./data/guildInfo/${guild.id}.json`, function () {
         console.log(`刪除: ${guild.name} 的存檔`);
     });
