@@ -1022,7 +1022,7 @@ client.on('messageCreate', async msg =>{
                     case 're':
                         //#region 反應清單
                         const reactionsElement = guildInformation.getGuild(msg.guild.id);
-                        if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('著個伺服器並沒有設定專屬反應。');
+                        if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('這個伺服器並沒有設定專屬反應。');
                         const pageShowHaxR = 12;
                         let page2 = 0;
                         const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
