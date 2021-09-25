@@ -569,6 +569,7 @@ module.exports = {
         `\`${defprem}replay\` - 重播幕前的音樂\n` +
         `\`${defprem}random\` - 隨機排序播放清單\n` +
         `\`${defprem}loop\` - 循環/取消循環音樂\n` +
+        `\`${defprem}loopqueue\` - 循環/取消循環整個音樂清單\n` +
         `\`${defprem}skip\` - 跳過目前播放的音樂\n` +
         `\`${defprem}remove <音樂編號> [歌曲數]\` - 移除音樂\n` +
         `\`${defprem}clearqueue\` - 清空整個播放清單\n` +
