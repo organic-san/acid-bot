@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 
 const prefix = require('./JSONHome/prefix.json');
 const characters = require("./data/characters/testEnglishCharacters.json")
@@ -28,6 +30,14 @@ client.login(process.env.DCKEY_TOKEN);
 
 let guildInformation = new guild.GuildInformationArray([], []); //所有資料的中樞(會將檔案的資料撈出來放這裡)
 let isReady = false;
+
+client.commands = new Discord.Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	client.commands.set(command.data.name, command);
+}
 
 // 連上線時的事件
 //#region 連線事件
@@ -90,6 +100,40 @@ client.on('ready', () =>{
     },10 * 60 * 1000)
 });
 //#endregion
+
+client.on('interactionCreate', async interaction => {
+
+    //#region 等級系統
+    const element = guildInformation.getGuild(interaction.guild.id);
+    if(element.levels){
+        if(!element.has(interaction.user.id)){
+            const newuser = new guild.User(interaction.user.id, interaction.user.tag);
+            element.addUser(newuser);
+            console.log(`在 **${interaction.guild.name}** 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`);
+            client.channels.fetch(process.env.CHECK_CH_ID)
+                .then(channel => channel.send(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`));
+        }else{
+            element.getUser(interaction.user.id).tag = interaction.user.tag;
+            const lvup = element.getUser(interaction.user.id).addexp(Math.floor(Math.random() * 6) + 10, true);
+            if(lvup) element.sendLevelsUpMessage(interaction.user, interaction.channel, interaction.guild, '/');
+        }
+    }
+    //#endregion
+
+	if (!interaction.isCommand()) return;
+    console.log("isInteraction: isCommand: " + interaction.commandName + ", id: " + interaction.commandId)
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction, client);
+
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: '糟糕! 好像出了點錯誤!', ephemeral: true });
+	}
+});
 
 let numberingList = new Map();
 
@@ -675,7 +719,9 @@ client.on('messageCreate', async msg =>{
                     case '等級':
                     case 'r':
                         //#region 等級
-                        const userr = textCommand.UserResolveFromMention(client, cmd[1]);
+                        let userr;
+                        if(cmd[1]) userr = textCommand.UserResolveFromMention(client, cmd[1]);
+                        else userr = msg.author;
                         console.log(userr);
                         console.log(client.users.cache.get(cmd[1]));
                         if(!userr) return msg.reply("抱歉，我能力不足，找不到他的資料......要不要改用提及(@)?")
