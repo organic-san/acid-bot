@@ -26,6 +26,52 @@ module.exports = {
     },
 
     /**
+     * 從 <@!123456789012345678> 中解析返回 Discord.User
+     * @param {string} mention 
+     * @param {Discord.Client} client 
+     * @returns 
+     */
+    UserResolveFromMention: function(client, mention) {
+        const matches = mention.match(/^<@!?(\d+)>$/) ?? mention.match(/\d+/);
+        if (!matches) return;
+        console.log(matches);
+        let id = "";
+        if(matches[0].startsWith("<")) id = matches[1];
+        else id = matches[0];
+        return client.users.cache.get(id);
+    },
+
+    /**
+     * 從 <@!123456789012345678> 中解析返回 Discord.Member
+     * @param {string} mention 
+     * @param {Discord.Guild} guild
+     * @returns 
+     */
+     MemberResolveFromMention: function(guild, mention) {
+        const matches = mention.match(/^<@!?(\d+)>$/) ?? mention.match(/\d+/);
+        if (!matches) return;
+        let id = "";
+        if(matches[0].startsWith("<")) id = matches[1];
+        else id = matches[0];
+        return guild.members.cache.get(id);
+    },
+
+    /**
+     * 從 <#123456789012345678> 中解析返回 Discord.Channel
+     * @param {string} mention 
+     * @param {Discord.Client} client 
+     * @returns 
+     */
+    ChannelResolveFromMention: function(client, mention) {
+        const matches = mention.match(/^<#!?(\d+)>$/) ?? mention.match(/\d+/);
+        if (!matches) return;
+        let id = "";
+        if(matches[0].startsWith("<")) id = matches[1];
+        else id = matches[0];
+        return client.channels.cache.get(id);
+    },
+
+    /**
      * 偽隨機產生器
      * @param {number} max 最大值，預設1
      * @param {number} min 最小值，預設0

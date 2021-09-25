@@ -464,10 +464,10 @@ client.on('messageCreate', async msg =>{
                         }
                         var ifc = 0;
                         if(cmd[1].split('-').length !== 1 ){
-                            var channelrc = client.channels.cache.get(cmd[1].split('-')[0]);
+                            var channelrc = textCommand.ChannelResolveFromMention(client, cmd[1].split('-')[0]);
                             msgID = cmd[1].split('-')[1]; ifc = 1;
                         }else if(cmd[2]){
-                            var channelrc = client.channels.cache.get(cmd[1]);
+                            var channelrc = textCommand.ChannelResolveFromMention(client, cmd[1]);
                             msgID = cmd[2]; ifc = 1;
                         }else { var channelrc = msg.channel; msgID = cmd[1];};
                         if(!channelrc) return msg.reply("找不到這個頻道:(");
@@ -675,22 +675,21 @@ client.on('messageCreate', async msg =>{
                     case '等級':
                     case 'r':
                         //#region 等級
-                        if (!msg.mentions.users.size) {
-                            msg.mentions.users.set('0', msg.author);
-                        }
-                        msg.mentions.users.map(user => {
-                            if(user.bot){return msg.reply("哎呀！機器人並不適用等級系統！");}
+                        const userr = textCommand.UserResolveFromMention(client, cmd[1]);
+                        console.log(userr);
+                        console.log(client.users.cache.get(cmd[1]));
+                        if(!userr) return msg.reply("抱歉，我能力不足，找不到他的資料......要不要改用提及(@)?")
+                        if(userr.bot){return msg.reply("哎呀！機器人並不適用等級系統！");}
 
-                            const guildRankElement = guildInformation.getGuild(msg.guild.id);
-                            if(!guildRankElement.levels){msg.reply("哎呀！這個伺服器並沒有開啟等級系統！");}
-                            else{
-                                msg.channel.send(
-                                    {embeds: [
-                                        textCommand.rank(guildRankElement, user, msg.guild.members.cache.get(user.id).nickname)
-                                    ]}
-                                );
-                            }
-                        });
+                        const guildRankElement = guildInformation.getGuild(msg.guild.id);
+                        if(!guildRankElement.levels){msg.reply("哎呀！這個伺服器並沒有開啟等級系統！");}
+                        else{
+                            msg.channel.send(
+                                {embeds: [
+                                    textCommand.rank(guildRankElement, userr, msg.guild.members.cache.get(userr.id).nickname)
+                                ]}
+                            );
+                        }
                         break;
                         //#endregion
                         
@@ -870,10 +869,10 @@ client.on('messageCreate', async msg =>{
                             return msg.channel.send({embeds:[textCommand.helpPoll(defpre, embedhelp)]});
                         }
                         if(cmd[1].split('-').length !== 1 ){
-                            var channelpoll = client.channels.cache.get(cmd[1].split('-')[0]);
+                            var channelpoll = textCommand.ChannelResolveFromMention(client. cmd[1].split('-')[0]);
                             msgID = cmd[1].split('-')[1];
                         }else if(cmd[2]){
-                            var channelpoll = client.channels.cache.get(cmd[1]);
+                            var channelpoll = textCommand.ChannelResolveFromMention(client, cmd[1]);
                             msgID = cmd[2];
                         }else { var channelpoll = msg.channel; msgID = cmd[1];};
                         if(!channelpoll) return msg.reply("⚠️無法找到這個頻道");
@@ -1547,9 +1546,9 @@ client.on('messageCreate', async msg =>{
                                     if(take === 0 || take === 2){element.joinChannel = "";}
                                     if(take === 1 || take === 2){element.leaveChannel = "";}
                                 }
-                                else if(!msg.guild.channels.cache.get(responseSC.content)){
+                                else if(!textCommand.ChannelResolveFromMention(client, responseSC.content)){
                                     return responseSC.reply(`設定失敗：該頻道不存在，請重新設定`);
-                                }else if(msg.guild.channels.cache.get(responseSC.content).type !== "GUILD_TEXT"){
+                                }else if(textCommand.ChannelResolveFromMention(client, responseSC.content).type !== "GUILD_TEXT"){
                                     return responseSC.reply(`設定失敗：該頻道不是文字頻道，請重新設定`);
                                 }else{
                                     if(take === 0 || take === 2){element.joinChannel = responseSC.content;}
@@ -1557,14 +1556,14 @@ client.on('messageCreate', async msg =>{
                                 }
                                 if(element.joinChannel === ""){
                                     joinChannel = {"name":undefined, "id":undefined};
-                                }else if(!msg.guild.channels.cache.get(element.joinChannel)){
+                                }else if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){
                                     joinChannel = {"name":"invalid", "id":"invalid"};
-                                }else{joinChannel = await client.channels.fetch(element.joinChannel);}
+                                }else{joinChannel = textCommand.ChannelResolveFromMention(client, element.joinChannel);}
                                 if(element.leaveChannel === ""){
                                     leaveChannel = {"name":undefined, "id":undefined};
-                                }else if(!msg.guild.channels.cache.get(element.leaveChannel)){
+                                }else if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){
                                     leaveChannel = {"name":"invalid", "id":"invalid"};
-                                }else{leaveChannel = await client.channels.fetch(element.leaveChannel);}
+                                }else{leaveChannel = textCommand.ChannelResolveFromMention(client, element.leaveChannel);}
                                 msg.channel.send(`已更改頻道設定:\n進入訊息頻道名稱: #${joinChannel.name}\n進入訊息頻道ID: ${joinChannel.id}\n` + 
                                 `離去訊息頻道名稱: #${leaveChannel.name}\n離去訊息頻道ID: ${leaveChannel.id}`);
                                 break;
@@ -1636,14 +1635,14 @@ client.on('messageCreate', async msg =>{
                                 //顯示
                                 if(element.joinChannel === ""){
                                     joinChannel = {"name":undefined, "id":undefined};
-                                }else if(!msg.guild.channels.cache.get(element.joinChannel)){
+                                }else if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){
                                     joinChannel = {"name":"invalid", "id":"invalid"};
-                                }else{joinChannel = await client.channels.fetch(element.joinChannel);}
+                                }else{joinChannel = textCommand.ChannelResolveFromMention(client, element.joinChannel);}
                                 if(element.leaveChannel === ""){
                                     leaveChannel = {"name":undefined, "id":undefined};
-                                }else if(!msg.guild.channels.cache.get(element.leaveChannel)){
+                                }else if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){
                                     leaveChannel = {"name":"invalid", "id":"invalid"};
-                                }else{leaveChannel = await client.channels.fetch(element.leaveChannel);}
+                                }else{leaveChannel = textCommand.ChannelResolveFromMention(client, element.leaveChannel);}
                                 
                                 if(commands[1]){return msg.channel.send("請使用指定關鍵字：\`set\` 調整狀態，\`channel\` 設定發送頻道")}
                                 msg.channel.send(`現在是：\n進入狀態：${element.joinMessage}\n` + 
@@ -1663,18 +1662,19 @@ client.on('messageCreate', async msg =>{
                         if (!msg.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)){
                             return msg.reply("無法執行指令：權限不足：需要具有停權權限");
                         }
-                        if (msg.mentions.users.size !== 1) {return msg.reply("未指定人數或指定過多或人員不存在，請重試");}
-                        const member = msg.mentions.members.first();
+                        if (!commands[1]) return msg.reply("未指定成員，請重試");
+                        const member = textCommand.MemberResolveFromMention(commands[1]);
+                        if (!member) return msg.reply("該用戶不存在，請重試");
                         if (!member.bannable) return msg.reply('我沒辦法停權這位用戶 :(\n');
                         let reasonb = commands.slice(2).join(' ');
                         let banmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 停權。`;
                         if(!reasonb){
+                            await textCommand.MemberResolveFromMention(client, member.id).send(banmessage);
                             await msg.guild.members.ban(member);
-                            await client.users.cache.get(member.id).send(banmessage);
                         }
                         else{
                             banmessage += `\n原因：${reasonb}`;
-                            await client.users.cache.get(member.id).send(banmessage);
+                            await textCommand.MemberResolveFromMention(client, member.id).send(banmessage);
                             await msg.guild.members.ban(member, {reason:reasonb});
                         }
                         msg.channel.send(`已停權 ${member.user.tag} (ID ${memberk.user.id})`);
@@ -1686,17 +1686,18 @@ client.on('messageCreate', async msg =>{
                         if (!msg.member.permissions.has(Discord.Permissions.FLAGS.KICK_MEMBERS)){ 
                             return msg.reply("無法執行指令：權限不足：需要具有踢出權限");
                         }
-                        if (msg.mentions.users.size !== 1) {return msg.reply("未指定人數或指定過多或人員不存在，請重試")}
-                        const memberk = msg.mentions.members.first();
+                        if (!commands[1]) return msg.reply("未指定成員，請重試");
+                        const memberk = textCommand.MemberResolveFromMention(commands[1]);
+                        if (!memberk) return msg.reply("該用戶不存在，請重試");
                         if (!memberk.kickable) return msg.reply("我沒辦法踢出這位用戶 :(");
                         let reasonk = commands.slice(2).join(' ');
                         let kickmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 踢出。`;
                         if(!reasonk){
+                            await textCommand.MemberResolveFromMention(client, memberk.id).send(kickmessage);
                             await memberk.kick();
-                            await client.users.cache.get(memberk.id).send(kickmessage);
                         }else{
                             kickmessage += `\n原因：${reasonk}`;
-                            await client.users.cache.get(memberk.id).send(kickmessage);
+                            await textCommand.MemberResolveFromMention(client, memberk.id).send(kickmessage);
                             await memberk.kick(reasonk);
                         }
                         msg.channel.send(`已踢出 ${memberk.user.tag} (ID ${memberk.user.id})`);
@@ -1763,15 +1764,15 @@ client.on('messageCreate', async msg =>{
                                     const responseSC = collected2.first();
                                     await msg.channel.sendTyping();
                                     if (!responseSC) return response.reply(`設定失敗：輸入逾時，請重新設定`);
-                                    if(!msg.guild.channels.cache.get(responseSC.content)){
+                                    if(!textCommand.ChannelResolveFromMention(client, responseSC.content)){
                                         return responseSC.reply(`設定失敗：該頻道不存在，請重新設定`);
                                     }
-                                    if(msg.guild.channels.cache.get(responseSC.content).type !== "GUILD_TEXT"){
+                                    if(textCommand.ChannelResolveFromMention(client, responseSC.content).type !== "GUILD_TEXT"){
                                         return responseSC.reply(`設定失敗：該頻道不是文字頻道，請重新設定`);
                                     }
                                         levelsElement.levelsReactChannel = responseSC.content;
                                         levelsElement.levelsReact = 'SpecifyChannel';
-                                        const settingchannel = await client.channels.fetch(responseSC.content);
+                                        const settingchannel = textCommand.ChannelResolveFromMention(client, responseSC.content);
                                         msg.channel.send(`設定完成！\n已將升等訊息發送模式改為 ${levelsElement.levelsReact}\n` +
                                         ` 頻道指定為 ${settingchannel}(ID: ${settingchannel.id})`);
                                 }
@@ -1786,7 +1787,7 @@ client.on('messageCreate', async msg =>{
                                 if(levelsElement.levels){levelsisworking = `啟動`}
                                 else{levelsisworking = "停用"}
                                 if(levelsElement.levelsReactChannel){
-                                    settingchannel = await client.channels.fetch(levelsElement.levelsReactChannel);
+                                    settingchannel = textCommand.ChannelResolveFromMention(client, levelsElement.levelsReactChannel);
                                 }
                                 else{settingchannel = undefined;}
                                 lcm = `升級訊息發送頻道 - ${settingchannel} `;
@@ -2095,9 +2096,8 @@ client.on('messageCreate', async msg =>{
                     case 't':
                         //#region 指定頻道發言
                         if(parseInt(text[1]) === parseInt(text[1])){
-                            client.channels.fetch(text[1]).then(channel => 
-                                channel.send(msg.content.substring(prefix[6].Value.length + text[0].length + text[1].length + 2))
-                            );
+                            const channelt = textCommand.ChannelResolveFromMention(client, text[1]);
+                            channelt.send(msg.content.substring(prefix[6].Value.length + text[0].length + text[1].length + 2))
                         }else{
                             msg.channel.send(msg.content.substring(prefix[6].Value.length + text[0].length + 1));
                         }
@@ -2124,15 +2124,13 @@ client.on('messageCreate', async msg =>{
                     case "cmtd":
                     case 'c':
                         //#region 指定頻道->指定言論刪除
-                        client.channels.fetch(text[1]).then(channel => 
-                            channel.messages.fetch(text[2]).then(message => 
-                                {
-                                    if(message.deletable && !message.deleted){
-                                        message.delete();
-                                    }
+                        const channelc = textCommand.ChannelResolveFromMention(client, text[1])
+                        channelc.messages.fetch(text[2]).then(message => {
+                                if(message.deletable && !message.deleted){
+                                    message.delete();
                                 }
-                            )
-                        );
+                            }
+                        )
                         break;
                         //#endregion
                     
@@ -2142,6 +2140,10 @@ client.on('messageCreate', async msg =>{
 
                     case 'test':
                         abyss.main(msg);
+                        break;
+
+                    case 't2':
+                        console.log(textCommand.UserResolveFromMention(text[1], client))
                         break;
                     
                     case 'lo':
@@ -2242,7 +2244,7 @@ client.on('guildMemberAdd', member => {
         else
             member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !\n${element.joinMessageContent}`);
     }else{
-        if(!member.guild.channels.cache.get(element.joinChannel)){return;}
+        if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){return;}
         if(!element.joinMessageContent)
             client.channels.fetch(element.joinChannel).then(channel => channel.send(`${member} ，歡迎來到 **${member.guild.name}** !`));
         else
@@ -2260,7 +2262,7 @@ client.on('guildMemberRemove', member => {
         if(!member.guild.systemChannel){return;}
         member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
     }else{
-        if(!member.guild.channels.cache.get(element.leaveChannel)){return;}
+        if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){return;}
         client.channels.fetch(element.leaveChannel).then(channel => channel.send(`**${member.user.tag}** 已遠離我們而去。`));
     }  
 });
