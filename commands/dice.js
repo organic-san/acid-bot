@@ -21,9 +21,7 @@ module.exports = {
 	async execute(interaction) {
         const side = interaction.options.getInteger('side');
         const count = interaction.options.getInteger('count') ?? 1;
-        if(side > 1000 || count > 100){
-            interaction.reply(`骰子太大顆了！[骰子面數上限:1000][骰子數量上限:100]`);
-        }
+        if(side > 1000 || count > 100) return interaction.reply(`骰子太大顆了！[骰子面數上限:1000][骰子數量上限:100]`);
         const diceList = [];
         let total = 0;
         for (let step = 0; step < count; step++) {
