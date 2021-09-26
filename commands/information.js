@@ -30,7 +30,6 @@ module.exports = {
      */
 	async execute(interaction, guildInformation) {
         if (interaction.options.getSubcommand() === 'bot') {
-
             const time = interaction.client.user.createdAt;
             let char = "";
             switch(time.getDay()){
@@ -54,7 +53,6 @@ module.exports = {
                 case 6: week = "六"; break;
             }
             const uptime = interaction.client.uptime;
-            console.log(uptime);
             const uptimeday = Math.floor(uptime / (86400 * 1000));
             const uptimehour = Math.floor((uptime % (86400 * 1000)) / (3600 * 1000));
             const uptimemin = Math.floor((uptime % (3600 * 1000)) / (60 * 1000));
@@ -69,11 +67,11 @@ module.exports = {
                 .addField('持續運作時間', `${uptimeday}d ${uptimehour}h ${uptimemin}m ${uptimesec}s`, true)
                 .addField('參與伺服器數量', `${interaction.client.guilds.cache.size}`, true)
                 .addField('延遲', `${interaction.client.ws.ping}ms`, true)
+                .setThumbnail(interaction.client.user.displayAvatarURL({dynamic: true}))
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed3]});
 
         } else if(interaction.options.getSubcommand() === 'guild') {
-
             const time = interaction.guild.createdAt;
             let char = '';
             switch(time.getDay()){
@@ -166,6 +164,7 @@ module.exports = {
         } else if(interaction.options.getSubcommand() === 'user') {
             const user = interaction.options.getUser('user');
             const member = interaction.guild.members.cache.get(user.id);
+            if(!member) return interaction.reply({content: "我沒辦法在這個伺服器中找到他。", ephemeral:true})
             const time = user.createdAt;
             let char = '';
             switch(time.getDay()){
@@ -198,7 +197,8 @@ module.exports = {
                 .addField('帳號色彩', member.displayHexColor, true)
                 .addField('帳號建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
                 .addField('加入伺服器時間', `${timejoin.getFullYear()} ${timejoin.getMonth()+1}/${timejoin.getDate()} (${week})`, true)
-                .setFooter(`${user.tag}`,`${user.displayAvatarURL({dynamic: true})}`)
+                .setThumbnail(user.displayAvatarURL({dynamic: true}))
+                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed3]});
         }
 	},

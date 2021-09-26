@@ -141,8 +141,9 @@ class GuildInformation {
         obj.users.forEach(user => {
             const newUser = new User(user.id ?? 0, user.tag ?? "undefined#0000");
             newUser.DM = user.DM ?? true;
-            newUser.exp = user.exp ?? 0;
-            //newUser.chips = user.chips ?? newUser.exp;
+            newUser.exp = user.exp ?? newUser.exp;
+            newUser.chips = 200;
+            //TODO: 在未來有金錢系統後記得改這裡
             newUser.msgs = user.msgs ?? 0;
             newUser.levels = user.levels ?? 0;
             newUser.maxLevel = user.maxLevel ?? 0;
@@ -344,7 +345,6 @@ class User {
         if(isNewMessage){
             if (Date.now() - this.lastMessageTime >= messageCooldown * 1000 || isSkipTimeCheck) {
                 this.exp += exp;
-                this.chips += exp;
                 this.msgs += 1;
                 this.lastMessageTime = Date.now();
                 if (this.exp < (levelUpCalc(this.levels - 1)) * avgLevelPoint) this.levels--;

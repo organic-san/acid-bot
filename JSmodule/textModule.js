@@ -350,7 +350,8 @@ module.exports = {
                     rankBar += firstMark;
                 }
                 embed.addField(`${exps - backlevel} / ${nextlevel - backlevel} exp. to next level`, rankBar, true)
-                    .setFooter(`total: ${item.exp} exp. ${item.msgs} message(s). ${item.chips} chip(s)`)
+                    .setFooter(`total: ${item.exp} exp. ${item.msgs} message(s). `/*${item.chips} chip(s)*/)
+                    //TODO: 在未來有金錢系統後記得改掉這裡的顯示，讓chips顯示
             }
         });
         if(a === 0){

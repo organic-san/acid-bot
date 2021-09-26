@@ -105,6 +105,10 @@ client.on('ready', () =>{
 client.on('interactionCreate', async interaction => {
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
+    if (!interaction.isCommand()) return;
+    console.log("isInteraction: isCommand: " + interaction.commandName + ", id: " + interaction.commandId)
+	const command = client.commands.get(interaction.commandName);
+
     //#region 等級系統
     const element = guildInformation.getGuild(interaction.guild.id);
     if(element.levels){
@@ -121,10 +125,6 @@ client.on('interactionCreate', async interaction => {
         }
     }
     //#endregion
-
-	if (!interaction.isCommand()) return;
-    console.log("isInteraction: isCommand: " + interaction.commandName + ", id: " + interaction.commandId)
-	const command = client.commands.get(interaction.commandName);
 
 	if (!command) return;
 
@@ -719,8 +719,6 @@ client.on('messageCreate', async msg =>{
                         let userr;
                         if(cmd[1]) userr = textCommand.UserResolveFromMention(client, cmd[1]);
                         else userr = msg.author;
-                        console.log(userr);
-                        console.log(client.users.cache.get(cmd[1]));
                         if(!userr) return msg.reply("抱歉，我能力不足，找不到他的資料......要不要改用提及(@)?")
                         if(userr.bot){return msg.reply("哎呀！機器人並不適用等級系統！");}
 
