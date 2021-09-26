@@ -10,12 +10,12 @@ module.exports = {
                 .setDescription('所要發射的高度(樓層)')
                 .setRequired(true)
         ),
+    tag: "interaction",
     /**
      * 
      * @param {Discord.CommandInteraction} interaction 
-     * @param {Discord.Client} client 
      */
-	async execute(interaction, client) {
+	async execute(interaction) {
 		const floor = interaction.options.getInteger('floor');
         if(floor <= 100 && floor >= 1){
             const beforeMessage = await interaction.channel.messages.fetch({ before: interaction.id, limit: floor })

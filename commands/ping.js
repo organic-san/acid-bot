@@ -5,9 +5,10 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('返回目前的延遲(ms)'),
+	tag: "client",
     /**
      * 
-     * @param {Discord.Integration} interaction 
+     * @param {Discord.CommandInteraction} interaction 
      * @param {Discord.Client} client 
      */
 	async execute(interaction, client) {

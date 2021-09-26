@@ -12,6 +12,7 @@ const guild = require('./JSmodule/guildInformationClass');
 const abyss = require('./JSmodule/abyssModule');
 
 const fs = require('fs');
+const { connect } = require('http2');
 require('dotenv').config();
 
 const options = {
@@ -127,7 +128,8 @@ client.on('interactionCreate', async interaction => {
 	if (!command) return;
 
 	try {
-		await command.execute(interaction, client);
+        if(command.tag === "interaction") await command.execute(interaction);
+		if(command.tag === "client") await command.execute(interaction, client);
 
 	} catch (error) {
 		console.error(error);
@@ -277,14 +279,8 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
-        //#region 特殊文字判定回應 推 笑死 晚安 快樂光線
+        //#region 特殊文字判定回應 笑死 晚安 快樂光線
         switch(msg.content){
-            case '推':
-            case 'push':
-                await msg.channel.sendTyping();
-                msg.channel.send("推推");
-                break;
-
             case '笑死':
                 await msg.channel.sendTyping();
                 let message = '';
@@ -2141,6 +2137,7 @@ client.on('messageCreate', async msg =>{
                     case "cts":
                     case 't':
                         //#region 指定頻道發言
+                        if(!text[1]) return;
                         if(parseInt(text[1]) === parseInt(text[1])){
                             const channelt = textCommand.ChannelResolveFromMention(client, text[1]);
                             channelt.send(msg.content.substring(prefix[6].Value.length + text[0].length + text[1].length + 2))
@@ -2155,6 +2152,7 @@ client.on('messageCreate', async msg =>{
                     case "mtd":
                     case 'd':
                         //#region 指定言論刪除
+                        if(!text[1]) return;
                         msg.channel.messages.fetch(text[1]).then(async message => 
                             {
                                 if(message.deletable && !message.deleted){
@@ -2169,6 +2167,8 @@ client.on('messageCreate', async msg =>{
                     case "CMTD": //Channel Message To Delete
                     case "cmtd":
                     case 'c':
+                        if(!text[1]) return;
+                        if(!text[2]) return;
                         //#region 指定頻道->指定言論刪除
                         const channelc = textCommand.ChannelResolveFromMention(client, text[1])
                         channelc.messages.fetch(text[2]).then(message => {
@@ -2186,10 +2186,6 @@ client.on('messageCreate', async msg =>{
 
                     case 'test':
                         abyss.main(msg);
-                        break;
-
-                    case 't2':
-                        console.log(textCommand.UserResolveFromMention(text[1], client))
                         break;
                     
                     case 'lo':
@@ -2244,18 +2240,17 @@ client.on('messageCreate', async msg =>{
                     
                     case "SendInformationToEveryOwner": //Send Information To Every Owner
                         //#region 向伺服器擁有者發言
-                        const chance = "NO";
+                        const chance = "YES";
                         if(chance === "YES"){
                             guildInformation.guilds.forEach(async (element) => {
                                 const ownerId = client.guilds.cache.get(element.id).ownerId;
                                 const guildName = client.guilds.cache.get(element.id).name;
                                 const owner = await client.users.fetch(ownerId);
-                                owner.send(`感謝讓 **${client.user.tag}** 在 **${guildName}** 之中活躍！\n\n` + 
-                                `以下對 **${client.user.tag}** 的使用方法稍作說明！\n\n` + 
-                                `使用指令 \`%help\` 查詢 ${client.user.tag} 的基本指令！\n\n` + 
-                                `也可以使用 \`a^help\` 來查看專屬於管理系統的酷酷指令！\n\n` +
-                                `例如可以使用 \`a^help levels\` 查看調整等級系統的方法，\n` +
-                                `而 \`a^help joinMessage\` 則可以查看如何在有人進入時發送歡迎訊息！`);
+                                owner.send(`您好，我是acid bot的開發者 有機酸。\n` + 
+                                `目前打算逐步將機器人的指令替換成斜線指令(slash command)，因此需要將新的權限賦予機器人才能使用。\n` + 
+                                `請輕點此連結以賦予 **${client.user.tag}** 在您的伺服器中使用斜線指令(不需將機器人踢出):\n` + 
+                                `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=536270990591&scope=bot%20applications.commands\n` + 
+                                `感謝您持續使用本機器人，今後將持續添加新功能，歡迎加入此伺服器並聯絡organic_san_2#0500\nhttps://discord.gg/hveXGk5Qmz`);
                             });
                         }
                         break;

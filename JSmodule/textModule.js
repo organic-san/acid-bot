@@ -801,7 +801,6 @@ module.exports = {
         //#region h/文字反映
         embedhelp.setTitle(`文字指令清單/特殊文字反應`)
             .setDescription(`<只要包含此文字> [只能有此文字]`)
-            .addField('[推]', '同型指令: [push]')
             .addField('[笑死]', '\u200B')
             .addField('[晚安]', '同型指令: [晚ㄢ]')
             .addField('[快樂光線]', '同型指令: [happybeam], [happy beam], [happylight], [happy light]')
