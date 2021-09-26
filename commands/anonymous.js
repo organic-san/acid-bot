@@ -1,0 +1,44 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const Discord = require('discord.js');
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('anonymous')
+		.setDescription('發送匿名訊息')
+        .addStringOption(opt => 
+            opt.setName('message')
+            .setDescription('要匿名的訊息內容')
+            .setRequired(true)
+        ),
+	tag: "interaction",
+    /**
+     * 
+     * @param {Discord.CommandInteraction} interaction 
+     */
+	async execute(interaction) {
+
+        const message = interaction.options.getString('message');
+
+        if(message.length > 2000) return interaction.reply({content: "訊息太長了！請不要超過2000字！", ephemeral: true}); 
+        //#region 匿名訊息
+
+        const alvinChannelCheck = (interaction.guild.id === '746024720767385720' && !(interaction.channel.id === '770620296205041724' ||
+            interaction.channel.id === '770615191078567936' || interaction.channel.id === '795980483615260732' ||
+            interaction.channel.id === '814684970714267658' || interaction.channel.id === '755084007808565349'));                   
+        
+        const embed = new Discord.MessageEmbed().setColor(process.env.EMBEDCOLOR).setDescription(message).setTimestamp();
+        if(alvinChannelCheck === true) 
+            embed.setFooter(`來自 ${interaction.user.tag} 的一則訊息(這裡不能匿名)`, interaction.user.displayAvatarURL({dynamic: true}));
+        else 
+            embed.setFooter(`來自不願具名的一則訊息`, interaction.client.user.displayAvatarURL({dynamic: true}))
+
+        await interaction.reply({content: '已發送。點選❌可以刪除訊息。', ephemeral: true});
+
+        const sent = await interaction.channel.send({embeds: [embed]});
+        sent.react('❌');
+        const filter = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
+        sent.awaitReactions({filter, max: 1, time: 10 * 1000, errors: ['time'] })
+        .then(() => sent.delete()) 
+        .catch(() => sent.reactions.cache.get('❌').users.remove().catch((err)=>console.log(err)))
+    }
+};

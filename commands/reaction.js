@@ -12,7 +12,14 @@ module.exports = {
         .addSubcommand(opt =>
             opt.setName('goodnight')
             .setDescription('晚安~')
-        ),
+        ).addSubcommand(opt => 
+            opt.setName('up-crazy-night')
+            .setDescription('向上發射龜雞奶')
+            .addIntegerOption(opt => 
+                opt.setName('floor')
+                    .setDescription('所要發射的高度(樓層)')
+                    .setRequired(true)
+            )),
     /**
      * 
      * @param {Discord.CommandInteraction} interaction 
@@ -43,6 +50,22 @@ module.exports = {
                     interaction.reply("+｡:.゜晚安ヽ(´∀`)ﾉ .:｡+゜｡");
                     break;
             }
+        } else if(interaction.options.getSubcommand() === 'crazy-night') {
+            const floor = interaction.options.getInteger('floor');
+            if(floor <= 100 && floor >= 1){
+                const beforeMessage = await interaction.channel.messages.fetch({ before: interaction.id, limit: floor })
+                .then(messages => messages.last())
+                .catch(console.error)
+
+                if(beforeMessage){
+                    if(!beforeMessage.deleted){ beforeMessage.react('🐢');
+                        if(!beforeMessage.deleted) beforeMessage.react('🐔');
+                        if(!beforeMessage.deleted) beforeMessage.react('🥛');
+                        interaction.reply({content: "成功發射!", ephemeral: true})
+                    }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
+                }
+            }
+            else interaction.reply({content: '失敗: 數字請於合理範圍: 1-100', ephemeral: true});
         }
 	},
 };

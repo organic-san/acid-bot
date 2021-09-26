@@ -222,7 +222,7 @@ module.exports = {
      * @param {*} user 
      * @returns 
      */
-     anonymous: async function(fileimage, content, channel, author, user, defpre){
+    anonymous: async function(fileimage, content, channel, author, user, defpre){
         //#region 匿名訊息
 
         const alvinChannelCheck = (channel.guild.id === '746024720767385720' && !(channel.id === '770620296205041724' ||
