@@ -48,6 +48,6 @@ module.exports = {
                 }
                 interaction.reply({embeds: [embeedrecord]});
             }
-        ).catch(() => msg.reply({content: "噢，找不到訊息來記錄:(", ephemeral: true}));
+        ).catch(() => interaction.reply({content: "噢，找不到訊息來記錄:(", ephemeral: true}));
     }
 };

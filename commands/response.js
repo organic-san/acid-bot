@@ -20,11 +20,12 @@ module.exports = {
                     .setDescription('所要發射的高度(樓層)')
                     .setRequired(true)
             )),
+    tag: "interaction",
+    
     /**
      * 
      * @param {Discord.CommandInteraction} interaction 
      */
-    tag: "interaction",
 	async execute(interaction) {
         if (interaction.options.getSubcommand() === 'happybeam') {
 

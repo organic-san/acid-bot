@@ -103,6 +103,7 @@ client.on('ready', () =>{
 //#endregion
 
 client.on('interactionCreate', async interaction => {
+    if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
     //#region 等級系統
     const element = guildInformation.getGuild(interaction.guild.id);
@@ -129,7 +130,7 @@ client.on('interactionCreate', async interaction => {
 
 	try {
         if(command.tag === "interaction") await command.execute(interaction);
-		if(command.tag === "client") await command.execute(interaction, client);
+		if(command.tag === "guildInfo") await command.execute(interaction, guildInformation.getGuild(interaction.guild.id));
 
 	} catch (error) {
 		console.error(error);
@@ -574,7 +575,7 @@ client.on('messageCreate', async msg =>{
                                 const embed3 = new Discord.MessageEmbed()
                                     .setColor(process.env.EMBEDCOLOR)
                                     .setTitle(`${client.user.username} 的資訊`)
-                                    .setDescription(`關於個機器人的資訊：`)
+                                    .setDescription(`關於這個機器人的資訊：`)
                                     .addField('製作者', `organic_san_2#0500`, true)
                                     .addField('建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
                                     .addField('參與伺服器數量', `${client.guilds.cache.size}`, true)
