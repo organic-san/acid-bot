@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
-const textCommand = require('../JSmodule/textModule');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,7 +12,7 @@ module.exports = {
         ).addIntegerOption(opt => 
             opt.setName('count')
             .setDescription('骰子的顆數')
-            ),
+        ),
 	tag: "interaction",
     /**
      * 
@@ -22,7 +21,15 @@ module.exports = {
 	async execute(interaction) {
         const side = interaction.options.getInteger('side');
         const count = interaction.options.getInteger('count') ?? 1;
-
-        interaction.reply(textCommand.dice(side, count));
+        if(side > 1000 || count > 100){
+            interaction.reply(`骰子太大顆了！[骰子面數上限:1000][骰子數量上限:100]`);
+        }
+        const diceList = [];
+        let total = 0;
+        for (let step = 0; step < count; step++) {
+            diceList.push(Math.floor(Math.random()*side+1));
+            total += diceList[step];
+        }
+        interaction.reply(`${side}面骰 ${count}顆: [${diceList}點] => ${total}點`);
 	},
 };

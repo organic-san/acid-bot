@@ -50,7 +50,7 @@ module.exports = {
                     interaction.reply("+｡:.゜晚安ヽ(´∀`)ﾉ .:｡+゜｡");
                     break;
             }
-        } else if(interaction.options.getSubcommand() === 'crazy-night') {
+        } else if(interaction.options.getSubcommand() === 'up-crazy-night') {
             const floor = interaction.options.getInteger('floor');
             if(floor <= 100 && floor >= 1){
                 const beforeMessage = await interaction.channel.messages.fetch({ before: interaction.id, limit: floor })
