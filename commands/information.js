@@ -187,16 +187,30 @@ module.exports = {
                 case 5: week = "五"; break;
                 case 6: week = "六"; break;
             }
+            const premium = member.premiumSince;
+            let day = '';
+            if(premium){
+                switch(premium.getDay()){
+                    case 0: day = "日"; break;
+                    case 1: day = "一"; break;
+                    case 2: day = "二"; break;
+                    case 3: day = "三"; break;
+                    case 4: day = "四"; break;
+                    case 5: day = "五"; break;
+                    case 6: day = "六"; break;
+                }
+            }
+            const startday = premium ? `${premium.getFullYear()} ${premium.getMonth()+1}/${premium.getDate()} (${day})` : "沒有加成本伺服器" ;
             const embed3 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${user.tag} 的資訊`)
                 .setDescription(`關於這個用戶的資訊：`)
                 .addField('暱稱', member.displayName, true)
-                .addField('tag', user.tag, true)
                 .addField('ID', user.id, true)
                 .addField('帳號色彩', member.displayHexColor, true)
                 .addField('帳號建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
                 .addField('加入伺服器時間', `${timejoin.getFullYear()} ${timejoin.getMonth()+1}/${timejoin.getDate()} (${week})`, true)
+                .addField('開始加成時間', startday, true)
                 .setThumbnail(user.displayAvatarURL({dynamic: true}))
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed3]});
