@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('reaction')
+		.setName('response')
         .setDescription('給你一點溫馨的反應')
         .addSubcommand(opt =>
             opt.setName('happybeam')
