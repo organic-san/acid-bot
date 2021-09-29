@@ -102,8 +102,8 @@ module.exports = {
                         .setStyle('PRIMARY')
                 ]
 			);
-            interaction.reply({embeds: [levels], components: [row]});
-            const msg = interaction.editReply({embeds: [levels], components: [row]});
+            await interaction.reply({embeds: [levels], components: [row]});
+            const msg = await interaction.editReply({embeds: [levels], components: [row]});
             //TODO: 等哪天能直接從interaction.reply抓訊息再來改這裡
 
             const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
