@@ -7,11 +7,11 @@ module.exports = {
 		.setDescription('丟個骰子')
         .addIntegerOption(opt => 
             opt.setName('side')
-            .setDescription('骰子的面數')
+            .setDescription('骰子的面數，上限1000面')
             .setRequired(true)
         ).addIntegerOption(opt => 
             opt.setName('count')
-            .setDescription('骰子的顆數')
+            .setDescription('骰子的顆數，上限100顆')
         ),
 	tag: "interaction",
     /**

@@ -7,11 +7,11 @@ module.exports = {
 		.setDescription('紀錄某一則訊息')
         .addStringOption(opt => 
             opt.setName('message-id')
-            .setDescription('訊息ID')
+            .setDescription('所要記錄的訊息ID')
             .setRequired(true)
         ).addChannelOption(opt => 
             opt.setName('channel')
-            .setDescription('該訊息所在的頻道，空白視為發送訊息的頻道')
+            .setDescription('該訊息所在的頻道，空白則視為這個頻道')
         ),
 	tag: "interaction",
     /**
