@@ -192,7 +192,7 @@ module.exports = {
                         .setAuthor('現正播放', `${musicList.getClientUserAvatar()}`)
                         .setTitle(`${title} [${longmin}分 ${longsec}秒]`)
                         .setURL(`${musicList.firstSong.url}`)
-                        .setThumbnail(musicList.lastSong.getThumbnail())
+                        .setThumbnail(musicList.firstSong.getThumbnail())
                         .setFooter(`由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
                                 `${musicList.firstSong.getPlayerAvatar()}`);
                 await musicList.channel.send({embeds: [embed]}).then(message => {
@@ -414,7 +414,7 @@ module.exports = {
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${title}`)
                 .setURL(`${musicList.firstSong.url}`)
-                .setThumbnail(musicList.lastSong.getThumbnail())
+                .setThumbnail(musicList.firstSong.getThumbnail())
                 .setDescription(`[播放者：${musicList.firstSong.userPlayer}]`) 
                 .addField(`[ ${nowLongmin}:${nowLongsec} / ${longmin}:${longsec} ]`,`${timebar}`,false)
                 .setFooter(footer);
