@@ -32,6 +32,10 @@ client.login(process.env.DCKEY_TOKEN);
 let guildInformation = new guild.GuildInformationArray([], []); //所有資料的中樞(會將檔案的資料撈出來放這裡)
 let isReady = false;
 
+let numberingList = new Map();
+
+let musicList = new Map();
+
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -103,6 +107,17 @@ client.on('ready', () =>{
 //#endregion
 
 client.on('interactionCreate', async interaction => {
+
+    if(!guildInformation.has(interaction.guild.id)){
+        const thisGI = new guild.GuildInformation(interaction.guild, []);
+        guildInformation.addGuild(thisGI);
+        console.log(`${client.user.tag} 加入了 ${interaction.guild.name} (${interaction.guild.id}) (缺少伺服器資料觸發/interaction)`);
+        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
+            channel.send(`${client.user.tag} 加入了 **${interaction.guild.name}** (${interaction.guild.id}) (缺少伺服器資料觸發/interaction)`)
+        );
+    }
+    guildInformation.updateGuild(interaction.guild);
+
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
     if (!interaction.isCommand()) return;
@@ -115,9 +130,10 @@ client.on('interactionCreate', async interaction => {
         if(!element.has(interaction.user.id)){
             const newuser = new guild.User(interaction.user.id, interaction.user.tag);
             element.addUser(newuser);
-            console.log(`在 **${interaction.guild.name}** 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`);
-            client.channels.fetch(process.env.CHECK_CH_ID)
-                .then(channel => channel.send(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`));
+            console.log(`在 ${interaction.guild.name} (${interaction.guild.id}) 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`);
+            client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
+                channel.send(`在 **${interaction.guild.name}** (${interaction.guild.id}) 添加用戶進入等級系統: ${interaction.user.tag} (${interaction.user.id})`)
+            );
         }else{
             element.getUser(interaction.user.id).tag = interaction.user.tag;
             const lvup = element.getUser(interaction.user.id).addexp(Math.floor(Math.random() * 6) + 10, true);
@@ -138,11 +154,6 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-let numberingList = new Map();
-
-
-let musicList = new Map();
-
 // 當 Bot 接收到訊息時的事件
 //#region 文字事件反應
 client.on('messageCreate', async msg =>{
@@ -152,11 +163,11 @@ client.on('messageCreate', async msg =>{
         if(msg.channel.type === "DM") return; 
 
         if(!guildInformation.has(msg.guild.id)){
-            thisGI = new guild.GuildInformation(msg.guild, []);
+            const thisGI = new guild.GuildInformation(msg.guild, []);
             guildInformation.addGuild(thisGI);
-            console.log(client.user.tag + '加入了' + msg.guild.name + ' (缺少伺服器資料觸發)');
-                client.channels.fetch(process.env.CHECK_CH_ID)
-                    .then(channel => channel.send(`${client.user.tag} 加入了 **${msg.guild.name}** (缺少伺服器資料觸發)`));
+            console.log(`${client.user.tag} 加入了 ${msg.guild.name} (${msg.guild.id}) (缺少伺服器資料觸發/message)`);
+            client.channels.fetch(process.env.CHECK_CH_ID)
+                .then(channel => channel.send(`${client.user.tag} 加入了 **${msg.guild.name}** (${msg.guild.id}) (缺少伺服器資料觸發/message)`));
         }
         guildInformation.updateGuild(msg.guild);
 
@@ -179,9 +190,9 @@ client.on('messageCreate', async msg =>{
             if(!element.has(msg.author.id)){
                 const newuser = new guild.User(msg.author.id, msg.author.tag);
                 element.addUser(newuser);
-                console.log(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`);
+                console.log(`在 ${msg.guild.name} (${msg.guild.id}) 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`);
                 client.channels.fetch(process.env.CHECK_CH_ID)
-                    .then(channel => channel.send(`在 **${msg.guild.name}** 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`));
+                    .then(channel => channel.send(`在 **${msg.guild.name}** (${msg.guild.id}) 添加用戶進入等級系統: ${msg.author.tag} (${msg.author.id})`));
             }else{
                 element.getUser(msg.author.id).tag = msg.author.tag;
                 const lvup = element.getUser(msg.author.id).addexp(Math.floor(Math.random() * 6) + 10, true);
@@ -218,9 +229,9 @@ client.on('messageCreate', async msg =>{
                         if(!beforeMessage.deleted){beforeMessage.react('🐔');}
                         if(!beforeMessage.deleted){beforeMessage.react('🥛');}
                     }else{
-                    if(!msg.deleted){
-                            msg.react('😢');
-                    }
+                        if(!msg.deleted){
+                                msg.react('😢');
+                        }
                     }
             }
             }else{
@@ -888,7 +899,7 @@ client.on('messageCreate', async msg =>{
                         emojisSelect.slice(0, record + 1).forEach(emoji => poll.react(emoji))
 
                         if(!msg.deleted){
-                            msg.react('↩');;
+                            msg.react('↩');
                             const filterpoll = (reaction, user) => reaction.emoji.name === '↩' && user.id === msg.author.id;
                             msg.awaitReactions({filter:filterpoll, max: 1, time: 120 * 1000, errors: ['time'] })
                                 .then(() => {if(!msg.deleted){poll.delete(); msg.reactions.cache.get('↩').users.remove()}})
@@ -2276,9 +2287,9 @@ client.on('guildMemberAdd', member => {
     console.log(`${member.user.tag} 加入了 ${member.guild.name}。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
     const element = guildInformation.getGuild(member.guild.id);
-    if(!element.joinMessage){return;}
+    if(!element.joinMessage) return;
     if(!element.joinChannel){
-        if(!member.guild.systemChannel){return;}
+        if(!member.guild.systemChannel) return;
         if(!element.joinMessageContent)
             member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !`);
         else
@@ -2297,7 +2308,7 @@ client.on('guildMemberRemove', member => {
     console.log(`${member.user.tag} 已自 **${member.guild.name}** 離開。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
-    if(!element.leaveMessage){return;}
+    if(!element.leaveMessage) return;
     if(!element.leaveChannel){
         if(!member.guild.systemChannel){return;}
         member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
@@ -2317,15 +2328,12 @@ client.on("guildCreate", guild2 => {
     }
     var a = 0;
     console.log(client.user.tag + '加入了' + guild2.name + ' (新增事件觸發)');
-    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${client.user.tag} 加入了 **${guild2.name}** (新增事件觸發)`));
-    guild2.channels.cache.forEach((val, key) => {
-        client.channels.fetch(key).then(channel => {
-            if(a !== 0){return;}
-            if(channel.type !== "text"){return;}
-            channel.send(`歡迎使用acid bot！使用 \`%help\` 查詢基本指令！`);
-            a++;
-        });
-    });
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
+        channel.send(`${client.user.tag} 加入了 **${guild2.name}** (新增事件觸發)`)
+    );
+    if(guild2.systemChannel){
+        guild2.systemChannel.send(`歡迎使用acid bot！使用斜線指令來操作我的力量！`).catch(err => console.log(err))
+    }
     guild2.fetchOwner().then(owner => { 
     owner.send(
         `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild2.name}**！\n\n` + 
