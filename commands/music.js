@@ -695,9 +695,9 @@ function clearqueue(musicList, interaction){
     //#region disconnect 段開連接函數
     try{
         //判斷bot是否在此群組的語音頻道
-        if (!Voice.getVoiceConnection(msg.guild.id)) return interactionReply(interaction, '不存在的語音，怎麼退呢?', true);
+        if (!Voice.getVoiceConnection(interaction.guild.id)) return interactionReply(interaction, '不存在的語音，怎麼退呢?', true);
         //退出語音頻道
-        Voice.getVoiceConnection(msg.guild.id).destroy();
+        Voice.getVoiceConnection(interaction.guild.id).destroy();
         return interaction.reply('退出播放程序...');
     }catch(err){
         console.log(err, 'disconnectError');
