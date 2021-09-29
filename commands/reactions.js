@@ -35,7 +35,7 @@ module.exports = {
             const pageShowHax = 12;
             let page = 0;
 
-            const levels = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
+            const reactions = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
             const row = new Discord.MessageActionRow()
 			.addComponents(
 				[
@@ -48,11 +48,11 @@ module.exports = {
                         .setLabel('下一頁')
                         .setStyle('PRIMARY')
                 ]
-                
 			);
-            interaction.reply({embeds: [levels], components: [row]});
+            interaction.reply({embeds: [reactions], components: [row]});
+            const msg = interaction.editReply({embeds: [reactions], components: [row]});
 
-            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot;
+            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
             const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });
             
             collector.on('collect', async i => {
@@ -61,15 +61,15 @@ module.exports = {
                 if(i.customId === '上一頁')
                     if(page > 0) page--;
                 guildInformation.sortUser();
-                const levels = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
-                i.update({embeds: [levels], components: [row]});
+                const reactions = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
+                i.update({embeds: [reactions], components: [row]});
                 collector.resetTimer({ time: 60 * 1000 });
             });
             
             collector.on('end', (c, r) => {
                 if(r !== "messageDelete"){
-                    const levels = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
-                    interaction.editReply({embeds: [levels], components: []})
+                    const reactions = reactionsShow(interaction.guild, guildInformation, page, pageShowHax);
+                    interaction.editReply({embeds: [reactions], components: []})
                 }
             });
         

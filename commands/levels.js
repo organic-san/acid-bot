@@ -101,12 +101,12 @@ module.exports = {
                         .setLabel('下一頁')
                         .setStyle('PRIMARY')
                 ]
-                
 			);
             interaction.reply({embeds: [levels], components: [row]});
-            
+            const msg = interaction.editReply({embeds: [levels], components: [row]});
+            //TODO: 等哪天能直接從interaction.reply抓訊息再來改這裡
 
-            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot;
+            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
             const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });
             
             collector.on('collect', async i => {

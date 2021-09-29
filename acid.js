@@ -146,9 +146,14 @@ client.on('interactionCreate', async interaction => {
 
 	if (!command) return;
 
+    if(!musicList.has(interaction.guild.id)){
+        musicList.set(interaction.guild.id, new musicbase.MusicList(interaction.client.user, interaction.guild, []));
+    }
+
 	try {
         if(command.tag === "interaction") await command.execute(interaction);
 		if(command.tag === "guildInfo") await command.execute(interaction, guildInformation.getGuild(interaction.guild.id));
+		if(command.tag === "musicList") await command.execute(interaction, musicList.get(interaction.guild.id));
 
 	} catch (error) {
 		console.error(error);
