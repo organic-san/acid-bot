@@ -448,14 +448,14 @@ module.exports = {
     //#endregion
 
     /**
-         * 顯示整個伺服器的經驗值排名
-         * @param {Discord.Guild} guild 該伺服器的Discord資料
-         * @param {guildInfo.GuildInformation} element 該伺服器的資訊
-         * @param {number} page 頁數
-         * @param {number} pageShowHax 單頁上限 
-         * @returns 包含排名的Discord.MessageEmbed
-         */
-     reactionsShow: function(guild, element, page, pageShowHax){
+     * 顯示整個伺服器的經驗值排名
+     * @param {Discord.Guild} guild 該伺服器的Discord資料
+     * @param {guildInfo.GuildInformation} element 該伺服器的資訊
+     * @param {number} page 頁數
+     * @param {number} pageShowHax 單頁上限 
+     * @returns 包含排名的Discord.MessageEmbed
+     */
+    reactionsShow: function(guild, element, page, pageShowHax){
         //#region 等級排行顯示清單 
         let levelembed = new Discord.MessageEmbed()
             .setTitle(`${guild.name} 的專屬伺服器反映`)

@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
-const guild = require('../JSmodule/guildInformationClass');
-const characters = require("../data/characters/testEnglishCharacters.json")
+const characters = require("../data/characters/testEnglishCharacters.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -22,10 +21,10 @@ module.exports = {
                 opt.setName('amount')
                 .setDescription('每日單字的單字數量，上48，預設30')
             ).addIntegerOption(opt => 
-                opt.setName('rank-limit_low')
+                opt.setName('rank-limit-low')
                 .setDescription('每日單字中的等級範圍下限，範圍請在1~6之間。等級請參考台灣教育部的單字分級。')
             ).addIntegerOption(opt => 
-                opt.setName('rank-limit_high')
+                opt.setName('rank-limit-high')
                 .setDescription('每日單字中的等級範圍上限，範圍請在1~6之間。等級請參考台灣教育部的單字分級。')
             )
         ),
@@ -55,8 +54,8 @@ module.exports = {
         } else if (interaction.options.getSubcommand() === 'daily') {
             await interaction.deferReply();
             const wordAmount = interaction.options.getInteger('amount') ?? 30;
-            const limitLow = interaction.options.getInteger('rank-limit_low') ?? 1;
-            const limitHigh = interaction.options.getInteger('rank-limit_high') ?? 7;
+            const limitLow = interaction.options.getInteger('rank-limit-low') ?? 1;
+            const limitHigh = interaction.options.getInteger('rank-limit-high') ?? 7;
 
             if(limitLow < 1 || limitHigh > 7 || limitLow > limitHigh) 
                 return interaction.reply({content: '無法產生所要求的等級範圍，請將等級設於1~6之間。', ephemeral: true});
