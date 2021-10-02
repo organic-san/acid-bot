@@ -83,7 +83,7 @@ module.exports = {
                 .setTitle(`⏱️投票生成中...`)
                 .setTimestamp()
 
-            await interaction.reply({embeds:[embedlperPoll]});
+            const poll = await interaction.reply({embeds:[embedlperPoll], fetchReply: true});
 
             const embedlPoll = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
@@ -104,8 +104,9 @@ module.exports = {
             } else {
                 emojisSelect.push('⭕', '❌');
             }
+            embedlPoll.addField("統計指令", `\`/poll sum message-id::${poll.id}\``)
 
-            const poll = await interaction.editReply({embeds: [embedlPoll]});
+            await interaction.editReply({embeds: [embedlPoll]});
             if(poll instanceof Discord.Message) {
                 emojisSelect.forEach(emoji => poll.react(emoji));
 
@@ -117,6 +118,7 @@ module.exports = {
                         .catch(() => { poll.reactions.cache.get('↩').users.remove().catch((err)=>console.log(err)); })
                 }
             }
+        
         }else if(interaction.options.getSubcommand() === 'sum') {
 
             const messageId = interaction.options.getString('message-id');
@@ -146,6 +148,7 @@ module.exports = {
                 total = circle + cross;
             }else{
                 pollResult.embeds[0].fields.forEach((opt, index) => {
+                    if(!pollResult.reactions.cache.get(emojis[index])) return;
                     const count = pollResult.reactions.cache.get(emojis[index]).count - 1;
                     pollOptions.push([emojis[index] , opt.value, count]);
                     if(count > maxCount) maxCount = count;
