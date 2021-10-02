@@ -93,9 +93,9 @@ module.exports = {
                 }
             }
             if(embed2.fields.length > 0){
-                interaction.reply({embeds:[embed, embed2]});
+                interaction.editReply({embeds:[embed, embed2]});
             }else{
-                interaction.reply({embeds:[embed]});
+                interaction.editReply({embeds:[embed]});
             }
         }
 	},

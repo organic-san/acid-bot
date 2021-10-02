@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const music = require('../JSmodule/musicListClass');
-const musicCommand = require('../JSmodule/musicModule')
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
 const search = require('youtube-search');
@@ -110,9 +109,7 @@ module.exports = {
                             .setStyle('PRIMARY')
                     ]
                 );
-                await interaction.reply({embeds: [musicQueue], components: [row]});
-                const msg =  await interaction.editReply({embeds: [musicQueue], components: [row]});
-                //TODO: 等哪天能直接從interaction.reply抓訊息再來改這裡
+                const msg = await interaction.reply({embeds: [musicQueue], components: [row], fetchReply: true});
 
                 const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
                 const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });

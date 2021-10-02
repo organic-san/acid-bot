@@ -49,9 +49,7 @@ module.exports = {
                         .setStyle('PRIMARY')
                 ]
 			);
-            await interaction.reply({embeds: [reactions], components: [row]});
-            const msg = await interaction.editReply({embeds: [reactions], components: [row]});
-            //TODO: 等哪天能直接從interaction.reply抓訊息再來改這裡
+            const msg = await interaction.reply({embeds: [reactions], components: [row], fetchReply: true});
 
             const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
             const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });
