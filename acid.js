@@ -110,6 +110,8 @@ client.on('ready', () =>{
 
 client.on('interactionCreate', async interaction => {
 
+    if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
+
     if(!guildInformation.has(interaction.guild.id)){
         const thisGI = new guild.GuildInformation(interaction.guild, []);
         guildInformation.addGuild(thisGI);
@@ -119,8 +121,6 @@ client.on('interactionCreate', async interaction => {
         );
     }
     guildInformation.updateGuild(interaction.guild);
-
-    if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
     if (!interaction.isCommand()) return;
     console.log("isInteraction: isCommand: " + interaction.commandName + ", id: " + interaction.commandId)
