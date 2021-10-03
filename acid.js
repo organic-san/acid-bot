@@ -1922,8 +1922,8 @@ client.on('messageCreate', async msg =>{
                                     return response.reply(`設定結束：取消設定`);
                                 if (!response.content) 
                                     return response.reply(`設定失敗：請輸入文字。`);
-                                if (response.content.length > 50) 
-                                    return response.reply(`設定失敗：文字過長，請縮短文字長度至50字以下。`);
+                                if (response.content.length > 20) 
+                                    return response.reply(`設定失敗：文字過長，請縮短文字長度至20字以下。`);
                                 //是否為指令
                                 let responseIsprefix = prefixED.findIndex(element => prefix[element].Value === response.content.substring(0, prefix[element].Value.length));
                                 var responseIsCommand = false;
