@@ -100,9 +100,9 @@ module.exports = {
             .addField(`基本指令`, 
                 `\`/auto-reply show\` - 顯示機器人會自動回應的文字清單語查詢ID`)
             .addField("需要伺服器管理權限的指令", 
-                "\`/reactions add <trigger-message:文字> <reply-message:文字>\` - 新增自動回應的項目\n" + 
-                "\`/reactions remove <auto-reply-id:數字>\` - 刪除特定回應的項目\n" + 
-                "\`/reactions reset\` - 清空所有回應項目")
+                "\`/auto-reply add <trigger-message:文字> <reply-message:文字>\` - 新增自動回應的項目\n" + 
+                "\`/auto-reply remove <auto-reply-id:數字>\` - 刪除特定回應的項目\n" + 
+                "\`/auto-reply reset\` - 清空所有回應項目")
             .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                         `https://discord.gg/hveXGk5Qmz`)
             .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
