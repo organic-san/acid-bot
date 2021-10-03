@@ -20,7 +20,7 @@ module.exports = {
         const user = interaction.options.getUser('user');
 
         if(user.id === interaction.user.id) 
-            return interaction.reply({content: `連生日快樂歌都想唱給自己啊?你真邊緣阿......`, ephemeral: true})
+            return interaction.reply({content: `連生日快樂歌都想唱給自己啊? 你真邊緣阿......`, ephemeral: true});
         
         switch(Math.floor(Math.random()*2)){
             case 0:

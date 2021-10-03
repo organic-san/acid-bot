@@ -1803,19 +1803,19 @@ client.on('messageCreate', async msg =>{
                                 `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息\n` + 
                                 `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
                                 `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
-                                `\`nothing\` - 不發送升等訊息\n` +
+                                `\`NoReact\` - 不發送升等訊息\n` +
                                 `請直接輸入以上4種關鍵字作為設定，不需要輸入前輟。`);
                                 const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
                                 const response = collected.first();
                                 await msg.channel.sendTyping();
                                 if (!response) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (!['messagechannel', 'specifychannel', 'dmchannel', 'nothing'].includes(response.content.toLowerCase())) 
+                                if (!['messagechannel', 'specifychannel', 'dmchannel', 'NoReact'].includes(response.content.toLowerCase())) 
                                     return response.reply(`設定失敗：輸入非指定關鍵字，請重新設定`);
                                 
-                                if(['messagechannel', 'dmchannel', 'nothing'].includes(response.content.toLowerCase())){
+                                if(['messagechannel', 'dmchannel', 'NoReact'].includes(response.content.toLowerCase())){
                                     if(['messagechannel'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "MessageChannel";}
                                     if(['dmchannel'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "DMChannel";}
-                                    if(['nothing'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "nothing";}
+                                    if(['NoReact'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "NoReact";}
                                     return msg.channel.send(`設定完成！已將升等訊息發送模式改為 ${levelsElement.levelsReact}。`);
                                 }else{
                                     msg.channel.send('請輸入要設定的頻道的ID(例如：123456789012345678)。');
@@ -2081,7 +2081,7 @@ client.on('messageCreate', async msg =>{
                                     `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息(預設模式)\n` + 
                                     `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
                                     `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
-                                    `\`nothing\` - 不發送升等訊息\n`)
+                                    `\`NoReact\` - 不發送升等訊息\n`)
                                     .addField('頻道ID是什麼?', '\"使用者設定->進階->開啟開發者模式\"\n' +
                                                 '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
                                                 '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
@@ -2089,7 +2089,7 @@ client.on('messageCreate', async msg =>{
                                     .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                                                 `https://discord.gg/hveXGk5Qmz`)
                                     .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                    msg.channel.send({embeds: [embed5]});
+                                msg.channel.send({embeds: [embed5]});
                                 break;
                                 //#endregion
 
@@ -2109,7 +2109,7 @@ client.on('messageCreate', async msg =>{
                                     .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                                                 `https://discord.gg/hveXGk5Qmz`)
                                     .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                    msg.channel.send({embeds: [embed6]});
+                                msg.channel.send({embeds: [embed6]});
                                 break;
                                 //#endregion
 

@@ -303,7 +303,7 @@ class GuildInformation {
                 }
                 break;
 
-            case 'nothing':
+            case 'NoReact':
                 break;
         }
     }

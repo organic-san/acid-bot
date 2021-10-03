@@ -21,6 +21,36 @@ module.exports = {
         ).addSubcommand(opt => 
             opt.setName('no-dm')
             .setDescription('停用/啟用機器人私訊升等訊息')
+        ).addSubcommand(opt =>
+            opt.setName('help')
+            .setDescription('關於等級系統的相關說明')
+        ).addSubcommand(opt =>
+            opt.setName('open')
+            .setDescription('開啟等級系統，僅限具有管理伺服器權限人員操作')
+        ).addSubcommand(opt =>
+            opt.setName('close')
+            .setDescription('關閉等級系統，僅限具有管理伺服器權限人員操作')
+        ).addSubcommand(opt =>
+            opt.setName('reset')
+            .setDescription('重置等級系統，僅限具有管理伺服器權限人員操作')
+        ).addSubcommand(opt =>
+            opt.setName('level-up-react')
+            .setDescription('選擇升級訊息的回應方式，僅限具有管理伺服器權限人員操作')
+            .addStringOption(opt => 
+                opt.setName('mode')
+                .setDescription('升級訊息的回應方式')
+                .addChoice("message-channel(發送訊息的頻道)", "MessageChannel")
+                .addChoice("specify-channel(指定頻道，需同時指定channel變數)", "SpecifyChannel")
+                .addChoice("dm-channel(私訊回應)", "DMChannel")
+                .addChoice("no-react(不做回應)", "NoReact")
+                .setRequired(true)
+            ).addChannelOption(opt =>
+                opt.setName('channel')
+                .setDescription('選擇升級訊息要回應的頻道(僅需在設定為specify-channel時輸入)')
+            )
+        ).addSubcommand(opt =>
+            opt.setName('show')
+            .setDescription('顯示目前的設定檔，僅限具有管理伺服器權限人員操作')
         ),
     tag: "guildInfo",
 
@@ -137,6 +167,106 @@ module.exports = {
                 interaction.reply({content: `已關閉你在 **${interaction.guild.name}** 的私訊升等通知。`, ephemeral: true})
                     .catch(() => item.DM = false);
             }
+        } else if(interaction.options.getSubcommand() === 'help') {
+
+            const embed = new Discord.MessageEmbed()
+                .setColor(process.env.EMBEDCOLOR)
+                .setTitle(`指令幫助清單/levels(等級系統)`)
+                .setDescription(`關於等級系統: 專屬於伺服器的個人等級排名系統\n由發送訊息數量決定等級\n` +
+                    `<此為必填項> [此為選填項]`)
+                .addField("基本指令", 
+                    `\`/levels rank [user:用戶]\` - 查看自己或對象的等級\n` +
+                    `\`/levels ranking\` - 查看整個伺服器的排行\n` +
+                    `\`/levels noDM\` - 停止/開啟該伺服器中，給自己的的升等訊息私訊`)
+                .addField("需要伺服器管理權限的指令", 
+                    "\`/levels show\` - 顯示目前的設定檔\n" + 
+                    "\`/levels open\` - 開啟等級系統\n" + 
+                    "\`/levels close\` - 關閉等級系統\n" + 
+                    "\`/levels reset\` - 將所有人的等級系統歸零\n" + 
+                    "\`/levels level-up-react <mode:狀態> [channel:頻道]\` - 調整回應模式")
+                .addField('回應模式說明', 
+                    `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息(預設模式)\n` + 
+                    `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
+                    `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
+                    `\`NoReact\` - 不發送升等訊息\n`)
+                .addField('頻道ID是什麼?', '\"使用者設定->進階->開啟開發者模式\"\n' +
+                    '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
+                    '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
+                    '通常頻道ID會長得像這樣：123456789012345678')
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
+                            `https://discord.gg/hveXGk5Qmz`)
+                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                interaction.reply({embeds: [embed]});
+        
+        } else { 
+            //權限
+            if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)){ 
+                return interaction.reply({content: "你沒有管理伺服器的權限，別以為能亂突破", ephemeral: true});
+            }
+        }
+        
+        //以下需要管理權限
+
+        //開關
+        if(interaction.options.getSubcommand() === 'open') {
+            guildInformation.levels = true;
+            interaction.reply("已開啟等級系統");
+
+        } else if(interaction.options.getSubcommand() === 'close') {
+            guildInformation.levels = false;
+            interaction.reply("已關閉等級系統");
+
+        //歸零
+        } else if(interaction.options.getSubcommand() === 'reset') {
+            const msg = await interaction.reply({content: "確定要清除所有人的經驗值嗎？此動作無法復原。\n點一下下面的✅以清除所有資料", fetchReply: true});
+            await msg.react('✅');
+            const filter = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+            msg.awaitReactions({filter, max: 1, time: 20 * 1000, errors: ['time'] })
+            .then((c) => {
+                if(c.size !== 0){
+                    guildInformation.clearReaction();
+                    interaction.followUp("已歸零所有人的經驗值。").catch((err)=>console.log(err));
+                }else{
+                    interaction.followUp("已取消歸零所有人的經驗值。");
+                }
+            }) 
+            .catch(() => {
+                msg.reactions.cache.get('✅').users.remove().catch((err)=>console.log(err));
+                interaction.followUp("已取消歸零所有人的經驗值。");
+            })
+
+        //更改模式
+        } else if(interaction.options.getSubcommand() === 'level-up-react') {
+
+            const mode = interaction.options.getString('mode');
+
+            if(['MessageChannel', 'DMChannel', 'nothing'].includes(mode)){
+                guildInformation.levelsReact = mode;
+                return interaction.reply(`設定完成！已將升等訊息發送模式改為 ${guildInformation.levelsReact}。`);
+
+            }else{
+                const channel = interaction.options.getChannel('channel');
+
+                if(!channel) return interaction.reply({content: `設定模式為SpecifyChannel時請設定頻道!`, ephemeral: true})
+                if(!channel.isText()) return interaction.reply({content: '⚠️所選擇頻道似乎不是文字頻道。', ephemeral: true});
+                if(channel.isThread()) return interaction.reply({content: '⚠️請不要將頻道設立在討論串。', ephemeral: true});
+                guildInformation.levelsReactChannel = channel.id;
+                guildInformation.levelsReact = mode;
+                interaction.reply(`設定完成！\n已將升等訊息發送模式改為 ${guildInformation.levelsReact}\n` +
+                ` 頻道指定為 ${channel} (ID: ${channel.id})`);
+            }
+
+        //顯示設定
+        } else if(interaction.options.getSubcommand() === 'show') {
+            let levelsisworking = guildInformation.levelsReactChannel ? "啟用" : "停用";
+            const channel = interaction.client.channels.cache.get(guildInformation.levelsReactChannel);
+            let lcm = `升級訊息發送頻道 - ${channel ?? "undefined"}`;
+            if(channel) lcm += ` \`(ID: ${channel.id})\``;
+            interaction.reply('目前的設定：\n' +
+            `等級系統 - ${levelsisworking}\n` + 
+            `升級訊息發送模式 - \`${guildInformation.levelsReact}\`\n` + 
+            `${lcm} (僅在模式為\`SpecifyChannel\`時有用)\n\n` +
+            `詳細說明請查看 \`/levels help\``);
         }
 	},
 };
