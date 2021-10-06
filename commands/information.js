@@ -201,6 +201,10 @@ module.exports = {
                 }
             }
             const startday = premium ? `${premium.getFullYear()} ${premium.getMonth()+1}/${premium.getDate()} (${day})` : "沒有加成本伺服器" ;
+            let roles = '';
+            member.roles.cache.forEach(role => {
+                if(role.id !== interaction.guild.id) roles += role.toString() + ' ';
+            });
             const embed3 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${user.tag} 的資訊`)
@@ -211,6 +215,7 @@ module.exports = {
                 .addField('帳號建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
                 .addField('加入伺服器時間', `${timejoin.getFullYear()} ${timejoin.getMonth()+1}/${timejoin.getDate()} (${week})`, true)
                 .addField('開始加成時間', startday, true)
+                .addField('身分組', roles)
                 .setThumbnail(user.displayAvatarURL({dynamic: true}))
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed3]});

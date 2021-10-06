@@ -104,7 +104,7 @@ module.exports = {
             } else {
                 emojisSelect.push('⭕', '❌');
             }
-            embedlPoll.addField("統計指令", `\`/poll sum message-id::${poll.id}\``)
+            embedlPoll.addField("這則的訊息ID", `\`${poll.id}\``)
 
             await interaction.editReply({embeds: [embedlPoll]});
             if(poll instanceof Discord.Message) {

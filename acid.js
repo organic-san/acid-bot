@@ -87,6 +87,7 @@ client.on('ready', () =>{
     setTimeout(() => {
         console.log(`設定成功: ${new Date(Date.now())}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: ${time}`));
+        client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: ${time}`));
         isReady = true;
     }, 2000);
     setInterval(() => {
@@ -2291,8 +2292,10 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
-    console.log(`${member.user.tag} 加入了 ${member.guild.name}。`);
-    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 加入了 **${member.guild.name}**。`));
+    console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
+        channel.send(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`)
+    );
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage) return;
     if(!element.joinChannel){
@@ -2334,9 +2337,9 @@ client.on("guildCreate", guild2 => {
         guildInformation.addGuild(thisGI);
     }
     var a = 0;
-    console.log(client.user.tag + '加入了' + guild2.name + ' (新增事件觸發)');
+    console.log(`${client.user.tag} 加入了 ${guild2.name} (${guild2.id}) (新增事件觸發)`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
-        channel.send(`${client.user.tag} 加入了 **${guild2.name}** (新增事件觸發)`)
+        channel.send(`${client.user.tag} 加入了 **${guild2.name}** (${guild2.id}) (新增事件觸發)`)
     );
     if(guild2.systemChannel){
         guild2.systemChannel.send(`歡迎使用acid bot！使用斜線指令來操作我的力量！`).catch(err => console.log(err))
