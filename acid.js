@@ -87,7 +87,8 @@ client.on('ready', () =>{
     setTimeout(() => {
         console.log(`設定成功: ${new Date(Date.now())}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: ${time}`));
-        client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: ${time}`));
+        if(client.user.id !== process.env.BOT_ID_ACIDTEST)
+            client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: ${time}`));
         isReady = true;
     }, 2000);
     setInterval(() => {
