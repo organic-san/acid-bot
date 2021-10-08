@@ -170,6 +170,7 @@ client.on('messageCreate', async msg =>{
         if(!isReady) return;
         if(!msg.guild || !msg.member) return; //訊息內不存在guild元素 = 非群組消息(私聊)
         if(msg.channel.type === "DM") return; 
+        if(msg.webhookId) return;
 
         if(!guildInformation.has(msg.guild.id)){
             const thisGI = new guild.GuildInformation(msg.guild, []);
@@ -296,7 +297,7 @@ client.on('messageCreate', async msg =>{
                 await msg.channel.sendTyping();
                 msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
                 console.log("isCommand: " + isCommand + ": isReaction");
-            }else console.log("isCommand: " + isCommand);
+            }
         }
         //#endregion
 
@@ -372,7 +373,60 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
+        //#region NQN功能
+        const member = await msg.guild.members.fetch(client.user.id);
+        if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS)){
+            if(!msg.channel.isThread()){
+                const notEmoji = msg.content.split(/:\w+:/);
+                const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
+                isEmoji.forEach((v, i) => isEmoji[i] = v[0]);
+                let isEmojiChanged = false;
+
+                if(isEmoji.length > 0) {
+                    isEmoji.forEach((emoji, index) => {
+                        if(!emoji) return;
+                        if(notEmoji[index].endsWith('<')) return;
+                        if(notEmoji[index].endsWith('<a')) return;
+                        const find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
+                        if(find) {
+                            if(find.guild.id !== msg.guild.id || find.animated){
+                                isEmojiChanged = true;
+                                isEmoji[index] = find.toString();
+                            }
+                        }
+                    })
+    
+                    if(isEmojiChanged){
+                        console.log("isCommand: " + isCommand + ": isEmojiWebhook");
+    
+                        let words = [];
+                        for(let i = 0; i < notEmoji.length * 2 - 1; i++)
+                            i % 2 ? words.push(isEmoji[(i-1)/2]) : words.push(notEmoji[i/2]);
+                        words = words.join("");
+    
+                        const webhooks = await msg.channel.fetchWebhooks();
+                        let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
+                        if(!webhook) {
+                            webhook = await msg.channel.createWebhook(msg.member.displayName, {
+                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                            })
+                        }
+                        
+                        webhook.edit({
+                            name: msg.member.displayName,
+                            avatar: msg.author.displayAvatarURL({dynamic: true})
+                        })
+                            .then(webhook => webhook.send(words))
+                            .catch(console.error);
+                        if(!msg.deleted && msg.deletable) msg.delete().catch(console.error);
+                    } else console.log("isCommand: " + isCommand);
+                }
+            }
+        }
+        //#endregion
+
         //實作
+        //以下預計廢除
         switch(tempPrefix.toString()){
             case '0': //文字回應功能
             case '1':
@@ -2163,6 +2217,40 @@ client.on('messageCreate', async msg =>{
                         }else{
                             msg.channel.send(msg.content.substring(prefix[6].Value.length + text[0].length + 1));
                         }
+
+                    case "CTE": //channel ID to send
+                    case "cte":
+                    case 'e':
+                        //#region 指定頻道發言
+                        if(!text[1]) return;
+                        if(msg.channel.isThread()) return;
+                        const member = await msg.guild.members.fetch(client.user.id);
+                        if(!member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS)) return;
+
+                        const webhooks = await msg.channel.fetchWebhooks();
+		                let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
+                        console.log(webhook)
+                        if(!webhook) {
+                            webhook = await msg.channel.createWebhook(msg.member.displayName, {
+                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                            })
+                        }
+                        let emoji;
+                        if(!Number.isNaN(parseInt(text[1]))){
+                            emoji = client.emojis.cache.find(emoji => emoji.id === parseInt(text[1]));
+                        }else{
+                            emoji = client.emojis.cache.find(emoji => emoji.name.includes(text[1]));
+                        }
+                        webhook.edit({
+                            name: msg.member.displayName,
+                            avatar: msg.author.displayAvatarURL({dynamic: true})
+                        })
+                            .then(webhook => webhook.send(emoji.toString()))
+                            .catch(console.error);
+                        webhook.edit({
+                            name: msg.member.displayName,
+                            avatar: msg.author.displayAvatarURL({dynamic: true})
+                        })
                         
                         break;
                         //#endregion
@@ -2205,6 +2293,10 @@ client.on('messageCreate', async msg =>{
 
                     case 'test':
                         abyss.main(msg);
+                        break;
+
+                    case 'u':
+                        console.log(msg.author);
                         break;
                     
                     case 'lo':

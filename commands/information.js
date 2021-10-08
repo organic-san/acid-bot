@@ -117,7 +117,7 @@ module.exports = {
             var administrator = 0, emoji = 0, invite = 0, file = 0, send = 0;
             interaction.guild.roles.cache.map(role => {
                 bitfield = role.permissions.bitfield;
-                if(bitfield & 8n){
+                if(bitfield & Discord.Permissions.FLAGS.ADMINISTRATOR){
                     administrator++; emoji++; invite++; file++; send++;
                 }else{
                     if(bitfield & Discord.Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS) emoji++;
