@@ -373,7 +373,7 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
-        //#region NQN功能
+        //#region 群外表情符號代為顯示功能
         const member = await msg.guild.members.fetch(client.user.id);
         if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS)){
             if(!msg.channel.isThread()){
@@ -387,7 +387,8 @@ client.on('messageCreate', async msg =>{
                         if(!emoji) return;
                         if(notEmoji[index].endsWith('<')) return;
                         if(notEmoji[index].endsWith('<a')) return;
-                        const find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
+                        let find = client.emojis.cache.find(e => e.name === emoji.slice(1, emoji.length - 1));
+                        if(!find) find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
                         if(find) {
                             if(find.guild.id !== msg.guild.id || find.animated){
                                 isEmojiChanged = true;
@@ -411,6 +412,7 @@ client.on('messageCreate', async msg =>{
                                 avatar: msg.author.displayAvatarURL({dynamic: true})
                             })
                         }
+                        if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
                         
                         webhook.edit({
                             name: msg.member.displayName,
@@ -418,9 +420,8 @@ client.on('messageCreate', async msg =>{
                         })
                             .then(webhook => webhook.send(words))
                             .catch(console.error);
-                        if(!msg.deleted && msg.deletable) msg.delete().catch(console.error);
                     } else console.log("isCommand: " + isCommand);
-                }
+                } else console.log("isCommand: " + isCommand);
             }
         }
         //#endregion
