@@ -140,7 +140,7 @@ module.exports = {
             
             guildInformation.addReaction(triggerMessage, replyMessage, mode);
             const set = mode > 1 ? "部分相符" : "完全相符";
-            interaction.reply(`設定完成，已新增已下反應: \n\n訊息: \`${triggerMessage}\`\n回覆: \`${replyMessage}\`\n模式: \`${set}\``);
+            interaction.reply(`設定完成，已新增已下反應: \n\n模式: \`${guildInformation.reactionsMuch}\`訊息: \`${triggerMessage}\`\n回覆: \`${replyMessage}\`\n模式: \`${set}\``);
 
         //移除
         } else if (interaction.options.getSubcommand() === 'remove') {

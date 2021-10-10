@@ -519,15 +519,7 @@ client.on('messageCreate', async msg =>{
                     case '匿名訊息':
                     case 'anonymous':
                     case 'a':
-                        const fileimage = msg.attachments.first();
-                        const content = msg.content.substring(prefix[0].Value.length + cmd[0].length + 1);
-                        if(msg.content.length > 2000){ 
-                            msgtodlt = await msg.reply("訊息太長了！請不要超過2000字！"); 
-                            setTimeout(() => { if(!msgtodlt.deleted) { msgtodlt.delete() } } , 3000);
-                        }else{
-                            textCommand.anonymous(fileimage, content, msg.channel, msg.author, client.user, defpre)
-                        }
-                        if(msg.deletable && !msg.deleted && !(!cmd[1] && !fileimage)) msg.delete();
+                        msg.reply('本指令已棄用。使用斜線指令(/anonymous)以使用相同功能!')
                         break;
                     
                     case '猜拳':
@@ -625,438 +617,27 @@ client.on('messageCreate', async msg =>{
                     case 'info':
                     case 'information':
                     case 'i':
-                        //#region 資訊欄(群組與機器人)
-                        if(!cmd[1]){
-                            const embedhelp = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-                            return msg.channel.send({embeds: [textCommand.helpInformation(defpre, embedhelp)]});
-                        }
-                        switch(cmd[1]){
-                            case 'bot':
-                            case 'b':
-                            case '機器人':
-                                time = client.user.createdAt;
-                                switch(time.getDay()){
-                                    case 0: char = "日"; break;
-                                    case 1: char = "一"; break;
-                                    case 2: char = "二"; break;
-                                    case 3: char = "三"; break;
-                                    case 4: char = "四"; break;
-                                    case 5: char = "五"; break;
-                                    case 6: char = "六"; break;
-                                }
-                                const embed3 = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`${client.user.username} 的資訊`)
-                                    .setDescription(`關於這個機器人的資訊：`)
-                                    .addField('製作者', `organic_san_2#0500`, true)
-                                    .addField('建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
-                                    .addField('參與伺服器數量', `${client.guilds.cache.size}`, true)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                msg.channel.send({embeds: [embed3]});
-                                break;
-                            
-                            case 'server':
-                            case 'guild':
-                            case 'g':
-                            case 's':
-                            case '伺服器':
-                                time = msg.guild.createdAt;
-                                switch(time.getDay()){
-                                    case 0: char = "日"; break;
-                                    case 1: char = "一"; break;
-                                    case 2: char = "二"; break;
-                                    case 3: char = "三"; break;
-                                    case 4: char = "四"; break;
-                                    case 5: char = "五"; break;
-                                    case 6: char = "六"; break;
-                                }
-                                verificationLevel = msg.guild.verificationLevel;
-                                switch(verificationLevel){
-                                    case 'NONE':
-                                        verificationLevel = '無';
-                                        break;
-                                    case 'LOW':
-                                        verificationLevel = '低';
-                                        break;
-                                    case 'MEDIUM':
-                                        verificationLevel = '中';
-                                        break;
-                                    case 'HIGH':
-                                        verificationLevel = '高';
-                                        break;
-                                    case 'VERY_HIGH':
-                                        verificationLevel = '最高';
-                                        break;
-                                }
-                                var voicech = 0, catecorych = 0, textch = 0, newsch = 0, storech = 0, thread = 0;
-                                msg.guild.channels.cache.map(channel => {
-                                    switch(channel.type){
-                                        case 'GUILD_TEXT':
-                                            textch++;break;
-                                        case 'GUILD_VOICE':
-                                        case 'GUILD_STAGE_VOICE':
-                                            voicech++;break;
-                                        case 'GUILD_CATEGORY':
-                                            catecorych++;break;
-                                        case 'GUILD_NEWS':
-                                            newsch++;break;
-                                        case 'GUILD_STORE':
-                                            storech++;break;
-                                        case 'GUILD_PUBLIC_THREAD':
-                                        case 'GUILD_PRIVATE_THREAD':
-                                            thread++;break;
-                                    }
-                                });
-                                var user = 0, bot = 0;
-                                msg.guild.members.cache.map(member => {
-                                    if(member.user.bot){bot++;}else{user++;}
-                                });
-                                var animated = 0, stop = 0;
-                                msg.guild.emojis.cache.map(emoji => {
-                                    if(emoji.animated){animated++;}else{stop++;}
-                                });
-                                var administrator = 0, emoji = 0, invite = 0, file = 0, send = 0;
-                                msg.guild.roles.cache.map(role => {
-                                    bitfield = role.permissions.bitfield;
-                                    if(bitfield & 8n){administrator++;emoji++;invite++;file++;send++;}else{
-                                        if(bitfield & Discord.Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS){emoji++;}
-                                        if(bitfield & Discord.Permissions.FLAGS.SEND_MESSAGES){send++;}
-                                        if(bitfield & Discord.Permissions.FLAGS.ATTACH_FILES){file++;}
-                                        if(bitfield & Discord.Permissions.FLAGS.CREATE_INSTANT_INVITE){invite++;}
-                                    }
-                                });
-                                const element = guildInformation.getGuild(msg.guild.id);
-                                var lo10 = 0, lo20 = 0, lo30 = 0, lo60 = 0, bg60 = 0;
-                                if(element.levels){
-                                    element.users.forEach(element => {
-                                        if(element.levels <= 10){lo10++}
-                                        else if(element.levels <= 20){lo20++}
-                                        else if(element.levels <= 30){lo30++}
-                                        else if(element.levels <= 60){lo60++}
-                                        else{bg60++}
-                                    });
-                                }
-                                const embed4 = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTitle(msg.guild.name)
-                                .addField('ID', msg.guild.id)
-
-                                .addField('驗證等級', verificationLevel, true)
-                                .addField('擁有者', `${await msg.guild.fetchOwner().then(owner => owner.user)}`, true)
-                                .addField('建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
-
-                                .addField(`伺服器加成`, `次數 - ${msg.guild.premiumSubscriptionCount}\n等級 - ${msg.guild.premiumTier}`, true)
-                                .addField(`表情符號&貼圖 - ${msg.guild.emojis.cache.size} + ${msg.guild.stickers.cache.size}`, 
-                                          `靜態符號 - ${stop}\n動態符號 - ${animated}\n貼圖 - ${msg.guild.stickers.cache.size}`, true)
-                                .addField(`人數 - ${msg.guild.memberCount}`, `成員 - ${user}\n機器人 - ${bot}`, true)
-
-                                .addField(`頻道數量 - ${msg.guild.channels.cache.size}`, `文字頻道 - ${textch}\n語音頻道 - ${voicech}\n` + 
-                                          `新聞頻道 - ${newsch}\n商店頻道 - ${storech}\n討論串 - ${thread}\n分類 - ${catecorych}`, true)
-                                .addField(`身分組 - ${msg.guild.roles.cache.size -1}`, `管理員 - ${administrator}\n` + 
-                                          `管理表情符號與貼圖 - ${emoji}\n建立邀請 - ${invite}\n附加檔案 - ${file}\n發送訊息 - ${send}`, true)
-                                .addField(`等級系統參與 - ${element.levels ? element.usersMuch : "尚未啟動"}`, 
-                                          `小於10等 - ${lo10}\n11-20等 - ${lo20}\n21-30等 - ${lo30}\n31-60等 - ${lo60}\n大於60等 - ${bg60}\n`, true)
-                                
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                .setThumbnail(`https://cdn.discordapp.com/icons/${msg.guild.id}/${msg.guild.icon}.jpg`)
-                                msg.channel.send({embeds: [embed4]});
-                                break;
-
-                            case 'user':
-                            case 'u':
-                            case '用戶':
-                                iself = 0;
-                                if (!msg.mentions.users.size) {
-                                    msg.mentions.users.set('0', msg.author);
-                                    iself = 1;
-                                }
-                                msg.mentions.members.map(user => {
-                                    msg.channel.send(
-                                        textCommand.time(user.joinedAt, `這是 ${user} 加入 **${msg.guild.name}** 的時間`)
-                                    );
-                                });
-                                break;
-
-                            default:
-                                msg.channel.send("請在指令後輸入 \`伺服器\` 或 \`機器人\`。");
-                                break;
-                        }
+                        msg.reply('本指令已棄用。使用斜線指令(/information)以使用相同功能!')
                         break;
-                        //#endregion
                     
                     case 'rank':
                     case '等級':
                     case 'r':
-                        //#region 等級
-                        let userr;
-                        if(cmd[1]) userr = textCommand.UserResolveFromMention(client, cmd[1]);
-                        else userr = msg.author;
-                        if(!userr) return msg.reply("抱歉，我能力不足，找不到他的資料......要不要改用提及(@)?")
-                        if(userr.bot){return msg.reply("哎呀！機器人並不適用等級系統！");}
-
-                        const guildRankElement = guildInformation.getGuild(msg.guild.id);
-                        if(!guildRankElement.levels){msg.reply("哎呀！這個伺服器並沒有開啟等級系統！");}
-                        else{
-                            msg.channel.send(
-                                {embeds: [
-                                    textCommand.rank(guildRankElement, userr, msg.guild.members.cache.get(userr.id).nickname)
-                                ]}
-                            );
-                        }
-                        break;
-                        //#endregion
-                        
                     case 'levels':
                     case '排行':
                     case 'l':
-                        //#region 排行
-                        const pageShowHax = 20;
-                        const guildLevelsElement = guildInformation.getGuild(msg.guild.id);
-                        if(guildLevelsElement.id !== msg.guild.id) {return;}
-                        let page = 0;
-                        guildLevelsElement.sortUser();
-
-                        const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
-                        msg.channel.send({embeds: [levels]}).then(book => {
-                            book.react("◀️");
-                            book.react("▶️");
-    
-                            const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
-                            const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
-                            
-                            collector.on('collect', async r => {
-                                if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildLevelsElement.usersMuch){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page > 0){page--;} }                        
-                                guildLevelsElement.sortUser();
-                                const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
-                                book.edit({embeds: [levels]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('remove', async r => {
-                                if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildLevelsElement.usersMuch){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
-                                guildLevelsElement.sortUser();
-                                const levels = textCommand.levels(msg.guild, guildLevelsElement, page, pageShowHax);
-                                book.edit({embeds: [levels]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('end', (c, r) => {
-                                if(!book.deleted && r !== "messageDelete"){
-                                    book.reactions.cache.get("▶️").users.remove();
-                                    book.reactions.cache.get("◀️").users.remove();
-                                }
-                            });
-                        });
-                        
-                        break;
-                        //#endregion
-                    
                     case 'noDM':
                     case 'DM':
-                        //#region noDM
-                        const element = guildInformation.getGuild(msg.guild.id);
-                        const item = element.getUser(msg.author.id);
-                        if(item.DM !== true){
-                            item.DM = true;
-                            msg.reply(`已開啟你在 **${msg.guild.name}** 的私訊升等通知。`)
-                                .catch(() => {
-                                    msg.author.send(`$已開啟你在 **${msg.guild.name}** 的私訊升等通知。`)
-                                        .catch(() => item.DM = false);
-                                });
-                        }else{
-                            item.DM = false;
-                            msg.reply(`已關閉你在 **${msg.guild.name}** 的私訊升等通知。`)
-                                .catch(() => {
-                                    msg.author.send(`已關閉你在 **${msg.guild.name}** 的私訊升等通知。`)
-                                        .catch(() => item.DM = true);
-                                });
-                        }
+                        msg.reply('本指令已棄用。使用斜線指令(/levels)以使用相同功能!')
                         break;
-                        //#endregion 
                     
                     case 'poll':
                     case '投票':
                     case 'p':
-                        //#region 投票
-                        //TODO: 投票系統放到textModule
-                        const emojis = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿', '⭕', '❌'];
-                        const emojisSelect = new Array();
-                        const fileimagep = msg.attachments.first();
-                        let record = -1;
-
-                        if(!cmd[1]){
-                            const embedhelp = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                            return msg.channel.send({embeds: [textCommand.helpPoll(defpre, embedhelp)]});
-                        }
-
-                        const embedlperPoll = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTitle(`⏱️投票生成中...`)
-                            .setTimestamp()
-
-                        const poll = await msg.channel.send({embeds:[embedlperPoll]});
-
-                        const embedlPoll = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTitle(cmd[1])
-                            .setAuthor(`由 ${msg.author.tag} 提出本次投票`, msg.author.displayAvatarURL({dynamic: true}))
-                            .setTimestamp()
-                            .setFooter("poll:點選與選項相同的表情符號即可投票")
-
-                        let textPoll = "";
-                        if(cmd.length > 2){
-                            for(let i = 2; i < (cmd.length); i += 2){
-                                record++;
-                                if(record > 14){
-                                    msg.reply("太多選項了！請減少選項！");
-                                    if(poll.deletable && !poll.deleted) poll.delete();
-                                    return;
-                                }
-                                if(textCommand.isEmojiCharacter(cmd[i]) || (cmd[i][0] === "<" && cmd[i][1] === ":")){
-                                    if(emojis.includes(cmd[i])){
-                                        textPoll += emojis[record];
-                                        emojisSelect.push(emojis[record]);
-                                    }else{
-                                        textPoll += cmd[i];
-                                        emojisSelect.push(cmd[i]);
-                                    }
-                                    if(cmd[i + 1]){
-                                        if(textCommand.isEmojiCharacter(cmd[i + 1]) || (cmd[i + 1][0] === "<" && cmd[i + 1][1] === ":")){
-                                            textPoll += ` 選項${record + 1}\n`;
-                                            i -= 1;
-                                            continue;
-                                        }else{
-                                            textPoll += (" " + cmd[i + 1] + " \n");
-                                        }
-                                    }else{
-                                        textPoll += ` 選項${record + 1}\n`;
-                                    }
-                                }else{
-                                    emojisSelect.push(emojis[record]);
-                                    textPoll += (emojis[record] + " " + (cmd[i] + " \n"));
-                                    i -= 1;
-                                    continue;
-                                }
-                            }
-                            embedlPoll.setDescription(textPoll);
-                        }else{
-                            record = 1;
-                            emojisSelect.push(...['⭕', '❌']);
-
-                        }
-                        if (fileimagep){
-                            if (!fileimagep.height && !fileimagep.width) return // 画像じゃなかったらスルー
-                            {
-                                embedlPoll.setImage(fileimagep.url);
-                            }
-                        }
-                        embedlPoll.addField('統計指令', `\`${defpre}sumpoll ${poll.id}\``);
-                        poll.edit({embeds: [embedlPoll]});
-                        emojisSelect.slice(0, record + 1).forEach(emoji => poll.react(emoji))
-
-                        if(!msg.deleted){
-                            msg.react('↩');
-                            const filterpoll = (reaction, user) => reaction.emoji.name === '↩' && user.id === msg.author.id;
-                            msg.awaitReactions({filter:filterpoll, max: 1, time: 120 * 1000, errors: ['time'] })
-                                .then(() => {if(!msg.deleted){poll.delete(); msg.reactions.cache.get('↩').users.remove()}})
-                                .catch(() => {if(!msg.deleted){msg.reactions.cache.get('↩').users.remove();}})
-                        }
-                        break;
-                        //#endregion
-
                     case 'sumpoll':
                     case '統計':
                     case 'sp':
-                        //#region 投票統計
-                        //TODO: 投票統計系統放到textModule
-                        if(!cmd[1]){
-                            const embedhelp = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-                            return msg.channel.send({embeds:[textCommand.helpPoll(defpre, embedhelp)]});
-                        }
-                        if(cmd[1].split('-').length !== 1 ){
-                            var channelpoll = textCommand.ChannelResolveFromMention(client. cmd[1].split('-')[0]);
-                            msgID = cmd[1].split('-')[1];
-                        }else if(cmd[2]){
-                            var channelpoll = textCommand.ChannelResolveFromMention(client, cmd[1]);
-                            msgID = cmd[2];
-                        }else { var channelpoll = msg.channel; msgID = cmd[1];};
-                        if(!channelpoll) return msg.reply("⚠️無法找到這個頻道");
-                        if(!channelpoll.isText()) return msg.reply("⚠️頻道不是文字頻道");
-
-                        const pollResult = await channelpoll.messages.fetch(msgID).catch(() => {});
-                        if(!pollResult){return msg.reply("⚠️無法在這個頻道中找到該訊息ID的訊息");}
-                        if(!pollResult.embeds[0]){return msg.reply("⚠️在該訊息ID的訊息中找不到投票");}
-                        if(pollResult.embeds[0].footer.text.indexOf('poll') === -1){
-                            return msg.reply("⚠️在該訊息ID的訊息中找不到投票");
-                        }
-
-                        let emojiCount = new Array();
-                        let totalCount = 0;
-                        let maxCount = 0;
-                        const embedlPollresult = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTitle(`${pollResult.embeds[0].title} 的投票結果`)
-                            .setAuthor(pollResult.embeds[0].author.name, pollResult.embeds[0].author.iconURL)
-                            .setTimestamp()
-
-                        if(!pollResult.embeds[0].description){
-                            var pollOptions = ['⭕', "", '❌', ""]
-                        }else{
-                            var pollOptions = pollResult.embeds[0].description.split(splitText);
-                        }
-
-                        for(let i = 0; i < pollOptions.length; i += 2){
-                            let count = 0;
-                            if(pollOptions[i][0] === '<' && pollOptions[i][1] === ':'){
-                                count = pollResult.reactions.cache.get(pollOptions[i].split(/:|>/)[2]).count - 1;
-                            }else{
-                                if(pollResult.reactions.cache.get(pollOptions[i])){
-                                    count = pollResult.reactions.cache.get(pollOptions[i]).count - 1;
-                                }else{
-                                    count = 0;
-                                }
-                            }
-                            emojiCount[i/2] = {
-                                "emoji": pollOptions[i], 
-                                "title": pollOptions[i + 1],
-                                "count": count
-                            };
-                            if(parseInt(cmd[(i/2)+2])) emojiCount[i/2].count += parseInt(cmd[(i/2)+2]);
-                            totalCount += emojiCount[i/2].count;
-                            if(emojiCount[i/2].count > maxCount) maxCount = emojiCount[i/2].count;
-                        }
-                        if(totalCount === 0){totalCount++; maxCount++;}
-                        emojiCount.forEach( element => {
-                            let title = `${element.emoji} ${element.title} (${element.count}票)`;
-                            if(element.count === maxCount && maxCount !== 0) title += '🏆';
-
-                            let pollProportion = '\`' + 
-                                ((parseFloat((element.count / totalCount) * 100).toFixed(1) + '%').padStart(6, ' ')) +　
-                                '\` ';
-                            for(let i = 0; i <= ((element.count / maxCount) * 70 - 0.5) ; i++){
-                                pollProportion += "\\|";
-                            }
-                            embedlPollresult.addField(title, pollProportion)
-                        });
-                        embedlPollresult.addField(`投票連結`, `[點一下這裡](${pollResult.url})`)
-                        msg.channel.send({ embeds: [embedlPollresult] }).then( pollresult => {
-                            msg.react('↩');
-                            const filterpollresult = (reaction, user) => reaction.emoji.name === '↩' && user.id === msg.author.id;
-                            msg.awaitReactions({filter: filterpollresult, max: 1, time: 120 * 1000, errors: ['time'] })
-                                .then(() => {if(!msg.deleted){pollresult.delete(); msg.reactions.cache.get('↩').users.remove()}}) 
-                                .catch(() => {if(!msg.deleted){msg.reactions.cache.get('↩').users.remove();}})
-                        });
+                        msg.reply('本指令已棄用。使用斜線指令(/poll)以使用相同功能!')
                         break;
                         //#endregion
 
@@ -1135,42 +716,7 @@ client.on('messageCreate', async msg =>{
                     case '反應':
                     case 'reaction':
                     case 're':
-                        //#region 反應清單
-                        const reactionsElement = guildInformation.getGuild(msg.guild.id);
-                        if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('這個伺服器並沒有設定專屬反應。');
-                        const pageShowHaxR = 12;
-                        let page2 = 0;
-                        const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
-                        msg.channel.send({embeds: [reactionsEmbed]}).then(book => {
-                            book.react("◀️");
-                            book.react("▶️");
-    
-                            const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
-                            const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
-                            
-                            collector.on('collect', async r => {
-                                if(r.emoji.name === "▶️"){ if(page2 * pageShowHaxR + pageShowHaxR < reactionsElement.reactionsMuch - 1){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page2 > 0){page2--;} }
-                                const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
-                                book.edit({embeds: [reactionsEmbed]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('remove', async r => {
-                                if(r.emoji.name === "▶️"){ if(page2 * pageShowHaxR + pageShowHaxR < reactionsElement.reactionsMuch - 1){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page2 > 0){page2--;} }
-                                const reactionsEmbed = textCommand.reactionsShow(msg.guild, reactionsElement, page2, pageShowHaxR);
-                                book.edit({embeds: [reactionsEmbed]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('end', () => {
-                                if(!book.deleted){
-                                    book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
-                                    book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
-                                }
-                            });
-                        });
+                        msg.reply('本指令已棄用。使用斜線指令(/auto-reply)以使用相同功能!')
                         break;
                         //#endregion
 
@@ -1352,17 +898,9 @@ client.on('messageCreate', async msg =>{
                     case 'play':
                     case '播放':
                     case 'p':
-                        //點歌&播放
-                        music.playMusic(guildMusicList, msg, contents, client.user);
-                        break;
-
                     case 'replay':
                     case 'rp':
                     case '重播':
-                        //重播
-                        music.replayMusic(guildMusicList, msg);
-                        break;
-
                     case 'np':
                     case 'n':
                     case '歌曲資訊':
@@ -1371,10 +909,6 @@ client.on('messageCreate', async msg =>{
                     case 'i':
                     case 'nowplaying':
                     case 'info':
-                        //歌曲資訊
-                        music.nowPlaying(guildMusicList, msg);
-                        break;
-
                     case 'queue':
                     case 'list':
                     case 'q':
@@ -1382,96 +916,32 @@ client.on('messageCreate', async msg =>{
                     case '列表':
                     case '歌曲清單':
                     case '歌曲列表':
-                        //#region 清單
-                        if(!guildMusicList){return msg.reply(`這份清單似乎是空的。我無法讀取其中的資料。`);}
-                        if(guildMusicList.song.length <= 0){return msg.reply(`這份清單似乎是空的。我無法讀取其中的資料。`);}
-
-                        const pageShowHax = 6;
-                        let page = 0;
-
-                        const levels = music.queuePlay(guildMusicList, page, pageShowHax);
-                        msg.channel.send({embeds: [levels]}).then(book => {
-                            book.react("◀️");
-                            book.react("▶️");
-    
-                            const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
-                            const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
-                            
-                            collector.on('collect', async r => {
-                                if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildMusicList.song.length - 1){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
-                                const levels = music.queuePlay(guildMusicList, page, pageShowHax);
-                                book.edit({embeds: [levels]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('remove', async r => {
-                                if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < guildMusicList.song.length - 1){page++;} }
-                                if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
-                                const levels = music.queuePlay(guildMusicList, page, pageShowHax);
-                                book.edit({embeds: [levels]});
-                                collector.resetTimer({ time: 60 * 1000 });
-                            });
-                            
-                            collector.on('end', () => {
-                                if(!book.deleted){
-                                    book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
-                                    book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
-                                }
-                            });
-                        });
-                        break;
-                        //#endregion
-                    
                     case 'stop':
                     case 'pause':
                     case '暫停':
                     case '停止':
-                        //暫停
-                        music.pause(guildMusicList, msg);
-                        break;
-                    
                     case 'loop':
                     case 'l':
                     case '循環':
                     case 'repeat':
-                        //循環
-                        music.loop(guildMusicList, msg);
-                        break;
-
                     case 'looplist':
                     case 'll':
                     case '清單循環':
                     case 'loopqueue':
                     case 'lq':
-                        //清單循環
-                        music.loopList(guildMusicList, msg);
-                        break;
-
                     case 'random':
                     case 'rd':
                     case '隨機':
-                        music.random(guildMusicList, msg);
-                        break;
-
                     case 'skip':
                     case 's':
                     case '跳歌':
                     case '跳過':
                     case '下一首':
                     case 'next':
-                        //中斷
-                        music.skip(guildMusicList, msg);
-                        break;
-
                     case '移除':
                     case 'remove':
                     case 'rm':
                     case 'r':
-                        //移除
-                        music.removeMusic(contents[1], contents[2], guildMusicList, msg, client.user, defprem);
-                        break;
-
                     case 'clearqueue':
                     case 'clearlist':
                     case 'clear':
@@ -1481,18 +951,13 @@ client.on('messageCreate', async msg =>{
                     case 'cl':
                     case 'cq':
                     case 'c':
-                        //跳過整個清單
-                        music.skipList(guildMusicList, msg);
-                        break;
-
                     case 'dc':
                     case 'd':
                     case 'leave':
                     case '退出':
                     case '斷開':
                     case 'disconnect':
-                        //退出並清空
-                        music.disconnect(msg);
+                        msg.reply('本指令已棄用。使用斜線指令(/music)以使用相同功能!')
                         break;
 
                     case 'help':
@@ -1822,235 +1287,13 @@ client.on('messageCreate', async msg =>{
                     
                     case 'levels':
                     case 'level':
-                        //#region 等級設定
-                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
-                            return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
-                        }
-                        const levelsElement = guildInformation.getGuild(msg.guild.id);
-                        switch(commands[1]){
-                            case 'open':
-                                levelsElement.levels = true;
-                                msg.channel.send("已開啟等級系統");
-                                break;
-
-                            case 'close':
-                                levelsElement.levels = false;
-                                msg.channel.send("已關閉等級系統");
-                                break;
-
-                            case 'reset':
-                                msg.channel.send("確定要清除所有人的經驗值嗎？此動作無法復原。\n輸入\`yes\`即清除資料，否則取消清除");
-                                const collecteda = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responser = collecteda.first();
-                                await msg.channel.sendTyping();
-                                if (!responser) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (['yes'].includes(responser.content.toLowerCase())){
-                                    levelsElement.clearExp();
-                                    msg.channel.send("已歸零所有人的經驗值。");
-                                }else{
-                                    msg.channel.send("已取消歸零所有人的經驗值。");
-                                }
-                                break;
-                            
-                            case 'levelupreact':
-                            case 'LevelUpReact':
-                            case 'levelUpReact':
-                            case 'LevelUPReact':
-                                msg.channel.send('請選擇設定模式：\n' +
-                                `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息\n` + 
-                                `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
-                                `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
-                                `\`NoReact\` - 不發送升等訊息\n` +
-                                `請直接輸入以上4種關鍵字作為設定，不需要輸入前輟。`);
-                                const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const response = collected.first();
-                                await msg.channel.sendTyping();
-                                if (!response) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (!['messagechannel', 'specifychannel', 'dmchannel', 'NoReact'].includes(response.content.toLowerCase())) 
-                                    return response.reply(`設定失敗：輸入非指定關鍵字，請重新設定`);
-                                
-                                if(['messagechannel', 'dmchannel', 'NoReact'].includes(response.content.toLowerCase())){
-                                    if(['messagechannel'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "MessageChannel";}
-                                    if(['dmchannel'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "DMChannel";}
-                                    if(['NoReact'].includes(response.content.toLowerCase())) {levelsElement.levelsReact = "NoReact";}
-                                    return msg.channel.send(`設定完成！已將升等訊息發送模式改為 ${levelsElement.levelsReact}。`);
-                                }else{
-                                    msg.channel.send('請輸入要設定的頻道的ID(例如：123456789012345678)。');
-                                    const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                    const responseSC = collected2.first();
-                                    await msg.channel.sendTyping();
-                                    if (!responseSC) return response.reply(`設定失敗：輸入逾時，請重新設定`);
-                                    if(!textCommand.ChannelResolveFromMention(client, responseSC.content)){
-                                        return responseSC.reply(`設定失敗：該頻道不存在，請重新設定`);
-                                    }
-                                    if(textCommand.ChannelResolveFromMention(client, responseSC.content).type !== "GUILD_TEXT"){
-                                        return responseSC.reply(`設定失敗：該頻道不是文字頻道，請重新設定`);
-                                    }
-                                        levelsElement.levelsReactChannel = responseSC.content;
-                                        levelsElement.levelsReact = 'SpecifyChannel';
-                                        const settingchannel = textCommand.ChannelResolveFromMention(client, responseSC.content);
-                                        msg.channel.send(`設定完成！\n已將升等訊息發送模式改為 ${levelsElement.levelsReact}\n` +
-                                        ` 頻道指定為 ${settingchannel}(ID: ${settingchannel.id})`);
-                                }
-                                break;
-
-                            default:
-                                msg.channel.send(`請在 \`${defprea}levels\` 後方使用指定關鍵字：\`open\`、\`close\`、\`reset\` 或 \`levelUpReact\``);
-                                break;
-                        
-                            case undefined:
-                                var levelsisworking;
-                                if(levelsElement.levels){levelsisworking = `啟動`}
-                                else{levelsisworking = "停用"}
-                                if(levelsElement.levelsReactChannel){
-                                    settingchannel = textCommand.ChannelResolveFromMention(client, levelsElement.levelsReactChannel);
-                                }
-                                else{settingchannel = undefined;}
-                                lcm = `升級訊息發送頻道 - ${settingchannel} `;
-                                if(settingchannel){lcm += `\`(ID: ${settingchannel.id})\``;}
-                                msg.channel.send('目前的設定：\n' +
-                                `等級系統 - ${levelsisworking}\n` + 
-                                `升級訊息發送模式 - \`${levelsElement.levelsReact}\`\n` + 
-                                `${lcm} (僅在模式為\`SpecifyChannel\`時有用)\n\n` +
-                                `詳細說明請查看 \`${defprea}help levels\``);
-                                break;
-                        }
+                        msg.reply('本指令已棄用。使用斜線指令(/levels)以使用相同功能!')
                         break;
                         //#endregion
 
                     case 'reactions': 
                     case 'reaction': 
-                        //#region 自訂回應
-                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
-                            return msg.channel.send("無法執行指令：權限不足：需要管理員權限");
-                        }
-                        const reactionsElement = guildInformation.getGuild(msg.guild.id);
-                        switch(commands[1]){
-                            case undefined:
-                                msg.channel.send(`詳細系統說明請查看 \`${defprea}help reactions\``);
-                            
-                            case 'show': //show
-                                if(reactionsElement.reactionsMuch <= 0) return msg.channel.send('這個伺服器並沒有設定專屬反應。');
-                                const pageShowHax = 12;
-                                let page = 0;
-
-                                const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
-                                msg.channel.send({embeds: [reactionsEmbed]}).then(book => {
-                                    book.react("◀️");
-                                    book.react("▶️");
-            
-                                    const filter = (reaction, user) => !user.bot && (reaction.emoji.name === "◀️" || reaction.emoji.name === "▶️");
-                                    const collector = book.createReactionCollector({filter, time: 60 * 1000 , dispose: true});
-                                    
-                                    collector.on('collect', async r => {
-                                        if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < reactionsElement.reactionsMuch - 1){page++;} }
-                                        if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
-                                        const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
-                                        book.edit({embeds: [reactionsEmbed]});
-                                        collector.resetTimer({ time: 60 * 1000 });
-                                    });
-                                    
-                                    collector.on('remove', async r => {
-                                        if(r.emoji.name === "▶️"){ if(page * pageShowHax + pageShowHax < reactionsElement.reactionsMuch - 1){page++;} }
-                                        if(r.emoji.name === "◀️"){ if(page > 0){page--;} }
-                                        const reactionsEmbed = textCommand.authReactionsShow(msg.guild, reactionsElement, page, pageShowHax);
-                                        book.edit({embeds: [reactionsEmbed]});
-                                        collector.resetTimer({ time: 60 * 1000 });
-                                    });
-                                    
-                                    collector.on('end', () => {
-                                        if(!book.deleted){
-                                            book.reactions.cache.get('▶️').users.remove().catch(err => console.log(err));
-                                            book.reactions.cache.get('◀️').users.remove().catch(err => console.log(err));
-                                        }
-                                    });
-                                });
-                                break;
-                                
-                            case 'add':
-                                //輸入要起反應的文字
-                                msg.channel.send(`請在下面直接輸入要起反應的文字，例如：\`快樂光線\` 或者輸入cancel以取消：`);
-                                const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const response = collected.first();
-                                await msg.channel.sendTyping();
-                                //檢測
-                                if (!response) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (['cancel'].includes(response.content.toLowerCase())) 
-                                    return response.reply(`設定結束：取消設定`);
-                                if (!response.content) 
-                                    return response.reply(`設定失敗：請輸入文字。`);
-                                if (response.content.length > 20) 
-                                    return response.reply(`設定失敗：文字過長，請縮短文字長度至20字以下。`);
-                                //是否為指令
-                                let responseIsprefix = prefixED.findIndex(element => prefix[element].Value === response.content.substring(0, prefix[element].Value.length));
-                                var responseIsCommand = false;
-                                if(responseIsprefix >= 0){  responseIsCommand = true; }
-                                if (responseIsCommand) 
-                                    return response.reply(`設定失敗：請不要使用包含指令的文字。`);
-                                if(reactionsElement.findReaction(response.content) >= 0)
-                                    return response.reply(`設定失敗：該關鍵字已被使用，請重新設定。`);
-
-                                //輸入機器人要回應的文字
-                                msg.channel.send('請在下面直接輸入機器人要回應的文字，例如：\`(/  ≧▽≦)/===============)))\` 或者輸入cancel以取消：');
-                                const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responseSC = collected2.first();
-                                await msg.channel.sendTyping();
-                                //檢測
-                                if (!responseSC) return response.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (['cancel'].includes(responseSC.content.toLowerCase())) 
-                                    return responseSC.reply(`設定結束：取消設定`);
-                                if (!responseSC.content) 
-                                    return responseSC.reply(`設定失敗：請輸入文字。`);
-                                if (responseSC.content.length > 200) 
-                                    return responseSC.reply(`設定失敗：文字過長，請縮短文字長度至200字以下。`);
-                                //是否為指令
-                                let responseSCIsprefix = prefixED.findIndex(element => prefix[element].Value === responseSC.content.substring(0, prefix[element].Value.length));
-                                var responseSCIsCommand = false;
-                                if(responseSCIsprefix >= 0){  responseSCIsCommand = true; }
-                                if (responseSCIsCommand) 
-                                    return responseSC.reply(`設定失敗：請不要使用包含指令的文字。`);
-                                
-                                reactionsElement.addReaction(response.content, responseSC.content);
-                                msg.channel.send(`設定完成，已新增已下反應：\n\n訊息：\`${response.content}\`\n回覆：\`${responseSC.content}\``);
-                                break;
-
-                            case 'remove': 
-                                if(reactionsElement.reactionsMuch <= 0){
-                                    return msg.channel.send('這個伺服器並沒有設定專屬自動回應。請使用 \`' + defprea + 'reactions add\` 新增。');
-                                }
-                                msg.channel.send(`請在下面直接輸入要刪除的ID(用 \`${defprea}reactions show\` 查詢)，或者輸入cancel以取消：`);
-                                const collected3 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const response2 = collected3.first();
-                                await msg.channel.sendTyping();
-                                if (!response2) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (['cancel'].includes(response2.content.toLowerCase())) 
-                                    return response2.reply(`設定結束：取消設定`);
-                                const successed = reactionsElement.deleteReaction(parseInt(response2));
-                                if(successed.s) msg.channel.send(`成功移除反應：\n\n訊息：\`${successed.r}\`\n回覆：\`${successed.p}\``);
-                                else msg.channel.send('無法找到該ID的反應。請確認是否為存在的ID。')
-                                break;
-
-                            case 'reset':
-                                if(reactionsElement.reactionsMuch <= 0){
-                                    return msg.channel.send('目前伺服器自動回應清單是空的。請使用 \`' + defprea + 'reactions add\` 新增。');
-                                }
-                                msg.channel.send("確定要清除所有自動回應嗎？此動作無法復原。\n輸入\`yes\`即清除資料，否則取消清除");
-                                const collectedrs = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responserrs = collectedrs.first();
-                                await msg.channel.sendTyping();
-                                if (!responserrs) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (['yes'].includes(responserrs.content.toLowerCase())){
-                                    reactionsElement.clearReaction();
-                                    msg.channel.send("已清除所有自動回應。");
-                                }else{
-                                    msg.channel.send("已取消清除所有自動回應。");
-                                }
-                                break;
-
-                            default:
-                                msg.channel.send(`請在 \`${defprea}reactions\` 後方使用指定關鍵字：\`show\`、\`add\` 或 \`remove\`。`);
-                                break;
-                        }
+                        msg.reply('本指令已棄用。使用斜線指令(/auto-reply)以使用相同功能!')
                         break;
                         //#endregion
 
