@@ -125,7 +125,10 @@ client.on('interactionCreate', async interaction => {
     guildInformation.updateGuild(interaction.guild);
 
     if (!interaction.isCommand()) return;
-    console.log("isInteraction: isCommand: " + interaction.commandName + ", id: " + interaction.commandId)
+    let commandName = "";
+    if(!!interaction.options.getSubcommand(false)) commandName = interaction.commandName + "/" + interaction.options.getSubcommand(false);
+    else commandName = interaction.commandName;
+    console.log("isInteraction: isCommand: " + commandName + ", id: " + interaction.commandId)
 	const command = client.commands.get(interaction.commandName);
 
     //#region 等級系統
@@ -519,7 +522,8 @@ client.on('messageCreate', async msg =>{
                     case '匿名訊息':
                     case 'anonymous':
                     case 'a':
-                        msg.reply('本指令已棄用。使用斜線指令(/anonymous)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/anonymous)來取代這裡原有的功能!')
                         break;
                     
                     case '猜拳':
@@ -617,7 +621,8 @@ client.on('messageCreate', async msg =>{
                     case 'info':
                     case 'information':
                     case 'i':
-                        msg.reply('本指令已棄用。使用斜線指令(/information)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/information)來取代這裡原有的功能!')
                         break;
                     
                     case 'rank':
@@ -628,7 +633,8 @@ client.on('messageCreate', async msg =>{
                     case 'l':
                     case 'noDM':
                     case 'DM':
-                        msg.reply('本指令已棄用。使用斜線指令(/levels)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/levels)來取代這裡原有的功能!')
                         break;
                     
                     case 'poll':
@@ -637,7 +643,8 @@ client.on('messageCreate', async msg =>{
                     case 'sumpoll':
                     case '統計':
                     case 'sp':
-                        msg.reply('本指令已棄用。使用斜線指令(/poll)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/poll)來取代這裡原有的功能!')
                         break;
                         //#endregion
 
@@ -716,7 +723,8 @@ client.on('messageCreate', async msg =>{
                     case '反應':
                     case 'reaction':
                     case 're':
-                        msg.reply('本指令已棄用。使用斜線指令(/auto-reply)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/auto-reply)來取代這裡原有的功能!')
                         break;
                         //#endregion
 
@@ -724,152 +732,8 @@ client.on('messageCreate', async msg =>{
                     case 'h':
                     case '幫助':
                         //#region 幫助清單
-
-                        const embedhelp = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTimestamp()
-                            .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-
-                        switch(cmd[1]){        
-                            // TODO: 整理幫助清單，整合並減少數量
-                            
-                            case '我的出生':
-                            case '我的生日':
-                            case '生日':
-                            case 'birthday':
-                            case 'birth':
-                            case 'b':
-                                msg.channel.send({embeds: [textCommand.helpTimeBirth(defpre, embedhelp)]});
-                                break;
-                            
-                            case '現在時間':
-                            case '現在時刻':
-                            case 'now':
-                            case 'n':
-                                msg.channel.send({embeds: [textCommand.helpTimeNow(defpre, embedhelp)]});
-                                break;
-
-                            case '計時器':
-                            case 'timer':
-                            case 't':
-                                msg.channel.send({embeds: [textCommand.helpTimer(defpre, embedhelp)]});
-                                break;
-                            
-                            case '我的頭像':
-                            case '頭像':
-                            case 'myavatar':
-                            case 'avatar':
-                            case 'av':
-                            case 'ma':
-                                msg.channel.send({embeds: [textCommand.helpMyAvatar(defpre, embedhelp)]});
-                                break;
-                                
-                            case '骰子':
-                            case 'dice':
-                            case 'd':
-                                msg.channel.send({embeds: [textCommand.helpDice(defpre, embedhelp)]});
-                                break;
-
-                            case '猜拳':
-                            case 'jyanken':
-                            case '剪刀':
-                            case '石頭':
-                            case '布':
-                            case 'scissors':
-                            case 'paper':
-                            case 'stone':
-                                msg.channel.send({embeds: [textCommand.helpJyanken(defpre, embedhelp)]});
-                                break;
-
-                            case '匿名訊息':
-                            case '匿名':
-                            case 'anonymous':
-                            case 'a':                                
-                                msg.channel.send({embeds: [textCommand.helpAnonymous(defpre, embedhelp)]});
-                                break;
-
-                            case '生日快樂':
-                            case 'happybirthday':
-                            case 'hbd':
-                            case 'HBD':
-                                msg.channel.send({embeds: [textCommand.helpHBD(defpre, embedhelp)]});
-                                break;
-                                
-                            case '數數字':
-                            case 'cn':
-                            case 'nc':
-                            case 'numbering':
-                            case 'countnumber':
-                            case 'numbercount':
-                                msg.channel.send({embeds: [textCommand.helpCountNumber(defpre, embedhelp)]});
-                                break;
-
-                            case 'record':
-                            case 'rc':
-                            case '回顧':
-                            case '紀錄':
-                                msg.channel.send({embeds: [textCommand.helpRecord(defpre, embedhelp)]});
-                                break;
-
-                            case '資訊':
-                            case 'information':
-                            case 'info':
-                            case 'i':
-                                msg.channel.send({embeds: [textCommand.helpInformation(defpre, embedhelp, client.user)]});
-                                break;
-
-                            case '搜尋':
-                            case 's':
-                            case 'dc':
-                            case 'dailycharacters':
-                            case '每日單字':
-                            case 'search':
-                                msg.channel.send({embeds: [textCommand.helpCharacters(defpre, embedhelp)]});
-                                break;
-                            
-                            case 'reactions':
-                            case '反應':
-                            case 'reaction':
-                            case 're':
-                                msg.channel.send({embeds: [textCommand.helpReaction(defpre, embedhelp, defprea)]});
-                                break;
-                                
-                            case 'poll':
-                            case '投票':
-                            case 'p':
-                            case 'sumpoll':
-                            case '統計':
-                            case 'sp':
-                                msg.channel.send({embeds: [textCommand.helpPoll(defpre, embedhelp)]});
-                                break;
-
-                            case 'rank':
-                            case '等級':
-                            case 'r':
-                            case 'levels':
-                            case '排行':
-                            case 'l':
-                            case 'noDM':
-                            case 'DM':
-                                msg.channel.send({embeds: [textCommand.helpLevels(defpre, defprea, embedhelp, textCommand.messageCooldown)]});
-                                break;
-
-                            case 'word':
-                            case '文字':
-                                msg.channel.send({embeds: [textCommand.helpWord(embedhelp)]});
-                                break;
-                            
-                            case '反應':
-                            case 'action':
-                                msg.channel.send({embeds: [textCommand.helpAction(embedhelp)]});
-                                break;
-
-                            // TODO: 補完單字系統的幫助清單
-                        
-                            default:
-                                msg.channel.send({embeds: [textCommand.help(defpre, defprea, defprem, embedhelp)]});
-                                break;
-                        }
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/help)來取代這裡原有的功能!')
                         break;
                         //#endregion
                 }
@@ -891,7 +755,6 @@ client.on('messageCreate', async msg =>{
                 let content = msg.content.substring(prefix[2].Value.length);
                 //contents[0] = 指令,contents[1] = 參數
                 const contents = content.split(splitText);
-                const guildMusicList = musicList.get(msg.guild.id);
                 content = content.substring(contents[0].length + 1);
 
                 switch(contents[0]){
@@ -964,109 +827,8 @@ client.on('messageCreate', async msg =>{
                     case 'h':
                     case '幫助':
                         //#region 幫助清單
-                        const embedhelp = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTimestamp()
-                            .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-
-                        switch(content){        
-                            case '播放':
-                            case 'play':
-                            case 'p':
-                                msg.channel.send({embeds: [music.helpPlay(embedhelp, defprem)]});
-                                break;
-                            
-                            case '斷開':
-                            case '退出':
-                            case 'dc':
-                            case 'd':
-                            case 'disconnect':
-                            case 'leave':
-                                msg.channel.send({embeds: [music.helpDisconnect(embedhelp, defprem)]});
-                                break;
-                                
-                            case '歌曲資訊':
-                            case 'nowplaying':
-                            case 'np':
-                            case 'i':
-                            case 'info':
-                            case 'information':
-                            case '資訊':
-                                msg.channel.send({embeds: [music.helpNowPlaying(embedhelp, defprem)]});
-                                break;
-                                
-                            case '歌曲列表':
-                            case '列表':
-                            case 'queue':
-                            case 'q':
-                            case '歌曲清單':
-                            case '清單':
-                            case 'list':
-                                msg.channel.send({embeds: [music.helpQueue(embedhelp, defprem)]});
-                                break;
-                                
-                            case '暫停':
-                            case 'pause':
-                            case 'stop':
-                                msg.channel.send({embeds: [music.helpPause(embedhelp, defprem)]});
-                                break;
-                                
-                            case '跳過':
-                            case '跳歌':
-                            case '下一首':
-                            case 'next':
-                            case 'skip':
-                            case 's':
-                                msg.channel.send({embeds: [music.helpSkip(embedhelp, defprem)]});
-                                break;
-
-                            case 'random':
-                            case 'rd':
-                            case '隨機':
-                                msg.channel.send({embeds: [music.helpRandom(embedhelp, defprem)]});
-                                break;
-                                
-                            case '移除':
-                            case 'rm':
-                            case 'remove':
-                                msg.channel.send({embeds: [music.helpRemove(embedhelp, defprem)]});
-                                break;
-                                
-                            case '重播':
-                            case 'replay':
-                            case 'rp':
-                                msg.channel.send({embeds: [music.helpReplay(embedhelp, defprem)]});
-                                break;
-                                
-                            case '循環':
-                            case 'loop':
-                            case 'l':
-                            case 'repeat':
-                                msg.channel.send({embeds: [music.helpLoop(embedhelp, defprem)]});
-                                break;
-
-                            case 'looplist':
-                            case 'll':
-                            case 'loopqueue':
-                            case 'lq':
-                                msg.channel.send({embeds: [music.helpLoopList(embedhelp, defprem)]});
-                                break;
-                                
-                            case '清空清單':
-                            case '清空列表':
-                            case '清空':
-                            case 'clearlist':
-                            case 'clearqueue':
-                            case 'cl':
-                            case 'cq':
-                            case 'c':
-                                msg.channel.send({embeds: [music.helpClearQueue(embedhelp, defprem)]});
-                                break;
-
-                            default:
-                                msg.channel.send({embeds: [music.help(embedhelp, defprem, defpre, defprea)]});
-                                break;
-                        }
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/help music)來取代這裡原有的功能!')
                         //#endregion
                         break;
                 
@@ -1287,13 +1049,15 @@ client.on('messageCreate', async msg =>{
                     
                     case 'levels':
                     case 'level':
-                        msg.reply('本指令已棄用。使用斜線指令(/levels)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/levels)來取代這裡原有的功能!')
                         break;
                         //#endregion
 
                     case 'reactions': 
                     case 'reaction': 
-                        msg.reply('本指令已棄用。使用斜線指令(/auto-reply)以使用相同功能!')
+                    msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                    '但請別擔心! 我們已經準備新的斜線指令(/auto-reply)來取代這裡原有的功能!')
                         break;
                         //#endregion
 
@@ -1366,50 +1130,15 @@ client.on('messageCreate', async msg =>{
 
                             //#region h/levels
                             case 'levels':
-                                const embed5 = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單/levels(等級系統)：前輟[${defprea}](需要管理員權限)`)
-                                    .setDescription(`關於levles：專屬於伺服器的個人等級排名系統\n` +
-                                                    `以下列出有關指令[\`${defprea}levels\`]可以做的事，本權限全程需要管理員權限\n` + 
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField(`${defprea}levels`, `顯示目前的設定檔`)
-                                    .addField(`${defprea}levels open`, '開啟等級系統')
-                                    .addField(`${defprea}levels close`, '關閉等級系統')
-                                    .addField(`${defprea}levels reset`, '將所有人的等級系統歸零')
-                                    .addField(`${defprea}levels levelUpReact`, '設定升等時的回應方式，請依照指示操作')
-                                    .addField('回應模式說明', 
-                                    `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息(預設模式)\n` + 
-                                    `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
-                                    `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
-                                    `\`NoReact\` - 不發送升等訊息\n`)
-                                    .addField('頻道ID是什麼?', '\"使用者設定->進階->開啟開發者模式\"\n' +
-                                                '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
-                                                '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
-                                                '通常頻道ID會長得像這樣：123456789012345678')
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                                `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                msg.channel.send({embeds: [embed5]});
+                                msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                                    '但請別擔心! 我們已經準備新的斜線指令(/levels)來取代這裡原有的功能!')
                                 break;
                                 //#endregion
 
                             //#region h/reactions
                             case 'reactions':
-                                const embed6 = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單/reactions(自動回應系統)：前輟[${defprea}](需要管理員權限)`)
-                                    .setDescription(`關於reactions：專屬於伺服器的機器人自動回應系統\n` +
-                                                    `以下列出有關指令[\`${defprea}reactions\`]可以做的事，本權限全程需要管理員權限\n` + 
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField(`${defprea}reactions`, `顯示目前的回應清單`)
-                                    .addField(`${defprea}reactions show`, '顯示目前的回應清單')
-                                    .addField(`${defprea}reactions add`, '新增回應的項目')
-                                    .addField(`${defprea}reactions remove`, `刪除特定回應的項目(項目ID請用 \`${defprea}reactions show\` 查詢)`)
-                                    .addField(`${defprea}reactions reset`, '清空所有回應項目')
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                                `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                msg.channel.send({embeds: [embed6]});
+                                msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                                    '但請別擔心! 我們已經準備新的斜線指令(/auto-reply)來取代這裡原有的功能!')
                                 break;
                                 //#endregion
 
@@ -1461,43 +1190,6 @@ client.on('messageCreate', async msg =>{
                         }else{
                             msg.channel.send(msg.content.substring(prefix[6].Value.length + text[0].length + 1));
                         }
-
-                    case "CTE": //channel ID to send
-                    case "cte":
-                    case 'e':
-                        //#region 指定頻道發言
-                        if(!text[1]) return;
-                        if(msg.channel.isThread()) return;
-                        const member = await msg.guild.members.fetch(client.user.id);
-                        if(!member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS)) return;
-
-                        const webhooks = await msg.channel.fetchWebhooks();
-		                let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
-                        console.log(webhook)
-                        if(!webhook) {
-                            webhook = await msg.channel.createWebhook(msg.member.displayName, {
-                                avatar: msg.author.displayAvatarURL({dynamic: true})
-                            })
-                        }
-                        let emoji;
-                        if(!Number.isNaN(parseInt(text[1]))){
-                            emoji = client.emojis.cache.find(emoji => emoji.id === parseInt(text[1]));
-                        }else{
-                            emoji = client.emojis.cache.find(emoji => emoji.name.includes(text[1]));
-                        }
-                        webhook.edit({
-                            name: msg.member.displayName,
-                            avatar: msg.author.displayAvatarURL({dynamic: true})
-                        })
-                            .then(webhook => webhook.send(emoji.toString()))
-                            .catch(console.error);
-                        webhook.edit({
-                            name: msg.member.displayName,
-                            avatar: msg.author.displayAvatarURL({dynamic: true})
-                        })
-                        
-                        break;
-                        //#endregion
                     
                     case "MTD": //Message ID to Delete
                     case "mtd":
@@ -1595,7 +1287,7 @@ client.on('messageCreate', async msg =>{
                     
                     case "SendInformationToEveryOwner": //Send Information To Every Owner
                         //#region 向伺服器擁有者發言
-                        const chance = "YES";
+                        const chance = "NO";
                         if(chance === "YES"){
                             guildInformation.guilds.forEach(async (element) => {
                                 const ownerId = client.guilds.cache.get(element.id).ownerId;
@@ -1615,7 +1307,7 @@ client.on('messageCreate', async msg =>{
                         const remindmessaged = await msg.channel.send(
                             "\`cts\`, \`mts\`, \`cmtd\`, \`save\`, \`lo\`, \`lou\`, \`louj\`, \`cl\`"
                         );
-                        remindmessaged.delete({timeout: 5 * 1000});
+                        setTimeout(() => remindmessaged.delete(), 5 * 1000);
                         break;
                 }
                 break;

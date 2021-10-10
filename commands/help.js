@@ -29,7 +29,7 @@ module.exports = {
         if (option === 'basic') {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
-                .setTitle(`指令幫助清單/basic(基本說明))`)
+                .setTitle(`指令幫助清單/basic(基本說明)`)
                 .setDescription(`關於${interaction.client.user.tag}的基本功能`)
                 .addField(`基本指令`,
                     "\`/account birthday [user:用戶]\` - 找尋用戶創建帳號的日子\n" + 
@@ -44,17 +44,19 @@ module.exports = {
                     "\`/dice <side:面數> [count:顆數]\` - 丟一顆骰子，結果將隨機產生\n" + 
                     "\`/happy-birthday <user:用戶>\` - 發送生日快樂訊息給該用戶\n" + 
                     "\`/paper-scissors-stone <gesture:出拳>\` - 和機器人猜個拳\n")
-                .addField(`系統指令`, 
+                .addField(`其他系統性的指令`, 
                     "以下指令的詳細說明，可以在/help後選擇其他模式以取得說明\n\n" + 
                     "\`/levels\` - 等級排行系統\n" + 
                     "\`/auto-reply\` - 自動回應系統\n" + 
                     "\`/music\` - 音樂系統\n" + 
                     "\`/response\` - 機器人回應\n" + 
-                    "\`/words\` - 每日單字系統\n")
+                    "\`/words\` - 每日單字系統")
                 .addField("表情符號轉換功能", 
                     "如果想要在訊息中加入動畫/別群的表情符號，但是卻沒有Discord-Nitro，\n" + 
                     "只要輸入表情符號的名稱，機器人就會將你的發言自動轉換成包含表情符號的訊息!\n" + 
                     "例如: 只要輸入 \`:acidbot:\`，就會自動將訊息轉換轉換成 <:acidbot:896709436163375114>")
+                .addField("內建關鍵字反應功能", 
+                    "部分關鍵字機器人也會反應\n分別為: \`笑死\`、\`晚安\`、\`快樂光線\`、\`成功\`、\`龜雞奶\`")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
