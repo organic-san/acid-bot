@@ -8,8 +8,7 @@ module.exports = {
         .addSubcommand(opt =>
             opt.setName('happybeam')
             .setDescription('快樂光線(/  ≧▽≦)/=====)')
-        )
-        .addSubcommand(opt =>
+        ).addSubcommand(opt =>
             opt.setName('goodnight')
             .setDescription('晚安~')
         ).addSubcommand(opt => 

@@ -55,7 +55,7 @@ module.exports = {
             )
         ).addSubcommand(opt =>
             opt.setName('clearqueue')
-            .setDescription('清空整個波放清單')
+            .setDescription('清空整個播放清單')
         ).addSubcommand(opt =>
             opt.setName('disconnect')
             .setDescription('讓機器人退出語音')

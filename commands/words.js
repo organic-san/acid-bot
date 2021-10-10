@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('單字列表')
         .addSubcommand(opt =>
             opt.setName('searth')
-            .setDescription('搜尋英文單字的中文涵意，其中單字列表取自台灣測驗中心')
+            .setDescription('搜尋英文單字的中文涵意')
             .addStringOption(opt => 
                 opt.setName('word')
                 .setDescription('所要查詢的英文單字')

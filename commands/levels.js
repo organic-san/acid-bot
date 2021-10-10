@@ -22,9 +22,6 @@ module.exports = {
             opt.setName('no-dm')
             .setDescription('停用/啟用機器人私訊升等訊息')
         ).addSubcommand(opt =>
-            opt.setName('help')
-            .setDescription('關於等級系統的相關說明')
-        ).addSubcommand(opt =>
             opt.setName('open')
             .setDescription('開啟等級系統，僅限具有管理伺服器權限人員操作')
         ).addSubcommand(opt =>
@@ -167,37 +164,6 @@ module.exports = {
                 interaction.reply({content: `已關閉你在 **${interaction.guild.name}** 的私訊升等通知。`, ephemeral: true})
                     .catch(() => item.DM = false);
             }
-        } else if(interaction.options.getSubcommand() === 'help') {
-
-            const embed = new Discord.MessageEmbed()
-                .setColor(process.env.EMBEDCOLOR)
-                .setTitle(`指令幫助清單/levels(等級系統)`)
-                .setDescription(`關於等級系統: 專屬於伺服器的個人等級排名系統\n由發送訊息數量決定等級\n` +
-                    `<此為必填項> [此為選填項]`)
-                .addField("基本指令", 
-                    `\`/levels rank [user:用戶]\` - 查看自己或對象的等級\n` +
-                    `\`/levels ranking\` - 查看整個伺服器的排行\n` +
-                    `\`/levels noDM\` - 停止/開啟該伺服器中，給自己的的升等訊息私訊`)
-                .addField("需要伺服器管理權限的指令", 
-                    "\`/levels show\` - 顯示目前的設定檔\n" + 
-                    "\`/levels open\` - 開啟等級系統\n" + 
-                    "\`/levels close\` - 關閉等級系統\n" + 
-                    "\`/levels reset\` - 將所有人的等級系統歸零\n" + 
-                    "\`/levels level-up-react <mode:狀態> [channel:頻道]\` - 調整回應模式")
-                .addField('回應模式說明', 
-                    `\`MessageChannel\` - 在用戶發送訊息的頻道發送升等訊息(預設模式)\n` + 
-                    `\`SpecifyChannel\` - 在指定的頻道發送升等訊息\n` + 
-                    `\`DMChannel\` - 機器人會直接私訊用戶告知升等訊息\n` + 
-                    `\`NoReact\` - 不發送升等訊息\n`)
-                .addField('頻道ID是什麼?', '\"使用者設定->進階->開啟開發者模式\"\n' +
-                    '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
-                    '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
-                    '通常頻道ID會長得像這樣：123456789012345678')
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
-                interaction.reply({embeds: [embed]});
-        
         } else { 
             //權限
             if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)){ 

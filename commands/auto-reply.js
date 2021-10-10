@@ -9,9 +9,6 @@ module.exports = {
         .addSubcommand(opt =>
             opt.setName('show')
             .setDescription('顯示自動回應的列表')
-        ).addSubcommand(opt =>
-            opt.setName('help')
-            .setDescription('關於自動回應系統的相關說明')
         ).addSubcommand(opt => 
             opt.setName('add')
             .setDescription('新增自動回應的內容，僅限具有管理伺服器權限人員操作')
@@ -94,26 +91,6 @@ module.exports = {
                 }
             });
         
-        } else if (interaction.options.getSubcommand() === 'help') {
-            const embed = new Discord.MessageEmbed()
-            .setColor(process.env.EMBEDCOLOR)
-            .setTitle(`指令幫助清單/auto-reply(自動回應系統)`)
-            .setDescription(`關於自動回應系統: 可以讓機器人自動與成員互動。\n` +
-                `如果將自動回應的文自設定為 \`快樂光線\` :\n` +
-                `那麼，當用戶輸入 \`快樂光線\` 時，\n` +
-                `機器人將自動回應 \`(/  ≧▽≦)/==============))\`\n` +
-                `<此為必填項> [此為選填項]`)
-            .addField(`基本指令`, 
-                `\`/auto-reply show\` - 顯示機器人會自動回應的文字清單語查詢ID`)
-            .addField("需要伺服器管理權限的指令", 
-                "\`/auto-reply add <trigger-message:文字> <reply-message:文字>\` - 新增自動回應的項目\n" + 
-                "\`/auto-reply remove <auto-reply-id:數字>\` - 刪除特定回應的項目\n" + 
-                "\`/auto-reply reset\` - 清空所有回應項目")
-            .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                        `https://discord.gg/hveXGk5Qmz`)
-            .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
-            interaction.reply({embeds: [embed]});
-
         } else {
             //權限
             if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)){ 
