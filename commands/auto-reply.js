@@ -23,6 +23,12 @@ module.exports = {
                 opt.setName('reply-message')
                 .setDescription('在接收到訊息後所要做出的自動回應(上限200字)，例如: (/  ≧▽≦)/==============))')
                 .setRequired(true)
+            ).addIntegerOption(opt => 
+                opt.setName('mode')
+                .setDescription('要檢測的模式，完全相符需要輸入的文字100%和trigger-message，部分相符只需要輸入的文字中包含trigger-message')
+                .setRequired(true)
+                .addChoice("完全相符", 1)
+                .addChoice("部分相符", 2)
             )
         ).addSubcommand(opt => 
             opt.setName('remove')
@@ -121,18 +127,20 @@ module.exports = {
 
             const triggerMessage = interaction.options.getString('trigger-message');
             const replyMessage = interaction.options.getString('reply-message');
+            const mode = interaction.options.getInteger('mode');
             
             if (triggerMessage.length > 20) 
-                return interaction.reply({content: `設定失敗：文字過長，請縮短文字長度至20字以下。`, ephemeral: true});
+                return interaction.reply({content: `設定失敗: 文字過長，請縮短文字長度至20字以下。`, ephemeral: true});
             if(guildInformation.findReaction(triggerMessage) >= 0)
-                return interaction.reply({content: `設定失敗：該關鍵字已被使用，請重新設定。`, ephemeral: true});
+                return interaction.reply({content: `設定失敗: 該關鍵字已被使用，請重新設定。`, ephemeral: true});
 
-            if (replyMessage.length > 200) 
-                return interaction.reply({content: `設定失敗：文字過長，請縮短文字長度至200字以下。`, ephemeral: true});
+            if (replyMessage.length > 200)
+                return interaction.reply({content: `設定失敗: 文字過長，請縮短文字長度至200字以下。`, ephemeral: true});
             //是否為指令
             
-            guildInformation.addReaction(triggerMessage, replyMessage);
-            interaction.reply(`設定完成，已新增已下反應：\n\n訊息：\`${triggerMessage}\`\n回覆：\`${replyMessage}\``);
+            guildInformation.addReaction(triggerMessage, replyMessage, mode);
+            const set = mode > 1 ? "部分相符" : "完全相符";
+            interaction.reply(`設定完成，已新增已下反應: \n\n訊息: \`${triggerMessage}\`\n回覆: \`${replyMessage}\`\n模式: \`${set}\``);
 
         //移除
         } else if (interaction.options.getSubcommand() === 'remove') {
@@ -142,7 +150,8 @@ module.exports = {
                 return interaction.reply({content: '這個伺服器並沒有設定專屬自動回應。請使用 \`/auto-reply add\` 新增。', ephemeral: true});
             }
             const successed = guildInformation.deleteReaction(replyId);
-            if(successed.s) interaction.reply(`成功移除反應：\n\n訊息：\`${successed.r}\`\n回覆：\`${successed.p}\``);
+            const set = successed.m > 1 ? "部分相符" : "完全相符";
+            if(successed.s) interaction.reply(`成功移除反應: \n\n訊息: \`${successed.r}\`\n回覆: \`${successed.p}\`\n模式: \`${set}\``);
             else interaction.reply({content: '無法找到該ID的反應。請確認是否為存在的ID。', ephemeral: true})
 
         //重置
@@ -187,7 +196,8 @@ module.exports = {
         .setDescription(`#${page * pageShowHax + 1} ~ #${Math.min(page * pageShowHax + pageShowHax, element.reactionsMuch)}` + 
         ` / #${element.reactionsMuch}`);
     element.reaction.slice(page * pageShowHax, page * pageShowHax + pageShowHax).forEach(element => {
-        if(element) embed.addField(`ID: ${element.id}`, `訊息：${element.react}\n回覆：${element.reply}`, true);
+        const mode = element.mode > 1 ? "部分相符" : "完全相符";
+        if(element) embed.addField(`ID: ${element.id}`, `訊息: ${element.react}\n回覆: ${element.reply}\n模式: ${mode}`, true);
     })
 
     return embed;

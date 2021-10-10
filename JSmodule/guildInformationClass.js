@@ -192,12 +192,14 @@ class GuildInformation {
      * 
      * @param {string} word 要起反應的文字
      * @param {string} react 要回應的文字
+     * @param {number} mode 要回應的文字
      */ 
-    addReaction(word, react) {
+    addReaction(word, react, mode) {
         this.reaction.push({
             "id": this.reactionsCount,
             "react": word,
-            "reply": react 
+            "reply": react,
+            "mode": mode
         })
         this.reactionsCount++;
     }
@@ -208,9 +210,14 @@ class GuildInformation {
      */
      deleteReaction(Id) {
         const deletedReaction = this.reaction.findIndex(element => element.id == Id);
-        if(deletedReaction < 0) return {"s": false, "r": undefined, "p": undefined};
+        if(deletedReaction < 0) return {"s": false, "r": undefined, "p": undefined, "m": 0};
         else{
-            const removed = {"s": true, "r": this.reaction[deletedReaction].react, "p": this.reaction[deletedReaction].reply};
+            const removed = {
+                "s": true, 
+                "r": this.reaction[deletedReaction].react, 
+                "p": this.reaction[deletedReaction].reply,
+                "m": this.reaction[deletedReaction].mode
+            };
             this.reaction.splice(deletedReaction, 1);
             return removed;
         }
@@ -222,7 +229,9 @@ class GuildInformation {
      * @returns 反應ID or -1
      */
     findReaction(content) {
-        const index = this.reaction.findIndex(element => element.react === content);
+        const index = this.reaction.findIndex(element => 
+            (element.react === content && element.mode !== 2) || (content.includes(element.react)  && element.mode === 2)
+        );
         return index >= 0 ? this.reaction[index].id : index;
     }
 
