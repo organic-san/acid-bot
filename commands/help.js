@@ -33,7 +33,7 @@ module.exports = {
                 .setDescription(`關於${interaction.client.user.tag}的基本功能`)
                 .addField(`基本指令`,
                     "\`/account birthday [user:用戶]\` - 找尋用戶創建帳號的日子\n" + 
-                    "\`/account avatar [user:用戶] [size]:尺寸]\` - 產生用戶頭像的網址\n" + 
+                    "\`/account avatar [user:用戶] [size:尺寸]\` - 產生用戶頭像的網址\n" + 
                     "\`/information bot\` - 查詢我的資料\n" + 
                     "\`/information guild\` - 查詢伺服器的資料\n" + 
                     "\`/information user <user:用戶>\` - 查詢該用戶的資料\n" + 

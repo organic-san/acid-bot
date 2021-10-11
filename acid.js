@@ -61,7 +61,7 @@ client.on('ready', () =>{
     if(minutes < 10){minutes = '0' + minutes;}
     if(sec < 10){sec = '0' + sec;}
     console.log(`登入成功: ${client.user.tag} 於 ${month}/${date} ${hours}:${minutes}:${sec}`);
-    client.user.setActivity('%help'/*, { type: 'PLAYING' }*/);
+    client.user.setActivity('/help'/*, { type: 'PLAYING' }*/);
 
     fs.readFile("./data/guildInfo/guildlist.json", (err,word) => {
         if(err) throw err;
@@ -378,7 +378,7 @@ client.on('messageCreate', async msg =>{
 
         //#region 群外表情符號代為顯示功能
         const member = await msg.guild.members.fetch(client.user.id);
-        if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS)){
+        if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && !isCommand){
             if(!msg.channel.isThread()){
                 const notEmoji = msg.content.split(/:\w+:/);
                 const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
@@ -1231,8 +1231,8 @@ client.on('messageCreate', async msg =>{
                         abyss.main(msg);
                         break;
 
-                    case 'u':
-                        console.log(msg.author);
+                    case 't2':
+                        client.user.setAFK();
                         break;
                     
                     case 'lo':
@@ -1242,11 +1242,6 @@ client.on('messageCreate', async msg =>{
                     case 'lou':
                         us = guildInformation.getGuild(msg.guild.id);
                         console.log(us.users);
-                        break;
-
-                    case 'louj':
-                        us = guildInformation.getGuild(msg.guild.id);
-                        console.log(JSON.stringify(us, null, '\t'));
                         break;
 
                     case 'lu':
@@ -1359,27 +1354,26 @@ client.on('guildMemberRemove', member => {
 //#endregion
 
 //#region 機器人被加入、踢出觸發事件guildCreate、guildDelete
-client.on("guildCreate", guild2 => {
+client.on("guildCreate", guild => {
 
-    if(!guildInformation.has(guild2.id)){
-        const thisGI = new guild.GuildInformation(guild2, []);
+    if(!guildInformation.has(guild.id)){
+        const thisGI = new guild.GuildInformation(guild, []);
         guildInformation.addGuild(thisGI);
     }
     var a = 0;
-    console.log(`${client.user.tag} 加入了 ${guild2.name} (${guild2.id}) (新增事件觸發)`);
+    console.log(`${client.user.tag} 加入了 ${guild.name} (${guild.id}) (新增事件觸發)`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
-        channel.send(`${client.user.tag} 加入了 **${guild2.name}** (${guild2.id}) (新增事件觸發)`)
+        channel.send(`${client.user.tag} 加入了 **${guild.name}** (${guild.id}) (新增事件觸發)`)
     );
-    if(guild2.systemChannel){
-        guild2.systemChannel.send(`歡迎使用acid bot！使用斜線指令來操作我的力量！`).catch(err => console.log(err))
+    if(guild.systemChannel){
+        const l = client.user.tag;
+        guild.systemChannel.send(`歡迎使用${l.slice(1, l.length)}！使用斜線指令(/help)來查詢我的功能！`).catch(err => console.log(err))
     }
-    guild2.fetchOwner().then(owner => { 
-    owner.send(
-        `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild2.name}**！\n\n` + 
-        `使用指令 \`%help\` 查詢 ${client.user.tag} 的基本指令！\n` + 
-        `也可以使用 \`a^help\` 來查看專屬於管理系統的酷酷指令！\n` +
-        `例如可以使用 \`a^help levels\` 查看調整等級系統的方法，\n` +
-        `而 \`a^help joinMessage\` 則可以查看如何在有人進入時發送歡迎訊息！`); 
+    guild.fetchOwner().then(owner => { 
+        owner.send(
+            `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild.name}**！\n\n` + 
+            `我的功能可以使用/help來查詢！\n` + 
+            `例如投票、歡迎訊息、`); 
     }).catch(err => console.log(err));
     
  });
