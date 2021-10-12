@@ -205,6 +205,7 @@ module.exports = {
             member.roles.cache.forEach(role => {
                 if(role.id !== interaction.guild.id) roles += role.toString() + ' ';
             });
+            if(!roles) roles = "沒有身分組";
             const embed3 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${user.tag} 的資訊`)
