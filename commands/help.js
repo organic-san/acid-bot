@@ -71,15 +71,16 @@ module.exports = {
                     `即日起，只要在訊息中加入表情符號文字，機器人就會將其轉譯成表情符號!\n` +
                     `例如: \`:acidbot:\` => <:acidbot:896709436163375114>` +
                     `註: 需要賦予 管理webhook 權限`)
-                .addField("自動回應可以設定模式了!", 
-                    "\`/auto-reply add\` 中，新增名為 \`<mode:模式>\` 的變數:\n" + 
-                    "這代表可以選擇是否要完全與文字相符才會發出反應了!\n" + 
-                    "例如，模式設定為 \`部分相符\` 時，即使輸入 \`bot\` 也能觸發到回應 \`acid-bot\`\n" +
-                    "而先前設定的自動回應將統一設為 \`完全相符\` 模式。")
+                .addField("新增肥宅文體產生器!", 
+                    "\`/response fat-nerd-style-generator <text:內文>\`\n" + 
+                    "將自動轉換您輸入的言論，並轉譯成肥宅體\n" + 
+                    "是非常方便的功能。(燦笑")
+                .addField("剔除非斜線的指令", 
+                    "第一波清單為: 投票、等級排行相關、自動回應相關、資訊、匿名訊息、所有音樂相關。")
                 .addField('未來計畫', 
                     "目前將逐步剔除非斜線的指令\n" + 
-                    "第一波清單為: 投票、等級排行相關、自動回應相關、資訊、匿名訊息、所有音樂相關" +
-                    "以下指令尚未轉換至斜線指令，將於近日中進行: 歡迎訊息相關、踢出/停權用戶")
+                    "第二波清單預計為單字相關、回顧、ping、我的出生、我的頭像、生日快樂、骰子、猜拳。" +
+                    "以下指令尚未轉換至斜線指令，將於近日中進行: 歡迎訊息相關、踢出/停權用戶、數數字、計時器。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
@@ -170,7 +171,8 @@ module.exports = {
                 .addField("基本指令", 
                     `\`/response happybeam\` - 由機器人送你一道快樂光線======)\n` +
                     `\`/response goodnight\` - 晚上了，和你說晚安.:｡+゜｡\n` + 
-                    `\`/response up-crazy-night\` - 向上面的訊息貼上🐢🐔🥛\n`)
+                    `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n` +
+                    `\`/response fat-nerd-style-generator <text:內文>\` - 肥宅文體產生器!\n`)
                 .addField('🐢🐔🥛是什麼?', 'crazy night')
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
