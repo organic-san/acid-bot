@@ -114,6 +114,7 @@ client.on('interactionCreate', async interaction => {
 
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
+    //伺服器資料建立&更新
     if(!guildInformation.has(interaction.guild.id)){
         const thisGI = new guild.GuildInformation(interaction.guild, []);
         guildInformation.addGuild(thisGI);
@@ -125,11 +126,17 @@ client.on('interactionCreate', async interaction => {
     guildInformation.updateGuild(interaction.guild);
 
     if (!interaction.isCommand()) return;
+    if(!interaction.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.SEND_MESSAGES) || 
+        !interaction.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.ADD_REACTIONS))
+        return interaction.reply({content: "我不能在這裡說話!", ephemeral: true});
+
+    //讀取指令ID，過濾無法執行(沒有檔案)的指令
     let commandName = "";
     if(!!interaction.options.getSubcommand(false)) commandName = interaction.commandName + "/" + interaction.options.getSubcommand(false);
     else commandName = interaction.commandName;
     console.log("isInteraction: isCommand: " + commandName + ", id: " + interaction.commandId)
 	const command = client.commands.get(interaction.commandName);
+	if (!command) return;
 
     //#region 等級系統
     const element = guildInformation.getGuild(interaction.guild.id);
@@ -147,10 +154,8 @@ client.on('interactionCreate', async interaction => {
             if(lvup) element.sendLevelsUpMessage(interaction.user, interaction.channel, interaction.guild, '/');
         }
     }
-    //#endregion
-
-	if (!command) return;
-
+    //#endregion    
+    
     if(!musicList.has(interaction.guild.id)){
         musicList.set(interaction.guild.id, new musicbase.MusicList(interaction.client.user, interaction.guild, []));
     }
@@ -414,15 +419,17 @@ client.on('messageCreate', async msg =>{
                             webhook = await msg.channel.createWebhook(msg.member.displayName, {
                                 avatar: msg.author.displayAvatarURL({dynamic: true})
                             })
+                                .then(webhook => webhook.send(words))
+                                .catch(console.error);
+                        } else {
+                            webhook.edit({
+                                name: msg.member.displayName,
+                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                            })
+                                .then(webhook => webhook.send(words))
+                                .catch(console.error);
                         }
                         if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
-                        
-                        webhook.edit({
-                            name: msg.member.displayName,
-                            avatar: msg.author.displayAvatarURL({dynamic: true})
-                        })
-                            .then(webhook => webhook.send(words))
-                            .catch(console.error);
                     } else console.log("isCommand: " + isCommand);
                 } else console.log("isCommand: " + isCommand);
             }
