@@ -447,7 +447,8 @@ client.on('messageCreate', async msg =>{
 
                 switch (cmd[0]) {
                     case 'ping':
-                        msg.channel.send(client.ws.ping + 'ms');
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/ping)來取代這裡原有的功能!')
                         break;
 
                     case '生日':
@@ -456,17 +457,8 @@ client.on('messageCreate', async msg =>{
                     case 'birth':
                     case 'birthday':
                     case 'b':
-                        //#region 生日
-                        iself = 0;
-                        if (!msg.mentions.users.size) {
-                            msg.mentions.users.set('0', msg.author);
-                            iself = 1;
-                        }
-                        msg.mentions.users.map(user => {
-                            msg.channel.send(textCommand.time(user.createdAt, `這是 ${user} 創立帳號的時間`));
-                        });
-                        break;
-                        //#endregion
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/account birthday 或者 /information user)來取代這裡原有的功能!')
 
                     case '現在時間':
                     case '現在時刻':
@@ -487,21 +479,9 @@ client.on('messageCreate', async msg =>{
                     case 'avatar':
                     case 'av':
                     case 'ma':
-                        //#region 頭像
-                        if (!msg.mentions.users.size) {
-                            msg.mentions.users.set('0',msg.author);
-                        }
-                        msg.mentions.users.map(user => {
-                            const embed = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setDescription(`這是 ${user.tag} 的頭像網址`)
-                                .addField("頭像網址(2048×2048)", user.displayAvatarURL({dynamic: true, format: "png", size: 2048}))
-                                .addField("頭像網址(256×256)", user.displayAvatarURL({dynamic: true, format: "png", size: 256}))
-                                .setThumbnail(`${user.displayAvatarURL({dynamic: true, format: "png", size: 2048})}`)
-                            msg.channel.send({embeds: [embed]});
-                        });
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/account avatar)來取代這裡原有的功能!')
                         break;
-                        //#endregion
                     
                     case 'numbercount':
                     case '數數字':
@@ -522,7 +502,8 @@ client.on('messageCreate', async msg =>{
                     case '骰子':
                     case 'dice':
                     case 'd':
-                        msg.reply(textCommand.dice(cmd[1], cmd[2]));
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/dice)來取代這裡原有的功能!')
                         break;
                     
                     case '匿名':
@@ -535,37 +516,22 @@ client.on('messageCreate', async msg =>{
                     
                     case '猜拳':
                     case 'jyanken':
-                        const embedhelp2 = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-                        msg.channel.send({embeds: [textCommand.helpJyanken(defpre, embedhelp2)]});
-                        break;
-
                     case '剪刀':
                     case '石頭':
                     case '布':
                     case 'scissors':
                     case 'stone':
                     case 'paper':
-                        textCommand.jyanken(cmd, msg, client.user);
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/paper-scissors-stone)來取代這裡原有的功能!')
                         break;
 
                     case 'happybirthday':
                     case 'hbd':
                     case 'HBD':
                     case '生日快樂':
-                        //#region 生日快樂歌
-                        if (!msg.mentions.users.size) {
-                            const embedhelp3 = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-                            msg.channel.send({embeds: [textCommand.helpHBD(defpre, embedhelp3)]});
-                        }
-                        msg.mentions.users.map(user => {
-                            msg.channel.send(textCommand.HBD(user, msg.channel));
-                        });
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/happy-birthday)來取代這裡原有的功能!')
                         break;
                         //#endregion
                     
@@ -573,50 +539,8 @@ client.on('messageCreate', async msg =>{
                     case 'rc':
                     case '紀錄':
                     case '回顧':
-                        //#region 紀錄
-                        if(!cmd[1]){
-                            const embedhelp = new Discord.MessageEmbed()
-                                .setColor(process.env.EMBEDCOLOR)
-                                .setTimestamp()
-                                .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`);
-                            return msg.channel.send({embeds: [textCommand.helpRecord(defpre, embedhelp)]});
-                        }
-                        var ifc = 0;
-                        if(cmd[1].split('-').length !== 1 ){
-                            var channelrc = textCommand.ChannelResolveFromMention(client, cmd[1].split('-')[0]);
-                            msgID = cmd[1].split('-')[1]; ifc = 1;
-                        }else if(cmd[2]){
-                            var channelrc = textCommand.ChannelResolveFromMention(client, cmd[1]);
-                            msgID = cmd[2]; ifc = 1;
-                        }else { var channelrc = msg.channel; msgID = cmd[1];};
-                        if(!channelrc) return msg.reply("找不到這個頻道:(");
-                        if(!channelrc.isText()) return msg.reply("這頻道不是文字頻道:(");
-                        channelrc.messages.fetch(msgID).then(async message => 
-                            {
-                                if(message.author.bot){msg.channel.send("噢，無法記錄機器人的訊息:(");}
-                                else{
-                                    const fileimage = message.attachments.first();
-                                    const embeedrecord = new Discord.MessageEmbed()
-                                        .setColor(process.env.EMBEDCOLOR)
-                                        .setTimestamp()
-                                        .setDescription(message.content)
-                                        .setFooter(`${client.user.tag} 記其志於此`, client.user.displayAvatarURL({dynamic: true}))
-                                        .addField(`原文`, `[點一下這裡](${message.url})`)
-                                    if (fileimage){
-                                        if (fileimage.height || fileimage.width)
-                                        { embeedrecord.setImage(fileimage.url); }
-                                    }
-                                    if(ifc){
-                                        embeedrecord.setAuthor(`${message.author.tag} 曾經在 #${channelrc.name} 這麼說過：`, 
-                                            message.author.displayAvatarURL({dynamic: true}))
-                                    }else{
-                                        embeedrecord.setAuthor(`${message.author.tag} 曾經這麼說過：`, 
-                                            message.author.displayAvatarURL({dynamic: true}))
-                                    }
-                                    msg.channel.send({embeds: [embeedrecord]});
-                                }
-                            }
-                        ).catch(() => msg.reply("噢，找不到訊息來記錄:("));
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/record)來取代這裡原有的功能!')
                         break;
                         //#endregion
                     
@@ -658,67 +582,15 @@ client.on('messageCreate', async msg =>{
                     case 'search':
                     case '搜尋':
                     case 's':
-                        //TODO: 單字搜尋系統放到textModule
-                        if(!cmd[1]) return;
-                        let index = characters.findIndex(element => element.character.toLowerCase() === cmd[1].toLowerCase());
-                        if(index < 0){index = characters.findIndex(element => element.character.toLowerCase().includes(cmd[1].toLowerCase()));}
-                        if(index < 0) return msg.channel.send("找不到");
-                        // TODO: 改善搜尋方法，應由完整符合->與開頭符合->與任一部分符合->逐步減少字串長度重複2、3來搜尋
-                        msg.channel.send(
-                            {content:`單字：${characters[index].character}\n` +
-                                `字義：${characters[index].mean}\n` +
-                                `等級：${characters[index].rank}`
-                            });
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/words search)來取代這裡原有的功能!')
                         break;
 
                     case 'dailycharacters':
                     case '每日單字':
                     case 'dc':
-                        //TODO: 美日單字系統放到textModule
-                        const charactersMax = cmd[2] ?? 30;
-                        const rank = cmd[1] ?? '1-7';
-                        const rankset = rank.split('-');
-                        if(rankset.length !== 2) return msg.reply('請正確輸入分級需求，例如\`1-6\`。');
-                        if(rankset[0] < 1 || rankset[1] > 7 | rankset[0] > rankset[1]) 
-                            return msg.reply('無法產生所要求的等級範圍，請將等級設於1~6之間。');
-                        const rankdefine = ['第一級', '第二級', '第三級', '第四級', '第五級', '第六級', '附錄'].slice(rankset[0] - 1, rankset[1]);
-
- 
-                        const now = new Date(Date.now());
-                        let cIndex = cmd[3] ?? now.getDate() * now.getDate() * now.getMonth() * charactersMax + now.getDate();
-
-                        if(parseInt(cmd[2]) > 48) return msg.reply("資料太大！請減少單字要求量。");
-
-                        const embedcharacters = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTimestamp()
-                            .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                            .setTitle(`每日單字 ${cmd[2] ?? 30} 個\n`);
-                        const embedcharacters2 = new Discord.MessageEmbed()
-                            .setColor(process.env.EMBEDCOLOR)
-                            .setTimestamp()
-                            .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                        let cList = [];
-
-                        for(let i = 0; i < charactersMax; i++){
-                            cIndex = Math.floor(textCommand.seededRandom(cIndex, characters.length - 1));
-                            if(cList.includes(characters[cIndex].character)) {i--; cIndex++; continue;}
-                            if(!rankdefine.includes(characters[cIndex].rank)) {i--; continue;}
-
-                            cList.push(characters[cIndex].character);
-                            if(embedcharacters.fields.length < 24){
-                                embedcharacters.addField(`${i + 1}. ${characters[cIndex].character}\n${characters[cIndex].rank}`, 
-                                    `||${characters[cIndex].mean.split("; [").join('\n[')}||`, true);
-                            }else{
-                                embedcharacters2.addField(`${i + 1}. ${characters[cIndex].character}\n${characters[cIndex].rank}`, 
-                                    `||${characters[cIndex].mean.split("; [").join('\n[')}||`, true);
-                            }
-                        }
-                        if(embedcharacters2.fields.length > 0){
-                            msg.reply({embeds:[embedcharacters, embedcharacters2]});
-                        }else{
-                            msg.reply({embeds:[embedcharacters]});
-                        }
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/words daily)來取代這裡原有的功能!')
                         break;
 
                     case 'invite':
@@ -827,7 +699,8 @@ client.on('messageCreate', async msg =>{
                     case '退出':
                     case '斷開':
                     case 'disconnect':
-                        msg.reply('本指令已棄用。使用斜線指令(/music)以使用相同功能!')
+                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
+                            '但請別擔心! 我們已經準備新的斜線指令(/music)來取代這裡原有的功能!')
                         break;
 
                     case 'help':
