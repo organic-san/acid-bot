@@ -77,7 +77,6 @@ module.exports = {
             else interaction.reply({content: '失敗: 數字請於合理範圍: 1-100', ephemeral: true});
 
         } else if(interaction.options.getSubcommand() === 'fat-nerd-style-generator') {
-            interaction.deferReply();
             if(!interaction.channel.permissionsFor(interaction.client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS))
                 return interaction.reply({content: "請先賦予我管理webhook的權限!", ephemeral: true});
             if(interaction.channel.isThread()) return interaction.reply({content: "不能在討論串中使用本功能!", ephemeral: true});
@@ -104,7 +103,7 @@ module.exports = {
             const webhooks = await interaction.channel.fetchWebhooks();
             let webhook = webhooks.find(webhook => webhook.owner.id === interaction.client.user.id);
             if(!webhook) {
-                webhook = await msg.channel.createWebhook(interaction.member.displayName, {
+                webhook = await interaction.channel.createWebhook(interaction.member.displayName, {
                     avatar: interaction.user.displayAvatarURL({dynamic: true})
                 })
                     .then(webhook => webhook.send(content))

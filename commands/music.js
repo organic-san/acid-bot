@@ -278,7 +278,7 @@ async function playmusic(musicList, interaction, songUrl){
                 //啟動被踢出偵測器與音樂播放偵測器
                 connectionCheck(musicList);
                 playerCheck(musicList);
-            }, 1500);
+            }, 2000);
             
         }else{
 
