@@ -1064,12 +1064,13 @@ client.on('messageCreate', async msg =>{
                     case 't':
                         //#region 指定頻道發言
                         if(!text[1]) return;
-                        if(parseInt(text[1]) === parseInt(text[1])){
+                        if(!Number.isNaN(parseInt(text[1]))){
                             const channelt = textCommand.ChannelResolveFromMention(client, text[1]);
                             channelt.send(msg.content.substring(prefix[6].Value.length + text[0].length + text[1].length + 2))
                         }else{
                             msg.channel.send(msg.content.substring(prefix[6].Value.length + text[0].length + 1));
                         }
+                        break;
                     
                     case "MTD": //Message ID to Delete
                     case "mtd":
@@ -1083,7 +1084,6 @@ client.on('messageCreate', async msg =>{
                                 }
                             }
                         );
-                        
                         break;
                         //#endregion
                     

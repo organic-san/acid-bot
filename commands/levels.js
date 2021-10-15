@@ -206,7 +206,7 @@ module.exports = {
 
             const mode = interaction.options.getString('mode');
 
-            if(['MessageChannel', 'DMChannel', 'nothing'].includes(mode)){
+            if(['MessageChannel', 'DMChannel', 'NoReact'].includes(mode)){
                 guildInformation.levelsReact = mode;
                 return interaction.reply(`設定完成！已將升等訊息發送模式改為 ${guildInformation.levelsReact}。`);
 
@@ -224,7 +224,7 @@ module.exports = {
 
         //顯示設定
         } else if(interaction.options.getSubcommand() === 'show') {
-            let levelsisworking = guildInformation.levelsReactChannel ? "啟用" : "停用";
+            let levelsisworking = guildInformation.levels ? "啟用" : "停用";
             const channel = interaction.client.channels.cache.get(guildInformation.levelsReactChannel);
             let lcm = `升級訊息發送頻道 - ${channel ?? "undefined"}`;
             if(channel) lcm += ` \`(ID: ${channel.id})\``;
