@@ -225,14 +225,22 @@ module.exports = {
         //顯示設定
         } else if(interaction.options.getSubcommand() === 'show') {
             let levelsisworking = guildInformation.levels ? "啟用" : "停用";
-            const channel = interaction.client.channels.cache.get(guildInformation.levelsReactChannel);
-            let lcm = `升級訊息發送頻道 - ${channel ?? "undefined"}`;
-            if(channel) lcm += ` \`(ID: ${channel.id})\``;
-            interaction.reply('目前的設定：\n' +
-            `等級系統 - ${levelsisworking}\n` + 
-            `升級訊息發送模式 - \`${guildInformation.levelsReact}\`\n` + 
-            `${lcm} (僅在模式為\`SpecifyChannel\`時有用)\n\n` +
-            `詳細說明請查看 \`/levels help\``);
+
+            let embed = new Discord.MessageEmbed()
+                .setTitle(`${interaction.guild.name} 的等級排行設定`)
+                .setColor(process.env.EMBEDCOLOR)                            
+                .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
+                .addField("等級排行系統", levelsisworking, true)
+                .addField("升級訊息發送模式", guildInformation.levelsReact, true)
+                .setFooter(`${interaction.client.user.tag} • 相關說明請查看/help`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setTimestamp();
+            
+            if(guildInformation.levelsReact === "SpecifyChannel") {
+                const channel = interaction.client.channels.cache.get(guildInformation.levelsReactChannel);
+                let lcm = `${channel ?? "undefined"}`;
+                embed.addField("升級訊息發送頻道", lcm, true);
+            }
+            interaction.reply({embeds: [embed]});
         }
 	},
 };
@@ -249,7 +257,7 @@ function levelsEmbed(guild, element, page, pageShowHax){
     //#region 等級排行顯示清單
     let levelembed = new Discord.MessageEmbed()
         .setTitle(`${guild.name} 的等級排行`)
-        .setColor(process.env.EMBEDCOLOR)                                
+        .setColor(process.env.EMBEDCOLOR)                            
         .setThumbnail(`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.jpg`);
 
     let ebmsgrk = "";
