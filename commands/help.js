@@ -41,6 +41,7 @@ module.exports = {
                     "\`/poll sum <message-id:訊息ID>\` - 截計投票結果\n" + 
                     "\`/anonymous <message:訊息>\` - 匿名發送訊息\n" + 
                     "\`/record <message-id:訊息ID> [channel:頻道]\` - 回顧一則訊息\n" + 
+                    `\`/timer [hour:小時] [min:分鐘] [sec:秒] [message:提醒訊息]\` - 計時器\n` +
                     "\`/dice <side:面數> [count:顆數]\` - 丟一顆骰子，結果將隨機產生\n" + 
                     "\`/happy-birthday <user:用戶>\` - 發送生日快樂訊息給該用戶\n" + 
                     "\`/paper-scissors-stone <gesture:出拳>\` - 和機器人猜個拳\n" +
@@ -68,20 +69,14 @@ module.exports = {
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`指令幫助清單/update(最近更新)`)
                 .setDescription(`來看看有機酸又加了什麼東西!`)
-                .addField(`表情符號轉換服務`, 
-                    `即日起，只要在訊息中加入表情符號文字，機器人就會將其轉譯成表情符號!\n` +
-                    `例如: \`:acidbot:\` => <:acidbot:896709436163375114>` +
-                    `註: 需要賦予 管理webhook 權限`)
                 .addField("新增肥宅文體產生器!", 
-                    "\`/response fat-nerd-style-generator <text:內文>\`\n" + 
+                    "\`/generator fat-nerd-style <text:內文>\`\n" + 
                     "將自動轉換您輸入的言論，並轉譯成肥宅體\n" + 
                     "是非常方便的功能。(燦笑")
+                .addField("計時器回來了!", 
+                    "\`/timer [hour:小時] [min:分鐘] [sec:秒] [message:提醒訊息]\`\n")
                 .addField("剔除非斜線的指令", 
-                    "第一波清單為: 投票、等級排行相關、自動回應相關、資訊、匿名訊息、所有音樂相關。")
-                .addField('未來計畫', 
-                    "目前將逐步剔除非斜線的指令\n" + 
-                    "第二波清單預計為單字相關、回顧、ping、我的出生、我的頭像、生日快樂、骰子、猜拳。" +
-                    "以下指令尚未轉換至斜線指令，將於近日中進行: 歡迎訊息相關、踢出/停權用戶、數數字、計時器。")
+                    "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
