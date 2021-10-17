@@ -43,7 +43,8 @@ module.exports = {
                     "\`/record <message-id:訊息ID> [channel:頻道]\` - 回顧一則訊息\n" + 
                     "\`/dice <side:面數> [count:顆數]\` - 丟一顆骰子，結果將隨機產生\n" + 
                     "\`/happy-birthday <user:用戶>\` - 發送生日快樂訊息給該用戶\n" + 
-                    "\`/paper-scissors-stone <gesture:出拳>\` - 和機器人猜個拳\n")
+                    "\`/paper-scissors-stone <gesture:出拳>\` - 和機器人猜個拳\n" +
+                    `\`/generator fat-nerd-style <text:內文>\` - 肥宅文體產生器!\n`)
                 .addField(`其他系統性的指令`, 
                     "以下指令的詳細說明，可以在/help後選擇其他模式以取得說明\n\n" + 
                     "\`/levels\` - 等級排行系統\n" + 
@@ -171,8 +172,7 @@ module.exports = {
                 .addField("基本指令", 
                     `\`/response happybeam\` - 由機器人送你一道快樂光線======)\n` +
                     `\`/response goodnight\` - 晚上了，和你說晚安.:｡+゜｡\n` + 
-                    `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n` +
-                    `\`/response fat-nerd-style-generator <text:內文>\` - 肥宅文體產生器!\n`)
+                    `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n`)
                 .addField('🐢🐔🥛是什麼?', 'crazy night')
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
