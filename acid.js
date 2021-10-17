@@ -419,14 +419,14 @@ client.on('messageCreate', async msg =>{
                             webhook = await msg.channel.createWebhook(msg.member.displayName, {
                                 avatar: msg.author.displayAvatarURL({dynamic: true})
                             })
-                                .then(webhook => webhook.send(words))
+                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
                                 .catch(console.error);
                         } else {
                             webhook.edit({
                                 name: msg.member.displayName,
                                 avatar: msg.author.displayAvatarURL({dynamic: true})
                             })
-                                .then(webhook => webhook.send(words))
+                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
                                 .catch(console.error);
                         }
                         if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
@@ -1234,24 +1234,24 @@ client.on('guildMemberRemove', member => {
 //#endregion
 
 //#region 機器人被加入、踢出觸發事件guildCreate、guildDelete
-client.on("guildCreate", guild => {
+client.on("guildCreate", guild2 => {
 
-    if(!guildInformation.has(guild.id)){
-        const thisGI = new guild.GuildInformation(guild, []);
+    if(!guildInformation.has(guild2.id)){
+        const thisGI = new guild.GuildInformation(guild2, []);
         guildInformation.addGuild(thisGI);
     }
     var a = 0;
-    console.log(`${client.user.tag} 加入了 ${guild.name} (${guild.id}) (新增事件觸發)`);
+    console.log(`${client.user.tag} 加入了 ${guild2.name} (${guild2.id}) (新增事件觸發)`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
-        channel.send(`${client.user.tag} 加入了 **${guild.name}** (${guild.id}) (新增事件觸發)`)
+        channel.send(`${client.user.tag} 加入了 **${guild2.name}** (${guild2.id}) (新增事件觸發)`)
     );
-    if(guild.systemChannel){
+    if(guild2.systemChannel){
         const l = client.user.tag;
-        guild.systemChannel.send(`歡迎使用${l.slice(1, l.length)}！使用斜線指令(/help)來查詢我的功能！`).catch(err => console.log(err))
+        guild2.systemChannel.send(`歡迎使用${l.slice(1, l.length)}！使用斜線指令(/help)來查詢我的功能！`).catch(err => console.log(err))
     }
-    guild.fetchOwner().then(owner => { 
+    guild2.fetchOwner().then(owner => { 
         owner.send(
-            `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild.name}**！\n\n` + 
+            `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild2.name}**！\n\n` + 
             `我的功能可以使用/help來查詢！\n` + 
             `例如投票、歡迎訊息、`); 
     }).catch(err => console.log(err));

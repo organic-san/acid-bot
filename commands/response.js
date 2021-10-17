@@ -106,14 +106,14 @@ module.exports = {
                 webhook = await interaction.channel.createWebhook(interaction.member.displayName, {
                     avatar: interaction.user.displayAvatarURL({dynamic: true})
                 })
-                    .then(webhook => webhook.send(content))
+                    .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
             }else{
                 webhook.edit({
                     name: interaction.member.displayName,
                     avatar: interaction.user.displayAvatarURL({dynamic: true})
                 })
-                    .then(webhook => webhook.send(content))
+                    .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
             }
             interaction.reply({content: "已發送!", ephemeral: true})
