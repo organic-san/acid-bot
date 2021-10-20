@@ -134,7 +134,7 @@ client.on('interactionCreate', async interaction => {
     let commandName = "";
     if(!!interaction.options.getSubcommand(false)) commandName = interaction.commandName + "/" + interaction.options.getSubcommand(false);
     else commandName = interaction.commandName;
-    console.log("isInteraction: isCommand: " + commandName + ", id: " + interaction.commandId)
+    console.log("isInteraction: isCommand: " + commandName + ", id: " + interaction.commandId + ", guild: " + interaction.guild.name)
 	const command = client.commands.get(interaction.commandName);
 	if (!command) return;
 
@@ -385,7 +385,7 @@ client.on('messageCreate', async msg =>{
         const member = await msg.guild.members.fetch(client.user.id);
         if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && !isCommand){
             if(!msg.channel.isThread()){
-                const notEmoji = msg.content.split(/:\w+:/);
+                const notEmoji = msg.content.split(/:\w+:/g);
                 const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
                 isEmoji.forEach((v, i) => isEmoji[i] = v[0]);
                 let isEmojiChanged = false;
@@ -416,7 +416,7 @@ client.on('messageCreate', async msg =>{
                         const webhooks = await msg.channel.fetchWebhooks();
                         let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
                         if(!webhook) {
-                            webhook = await msg.channel.createWebhook(msg.member.displayName, {
+                            msg.channel.createWebhook(msg.member.displayName, {
                                 avatar: msg.author.displayAvatarURL({dynamic: true})
                             })
                                 .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
@@ -1013,8 +1013,7 @@ client.on("guildCreate", guild2 => {
     guild2.fetchOwner().then(owner => { 
         owner.send(
             `您或您伺服器的管理員剛剛讓 **${client.user.tag}** 加入了 **${guild2.name}**！\n\n` + 
-            `我的功能可以使用/help來查詢！\n` + 
-            `例如投票、歡迎訊息、`); 
+            `我的功能可以使用/help來查詢！`).catch(err => console.log(err)); 
     }).catch(err => console.log(err));
     
  });

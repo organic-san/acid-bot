@@ -186,7 +186,7 @@ module.exports = {
  */
 async function playmusic(musicList, interaction, songUrl){
     try {
-
+        interactionReply(interaction, `正在讀取資訊...`);
         var a = 0;
         if(!interaction.member.voice.channel){
             return interactionReply(interaction, `找不到可以一同享受音樂的與音頻道，你要不要先找一個進去?`, true);
@@ -426,7 +426,7 @@ function queueplay(musicList, page, pageShowHax){
             message = message + `\n\n${i}. [${title}](${url}) | [${longmin}:${longsec}] [播放者：${musicList.song[i].userPlayer}]`;
             songqueue = songqueue + message;
         }
-        if(musicList.songlength > 1){
+        if(musicList.songlength > 1 && songqueue){
             embed.addField(`即將播放(#${page * pageShowHax + 1} ~ ` + 
                 `#${Math.min(page * pageShowHax + pageShowHax, musicList.songlength - 1)} / ` +
                 `#${musicList.songlength - 1})：`, songqueue);
