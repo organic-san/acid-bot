@@ -43,8 +43,7 @@ module.exports = {
         if(mins < 10){mins = "0" + mins}
         if(secs < 10){secs = "0" + secs}
         interaction.reply(`已設定一個 ${hours}:${mins}:${secs} 的計時器，` + 
-            `將在 ${goal.getHours()}點${goal.getMinutes()}分${goal.getSeconds()}秒` + 
-            `(UTC${goal.getTimezoneOffset()/60 <= 0 ? "+" : "-" }${Math.abs(goal.getTimezoneOffset()/60)}) 時通知`);
+            `將在 <t:${Math.floor(interaction.createdTimestamp / 1000)}:T> 時通知`);
         setTimeout(() => {
             if(!message){
                 interaction.channel.send(`叮叮叮！${interaction.user}，倒數 ${hours}:${mins}:${secs} 結束！`);

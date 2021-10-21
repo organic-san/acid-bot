@@ -446,12 +446,6 @@ client.on('messageCreate', async msg =>{
                 const cmd = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
 
                 switch (cmd[0]) {
-                    case '現在時間':
-                    case '現在時刻':
-                    case 'now':
-                    case 'n':
-                        msg.reply(textCommand.time(msg.createdAt, "這是現在時間"));
-                        break;
                     
                     case 'numbercount':
                     case '數數字':

@@ -57,13 +57,13 @@ module.exports = {
 
             if(!user) {
                 embed.setDescription(`這是你的的頭像網址`)
-                    .addField(`頭像網址(${size}×${size})`, interaction.user.displayAvatarURL({dynamic: true, format: "png", size: size}))
+                    .addField(`頭像網址(${size}×${size})`, `[點我開啟](${interaction.user.displayAvatarURL({dynamic: true, format: "png", size: size})})`)
                     .setThumbnail(interaction.user.displayAvatarURL({dynamic: true, format: "png", size: size}));
                 interaction.reply({embeds: [embed]});
 
             }else {
                 embed.setDescription(`這是 ${user.tag} 的的頭像網址`)
-                    .addField(`頭像網址(${size}×${size})`, user.displayAvatarURL({dynamic: true, format: "png", size: size}))
+                    .addField(`頭像網址(${size}×${size})`, `[點我開啟](${user.displayAvatarURL({dynamic: true, format: "png", size: size})})`)
                     .setThumbnail(user.displayAvatarURL({dynamic: true, format: "png", size: size}));
                 interaction.reply({embeds: [embed]});
             }
