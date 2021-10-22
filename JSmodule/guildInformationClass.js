@@ -106,6 +106,7 @@ class GuildInformation {
         this.joinMessage = false;
         this.leaveMessage = false;
         this.joinMessageContent = "";
+        this.leaveMessageContent = "";
         this.joinChannel = "";
         this.leaveChannel = "";
         this.levels = true;
@@ -129,6 +130,7 @@ class GuildInformation {
         newGI.joinMessage = obj.joinMessage ?? false;
         newGI.leaveMessage = obj.leaveMessage ?? false;
         newGI.joinMessageContent = obj.joinMessageContent ?? "";
+        newGI.leaveMessageContent = obj.leaveMessageContent ?? "";
         newGI.joinChannel = obj.joinChannel ?? "";
         newGI.leaveChannel = obj.leaveChannel ?? "";
         newGI.levels = obj.levels ?? true;

@@ -641,13 +641,13 @@ client.on('messageCreate', async msg =>{
                             return msg.reply("無法執行指令：權限不足：需要具有停權權限");
                         }
                         if (!commands[1]) return msg.reply("未指定成員，請重試");
-                        const member = textCommand.MemberResolveFromMention(commands[1]);
+                        const member = textCommand.MemberResolveFromMention(msg.guild, commands[1]);
                         if (!member) return msg.reply("該用戶不存在，請重試");
                         if (!member.bannable) return msg.reply('我沒辦法停權這位用戶 :(\n');
                         let reasonb = commands.slice(2).join(' ');
                         let banmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 停權。`;
                         if(!reasonb){
-                            await textCommand.MemberResolveFromMention(client, member.id).send(banmessage);
+                            await textCommand.MemberResolveFromMention(msg.guild, member.id).send(banmessage);
                             await msg.guild.members.ban(member);
                         }
                         else{
@@ -665,17 +665,17 @@ client.on('messageCreate', async msg =>{
                             return msg.reply("無法執行指令：權限不足：需要具有踢出權限");
                         }
                         if (!commands[1]) return msg.reply("未指定成員，請重試");
-                        const memberk = textCommand.MemberResolveFromMention(commands[1]);
+                        const memberk = textCommand.MemberResolveFromMention(msg.guild, commands[1]);
                         if (!memberk) return msg.reply("該用戶不存在，請重試");
                         if (!memberk.kickable) return msg.reply("我沒辦法踢出這位用戶 :(");
                         let reasonk = commands.slice(2).join(' ');
                         let kickmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 踢出。`;
                         if(!reasonk){
-                            await textCommand.MemberResolveFromMention(client, memberk.id).send(kickmessage);
+                            await textCommand.MemberResolveFromMention(msg.guild, memberk.id).send(kickmessage);
                             await memberk.kick();
                         }else{
                             kickmessage += `\n原因：${reasonk}`;
-                            await textCommand.MemberResolveFromMention(client, memberk.id).send(kickmessage);
+                            await textCommand.MemberResolveFromMention(msg.guild, memberk.id).send(kickmessage);
                             await memberk.kick(reasonk);
                         }
                         msg.channel.send(`已踢出 ${memberk.user.tag} (ID ${memberk.user.id})`);
@@ -953,7 +953,7 @@ client.on('messageCreate', async msg =>{
 client.on('guildMemberAdd', member => {
     console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
-        channel.send(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`)
+        channel.send(`${member.user.tag} (${member.user.id}) 加入了 **${member.guild.name}** (${member.guild.id})。`)
     );
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage) return;
@@ -961,29 +961,50 @@ client.on('guildMemberAdd', member => {
         if(!member.guild.systemChannel) return;
         if(!element.joinMessageContent)
             member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !`);
-        else
-            member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !\n${element.joinMessageContent}`);
+        else{
+            if(element.joinMessageContent.includes("<user>") && element.joinMessageContent.includes("<server>")){
+                const msg = element.joinMessageContent.split("<user>").join(` ${member} `).split("<server>").join(` **${member.guild.name}** `)
+                member.guild.systemChannel.send(msg);
+            }else
+                member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !\n${element.joinMessageContent}`);
+        }
+            
     }else{
-        if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){return;}
+        if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)) return;
         if(!element.joinMessageContent)
             client.channels.fetch(element.joinChannel).then(channel => channel.send(`${member} ，歡迎來到 **${member.guild.name}** !`));
-        else
-            client.channels.fetch(element.joinChannel).then(channel => channel.send(`${member} ，歡迎來到 **${member.guild.name}** !\n` + 
-            `${element.joinMessageContent}`));
+        else{
+            if(element.joinMessageContent.includes("<user>") && element.joinMessageContent.includes("<server>")){
+                const msg = element.joinMessageContent.split("<user>").join(` ${member} `).split("<server>").join(` **${member.guild.name}** `)
+                client.channels.fetch(element.joinChannel).then(channel => channel.send(msg));
+            }else
+                client.channels.fetch(element.joinChannel).then(channel => channel.send(`${member} ，歡迎來到 **${member.guild.name}** !\n` + 
+                `${element.joinMessageContent}`));
+        }
     }  
 });
 
 client.on('guildMemberRemove', member => {
-    console.log(`${member.user.tag} 已自 **${member.guild.name}** 離開。`);
-    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 ${member.guild.name} 離開。`));
+    console.log(`${member.user.tag} 已自 ${member.guild.name} 離開。`);
+    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 **${member.guild.name}** 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage) return;
     if(!element.leaveChannel){
         if(!member.guild.systemChannel){return;}
-        member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
+        if(!element.leaveMessageContent)
+            member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
+        else{
+            const msg = element.leaveMessageContent.split("<user>").join(` ${member.user.tag} `).split("<server>").join(` **${member.guild.name}** `)
+            member.guild.systemChannel.send(msg);
+        }
     }else{
-        if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){return;}
-        client.channels.fetch(element.leaveChannel).then(channel => channel.send(`**${member.user.tag}** 已遠離我們而去。`));
+        if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)) return;
+        if(!element.leaveMessageContent)
+            client.channels.fetch(element.leaveChannel).then(channel => channel.send(`**${member.user.tag}** 已遠離我們而去。`));
+        else{
+            const msg = element.leaveMessageContent.split("<user>").join(` ${member.user.tag} `).split("<server>").join(` **${member.guild.name}** `)
+            client.channels.fetch(element.leaveChannel).then(channel => channel.send(msg));
+        }
     }  
 });
 //#endregion
