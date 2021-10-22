@@ -69,6 +69,7 @@ module.exports = {
                 .addField('延遲', `${interaction.client.ws.ping}ms`, true)
                 .setThumbnail(interaction.client.user.displayAvatarURL({dynamic: true}))
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setTimestamp()
             interaction.reply({embeds: [embed3]});
 
         } else if(interaction.options.getSubcommand() === 'guild') {
@@ -137,28 +138,29 @@ module.exports = {
                 });
             }
             const embed4 = new Discord.MessageEmbed()
-            .setColor(process.env.EMBEDCOLOR)
-            .setTitle(interaction.guild.name)
-            .addField('ID', interaction.guild.id)
+                .setColor(process.env.EMBEDCOLOR)
+                .setTitle(interaction.guild.name)
+                .addField('ID', interaction.guild.id)
 
-            .addField('驗證等級', verificationLevel, true)
-            .addField('擁有者', `${await interaction.guild.fetchOwner().then(owner => owner.user)}`, true)
-            .addField('建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
+                .addField('驗證等級', verificationLevel, true)
+                .addField('擁有者', `${await interaction.guild.fetchOwner().then(owner => owner.user)}`, true)
+                .addField('建立日期', `${time.getFullYear()} ${time.getMonth()+1}/${time.getDate()} (${char})`, true)
 
-            .addField(`伺服器加成`, `次數 - ${interaction.guild.premiumSubscriptionCount}\n等級 - ${interaction.guild.premiumTier}`, true)
-            .addField(`表情符號&貼圖 - ${interaction.guild.emojis.cache.size} + ${interaction.guild.stickers.cache.size}`, 
-                        `靜態符號 - ${stop}\n動態符號 - ${animated}\n貼圖 - ${interaction.guild.stickers.cache.size}`, true)
-            .addField(`人數 - ${interaction.guild.memberCount}`, `成員 - ${user}\n機器人 - ${bot}`, true)
+                .addField(`伺服器加成`, `次數 - ${interaction.guild.premiumSubscriptionCount}\n等級 - ${interaction.guild.premiumTier}`, true)
+                .addField(`表情符號&貼圖 - ${interaction.guild.emojis.cache.size} + ${interaction.guild.stickers.cache.size}`, 
+                            `靜態符號 - ${stop}\n動態符號 - ${animated}\n貼圖 - ${interaction.guild.stickers.cache.size}`, true)
+                .addField(`人數 - ${interaction.guild.memberCount}`, `成員 - ${user}\n機器人 - ${bot}`, true)
 
-            .addField(`頻道數量 - ${interaction.guild.channels.cache.size}`, `文字頻道 - ${textch}\n語音頻道 - ${voicech}\n` + 
-                        `新聞頻道 - ${newsch}\n商店頻道 - ${storech}\n討論串 - ${thread}\n分類 - ${catecorych}`, true)
-            .addField(`身分組 - ${interaction.guild.roles.cache.size -1}`, `管理員 - ${administrator}\n` + 
-                        `管理表情符號與貼圖 - ${emoji}\n建立邀請 - ${invite}\n附加檔案 - ${file}\n發送訊息 - ${send}`, true)
-            .addField(`等級系統參與 - ${guildInformation.levels ? guildInformation.usersMuch : "尚未啟動"}`, 
-                        `小於10等 - ${lo10}\n11-20等 - ${lo20}\n21-30等 - ${lo30}\n31-60等 - ${lo60}\n大於60等 - ${bg60}\n`, true)
-            
-            .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
-            .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
+                .addField(`頻道數量 - ${interaction.guild.channels.cache.size}`, `文字頻道 - ${textch}\n語音頻道 - ${voicech}\n` + 
+                            `新聞頻道 - ${newsch}\n商店頻道 - ${storech}\n討論串 - ${thread}\n分類 - ${catecorych}`, true)
+                .addField(`身分組 - ${interaction.guild.roles.cache.size -1}`, `管理員 - ${administrator}\n` + 
+                            `管理表情符號與貼圖 - ${emoji}\n建立邀請 - ${invite}\n附加檔案 - ${file}\n發送訊息 - ${send}`, true)
+                .addField(`等級系統參與 - ${guildInformation.levels ? guildInformation.usersMuch : "尚未啟動"}`, 
+                            `小於10等 - ${lo10}\n11-20等 - ${lo20}\n21-30等 - ${lo30}\n31-60等 - ${lo60}\n大於60等 - ${bg60}\n`, true)
+                
+                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
+                .setTimestamp()
             interaction.reply({embeds: [embed4]});
             
         } else if(interaction.options.getSubcommand() === 'user') {
@@ -219,6 +221,7 @@ module.exports = {
                 .addField('身分組', roles)
                 .setThumbnail(user.displayAvatarURL({dynamic: true}))
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setTimestamp()
             interaction.reply({embeds: [embed3]});
         }
 	},
