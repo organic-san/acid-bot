@@ -147,8 +147,8 @@ module.exports = {
                 if(setType === 0) guildInformation.joinMessageContent = message;
                 else guildInformation.leaveMessageContent = message;
                 interaction.reply(`設定完成:\n` + 
-                    `歡迎訊息: ${guildInformation.joinMessageContent || "未定義"}\n` +
-                    `離去訊息: ${guildInformation.leaveMessageContent || "未定義"}`)
+                    `歡迎訊息: ${guildInformation.joinMessageContent || "未定義(使用預設)"}\n` +
+                    `離去訊息: ${guildInformation.leaveMessageContent || "未定義(使用預設)"}`)
             }
         }else{
             if(['open', 'close'].includes(interaction.options.getSubcommand(false))) {
@@ -207,7 +207,9 @@ module.exports = {
                     .addField(`系統開關`, `歡迎訊息: ${guildInformation.joinMessage ? "開啟" : "關閉"}\n` +
                         `離去訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
                     .addField(`歡迎訊息發送頻道`, joinChannel)
+                    .addField(`歡迎訊息內容`, guildInformation.joinMessageContent || "未定義(使用預設)")
                     .addField(`離去訊息發送頻道`, leaveChannel)
+                    .addField(`離去訊息內容`, guildInformation.leaveMessageContent || "未定義(使用預設)")
                     .setFooter(`${interaction.client.user.tag} • 相關說明請查看/help`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
                     .setTimestamp();
 
