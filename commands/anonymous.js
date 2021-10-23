@@ -24,10 +24,11 @@ module.exports = {
 
         const alvinChannelCheck = (interaction.guild.id === '746024720767385720' && !(interaction.channel.id === '770620296205041724' ||
             interaction.channel.id === '770615191078567936' || interaction.channel.id === '795980483615260732' ||
-            interaction.channel.id === '814684970714267658' || interaction.channel.id === '755084007808565349'));                   
+            interaction.channel.id === '814684970714267658' || interaction.channel.id === '755084007808565349'));
+        const majiCheck = interaction.guild.id === '881520130926981172';
         
         const embed = new Discord.MessageEmbed().setColor(process.env.EMBEDCOLOR).setDescription(message).setTimestamp();
-        if(alvinChannelCheck === true) 
+        if(alvinChannelCheck === true || majiCheck === true) 
             embed.setFooter(`來自 ${interaction.user.tag} 的一則訊息(這裡不能匿名)`, interaction.user.displayAvatarURL({dynamic: true}));
         else 
             embed.setFooter(`來自不願具名的一則訊息`, interaction.client.user.displayAvatarURL({dynamic: true}))

@@ -58,7 +58,7 @@ module.exports = {
                     "只要輸入表情符號的名稱，機器人就會將你的發言自動轉換成包含表情符號的訊息!\n" + 
                     "例如: 只要輸入 \`:acidbot:\`，就會自動將訊息轉換轉換成 <:acidbot:896709436163375114>")
                 .addField("內建關鍵字反應功能", 
-                    "部分關鍵字機器人也會反應\n分別為: \`笑死\`、\`晚安\`、\`快樂光線\`、\`成功\`、\`龜雞奶\`")
+                    "部分關鍵字機器人也會反應\n分別為: \`笑死\`、\`快樂光線\`、\`龜雞奶\`")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)

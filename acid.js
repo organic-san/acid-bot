@@ -86,9 +86,9 @@ client.on('ready', () =>{
     });
     setTimeout(() => {
         console.log(`設定成功: ${new Date(Date.now())}`);
-        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: ${time}`));
+        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         if(client.user.id !== process.env.BOT_ID_ACIDTEST)
-            client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: ${time}`));
+            client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         isReady = true;
     }, 2000);
     setInterval(() => {
@@ -223,15 +223,10 @@ client.on('messageCreate', async msg =>{
             return console.log("isCommand: reactless");
 
         //#region 幫文字加上表情符號
-        if (msg.content === '成功' || msg.content === '成功!' || msg.content === '成功！' ||
-        msg.content === '成功了' || msg.content === '成功了!' || msg.content === '成功了！'){
-            msg.react('🎉');
-        }
-
         if (msg.content === '龜雞奶'){
-            msg.react('🐢');
-            msg.react('🐔');
-            msg.react('🥛');
+            msg.react('🐢').catch(err => console.log(err));
+            msg.react('🐔').catch(err => console.log(err));
+            msg.react('🥛').catch(err => console.log(err));
         }
 
         if (msg.content.includes('上龜雞奶') && msg.content.includes('樓')){
@@ -243,12 +238,12 @@ client.on('messageCreate', async msg =>{
                 .catch(console.error)
 
                 if(beforeMessage){
-                    if(!beforeMessage.deleted){beforeMessage.react('🐢');
-                        if(!beforeMessage.deleted){beforeMessage.react('🐔');}
-                        if(!beforeMessage.deleted){beforeMessage.react('🥛');}
+                    if(!beforeMessage.deleted){beforeMessage.react('🐢').catch(err => console.log(err));
+                        if(!beforeMessage.deleted){beforeMessage.react('🐔').catch(err => console.log(err));}
+                        if(!beforeMessage.deleted){beforeMessage.react('🥛').catch(err => console.log(err));}
                     }else{
                         if(!msg.deleted){
-                                msg.react('😢');
+                                msg.react('😢').catch(err => console.log(err));
                         }
                     }
             }
@@ -269,17 +264,17 @@ client.on('messageCreate', async msg =>{
                 const responser = collected.last();
 
                 if(responser !== undefined){
-                    responser.react('🐢');
-                    if(!responser.deleted){ responser.react('🐔');}
-                    if(!responser.deleted){ responser.react('🥛');}
+                    responser.react('🐢').catch(err => console.log(err));
+                    if(!responser.deleted){ responser.react('🐔').catch(err => console.log(err));}
+                    if(!responser.deleted){ responser.react('🥛').catch(err => console.log(err));}
                 }else{
                     if(!msg.deleted){
-                        msg.react('😢');
+                        msg.react('😢').catch(err => console.log(err));
                     }
                 }
             }else{
                 if(!msg.deleted){
-                    msg.react('😢');
+                    msg.react('😢').catch(err => console.log(err));
                 }
             }
         }
@@ -312,6 +307,7 @@ client.on('messageCreate', async msg =>{
         //#region 特殊文字判定回應 笑死 晚安 快樂光線
         switch(msg.content){
             case '笑死':
+                if(msg.guild.id === '881520130926981172') return;
                 await msg.channel.sendTyping();
                 let message = '';
                 for(step = 0; step < (Math.floor(Math.random()*3 + 2)); step++){
@@ -326,20 +322,7 @@ client.on('messageCreate', async msg =>{
                 if(Math.floor(Math.random()*50) === 0){message = '你...找到了...隱藏的文字！(然而沒有意義)';}
                 msg.channel.send(message);
                 break;
-
-            case '晚安':
-            case '晚ㄢ':
-                await msg.channel.sendTyping();
-                switch(Math.floor(Math.random()*2)){
-                    case 0:
-                        msg.reply("今夜有個好夢 ( ˘ω˘ )睡…");
-                        break;
-                    case 1:
-                        msg.reply("+｡:.゜晚安ヽ(´∀`)ﾉ .:｡+゜｡");
-                        break;
-                }
-                break;
-            
+                
             case '快樂光線':
             case 'happybeam':
             case 'happy beam':
@@ -359,7 +342,7 @@ client.on('messageCreate', async msg =>{
                     else text = '{\\\\__/}\n(⊙ω⊙)\n/ >▄︻̷̿┻̿═━一   =========))';}
                 msg.reply(text);
                 break;
-
+            
             case '我要加入':
                 if(msg.channel.id === "851841312360890369"){
                     msg.guild.members.cache.get(msg.author.id).roles.add('848903846990577674');

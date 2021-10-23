@@ -25,13 +25,13 @@ module.exports = {
             if(!interaction.channel.permissionsFor(interaction.client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS))
                 return interaction.reply({content: "請先賦予我管理webhook的權限!", ephemeral: true});
             if(interaction.channel.isThread()) return interaction.reply({content: "不能在討論串中使用本功能!", ephemeral: true});
-
+            interaction.reply({content: "發送中......", ephemeral: true});
             const text = interaction.options.getString('text');
             let splitText = text.split(/\s+/);
             
             splitText.forEach((content, index) => {
                 const rnd10 = Math.floor(Math.random() * 10);
-                if(Math.floor(Math.random() * 3) <= 1) 
+                if(Math.floor(Math.random() * 3) < 1) 
                     splitText[index] = splitText[index].padEnd(splitText[index].length + Math.floor(Math.random() * 6), 'w');
                 if(rnd10 <= 1) {
                     splitText[index] += darklize_postfix[Math.floor(Math.random() * darklize_postfix.length)];
@@ -61,7 +61,6 @@ module.exports = {
                     .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
             }
-            interaction.reply({content: "已發送!", ephemeral: true})
         }
 
 	},

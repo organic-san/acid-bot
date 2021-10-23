@@ -59,9 +59,9 @@ module.exports = {
                 .catch(console.error)
 
                 if(beforeMessage){
-                    if(!beforeMessage.deleted){ beforeMessage.react('🐢');
-                        if(!beforeMessage.deleted) beforeMessage.react('🐔');
-                        if(!beforeMessage.deleted) beforeMessage.react('🥛');
+                    if(!beforeMessage.deleted){ beforeMessage.react('🐢').catch(err => console.log(err));
+                        if(!beforeMessage.deleted) beforeMessage.react('🐔').catch(err => console.log(err));
+                        if(!beforeMessage.deleted) beforeMessage.react('🥛').catch(err => console.log(err));
                         interaction.reply({content: "成功發射!", ephemeral: true})
                     }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
                 }
