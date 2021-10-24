@@ -131,8 +131,8 @@ module.exports = {
 			);
             const msg = await interaction.reply({embeds: [levels], components: [row], fetchReply: true});
 
-            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
-            const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });
+            const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot;
+            const collector = msg.createMessageComponentCollector({filter, time: 60 * 1000 });
             
             collector.on('collect', async i => {
                 if (i.customId === '下一頁') 

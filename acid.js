@@ -90,7 +90,7 @@ client.on('ready', () =>{
         if(client.user.id !== process.env.BOT_ID_ACIDTEST)
             client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         isReady = true;
-    }, 2000);
+    }, 4000);
     setInterval(() => {
         fs.writeFile("./data/guildInfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), function (err){
             if (err)
