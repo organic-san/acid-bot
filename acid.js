@@ -425,7 +425,6 @@ client.on('messageCreate', async msg =>{
             case '0': //文字回應功能
             case '1':
                 //#region 文字指令(全)
-                await msg.channel.sendTyping();
                 const cmd = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
 
                 switch (cmd[0]) {
@@ -437,6 +436,7 @@ client.on('messageCreate', async msg =>{
                     case 'cn':
                     case 'nc':
                         //#region 數數字part2
+                        await msg.channel.sendTyping();
                         if(numberingList.get(msg.channel.id) === undefined){
                             msg.channel.send('開始數數字！下一個數字：1');
                             numberingList.set(msg.channel.id, 0);
@@ -448,11 +448,26 @@ client.on('messageCreate', async msg =>{
 
                     case 'invite':
                     case '邀請':
+                        await msg.channel.sendTyping();
                         msg.channel.send({embeds: [textCommand.invite(client.user, msg.channel)]});
+                        break;
+                    
+                    default:
+                        await msg.channel.sendTyping();
+                        if(cmd[0].match(/[a-z]/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
                         break;
                 }
                 break;
                 //#endregion
+            
+            case '3': //舊音樂
+            case '4':
+                const cmd = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
+                if(cmd[0].match(/[a-z]/)){
+                await msg.channel.sendTyping();
+                msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
+                }
+                break;
 
             case '4': //管理指令
             case '5':
@@ -462,161 +477,6 @@ client.on('messageCreate', async msg =>{
                 const commands = msg.content.substring(prefix[4].Value.length).split(splitText); //以空白分割前綴以後的字串
                 const filter = message => message.author.id === msg.author.id;
                 switch(commands[0]){
-                    case 'joinmessage':
-                    case 'joinMessage':
-                        //#region 群組進出訊息權限管理
-                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)){ 
-                            return msg.reply("無法執行指令：權限不足：需要管理員權限");
-                        }
-                        const element = guildInformation.getGuild(msg.guild.id);
-                        if(element.id !== msg.guild.id){return;}
-                        switch(commands[1]){
-                            //頻道設定
-                            case 'channel':
-                                msg.channel.send("請選擇要更改設定的部分：\n" +
-                                "\`Join\` - 歡迎訊息的頻道\n" +
-                                "\`Leave\` - 送別訊息的頻道\n" +
-                                "\`JoinAndLeave\` - 同時調整兩邊的頻道\n" +
-                                "請直接輸入以上3種關鍵字作為設定，不需要輸入前輟。");
-                                const collected1 = await msg.channel.awaitMessages({filter: filter,  max: 1, time: 60 * 1000 });
-                                const responser1 = collected1.first();
-                                await msg.channel.sendTyping();
-                                if (!responser1) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (!['join', 'leave', 'joinandleave'].includes(responser1.content.toLowerCase())) 
-                                    return responser1.reply(`設定失敗：輸入非指定關鍵字，請重新設定`);
-                                var take = -1;
-
-                                switch(responser1.content.toLowerCase()){
-                                    case 'join':
-                                        take = 0;
-                                        break;
-                                    case 'leave':
-                                        take = 1;
-                                        break;
-                                    case 'joinandleave':
-                                        take = 2;
-                                        break;
-                                }
-                                msg.channel.send('請輸入要設定的頻道的ID(例如：123456789012345678)。\n' +
-                                '或輸入\`undefined\`將頻道設定為系統訊息頻道。');
-                                const collected2 = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responseSC = collected2.first();
-                                await msg.channel.sendTyping();
-                                if (!responseSC) return responser1.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if(responseSC.content.toLowerCase() === "undefined"){
-                                    if(take === 0 || take === 2){element.joinChannel = "";}
-                                    if(take === 1 || take === 2){element.leaveChannel = "";}
-                                }
-                                else if(!textCommand.ChannelResolveFromMention(client, responseSC.content)){
-                                    return responseSC.reply(`設定失敗：該頻道不存在，請重新設定`);
-                                }else if(textCommand.ChannelResolveFromMention(client, responseSC.content).type !== "GUILD_TEXT"){
-                                    return responseSC.reply(`設定失敗：該頻道不是文字頻道，請重新設定`);
-                                }else{
-                                    if(take === 0 || take === 2){element.joinChannel = responseSC.content;}
-                                    if(take === 1 || take === 2){element.leaveChannel = responseSC.content;}
-                                }
-                                if(element.joinChannel === ""){
-                                    joinChannel = {"name":undefined, "id":undefined};
-                                }else if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){
-                                    joinChannel = {"name":"invalid", "id":"invalid"};
-                                }else{joinChannel = textCommand.ChannelResolveFromMention(client, element.joinChannel);}
-                                if(element.leaveChannel === ""){
-                                    leaveChannel = {"name":undefined, "id":undefined};
-                                }else if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){
-                                    leaveChannel = {"name":"invalid", "id":"invalid"};
-                                }else{leaveChannel = textCommand.ChannelResolveFromMention(client, element.leaveChannel);}
-                                msg.channel.send(`已更改頻道設定:\n進入訊息頻道名稱: #${joinChannel.name}\n進入訊息頻道ID: ${joinChannel.id}\n` + 
-                                `送別訊息頻道名稱: #${leaveChannel.name}\n送別訊息頻道ID: ${leaveChannel.id}`);
-                                break;
-                            
-                            //反轉
-                            case 'set':
-                                msg.channel.send("請選擇要更改設定的部分：\n" +
-                                "\`Join\` - 歡迎訊息的發送設定\n" +
-                                "\`Leave\` - 送別訊息的發送設定\n" +
-                                "\`JoinAndLeave\` - 同時調整兩邊的設定\n" +
-                                "請直接輸入以上3種關鍵字作為設定，不需要輸入前輟。")
-                                const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responsera = collected.first();
-                                await msg.channel.sendTyping();
-                                if (!responsera) return msg.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (!['join', 'leave', 'joinandleave'].includes(responsera.content.toLowerCase())) 
-                                    return responsera.reply(`設定失敗：輸入非指定關鍵字，請重新設定`);
-                                var take = -1;
-                                switch(responsera.content.toLowerCase()){
-                                    case 'join':
-                                        take = 0;
-                                        break;
-                                    case 'leave':
-                                        take = 1;
-                                        break;
-                                    case 'joinandleave':
-                                        take = 2;
-                                        break;
-                                }
-                                msg.channel.send("請選擇要如何更改：\n" +
-                                "\`Open\` - 開啟這項設定\n" +
-                                "\`Close\` - 關閉這項設定\n" +
-                                "請直接輸入以上2種關鍵字作為設定，不需要輸入前輟。")
-                                const collectedb = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responserab = collectedb.first();
-                                await msg.channel.sendTyping();
-                                if (!responserab) return responsera.reply(`設定失敗：輸入逾時，請重新設定`);
-                                if (!['open', 'close'].includes(responserab.content.toLowerCase())) 
-                                    return responserab.reply(`設定失敗：輸入非指定關鍵字，請重新設定`);
-                                if(responserab.content.toLowerCase() === 'open'){
-                                    if(take === 0 || take === 2){element.joinMessage = true;}
-                                    if(take === 1 || take === 2){element.leaveMessage = true;}
-                                }else{
-                                    if(take === 0 || take === 2){element.joinMessage = false;}
-                                    if(take === 1 || take === 2){element.leaveMessage = false;}
-                                }
-                                msg.channel.send(`已更改設定狀態。\n現在是：\n進入狀態：${element.joinMessage}\n` + 
-                                `離開狀態：${element.leaveMessage}`);
-                                break;
-
-                            case 'message':
-                                msg.channel.send("請直接輸入想要設定的歡迎訊息，例如： \`進入前請先閱讀公告!\` 或者輸入 \`undefined\` 即可清除設定。\n" + 
-                                    "實際運作時將如下顯示：\n\n" + 
-                                    "<@用戶> ，歡迎來到 **<您的伺服器名稱>** !\n" + 
-                                    "進入前請先閱讀公告!\n\n" + 
-                                    "目前的設定是：" + element.joinMessageContent + "，請輸入所要設定的文字：")
-                                const collectedMessage = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
-                                const responserMessage = collectedMessage.first();
-                                await msg.channel.sendTyping();
-                                if(responserMessage.content.toLowerCase() === "undefined")
-                                element.joinMessageContent = "";
-                                else
-                                    element.joinMessageContent = responserMessage.content;
-                                msg.channel.send(`已更改設定狀態。\n現在是：\n進入狀態：${element.joinMessage}\n` + 
-                                `離開狀態：${element.leaveMessage}\n進入訊息：${element.joinMessageContent}`);
-                                break;
-
-                            default:
-                                //顯示
-                                if(element.joinChannel === ""){
-                                    joinChannel = {"name":undefined, "id":undefined};
-                                }else if(!textCommand.ChannelResolveFromMention(client, element.joinChannel)){
-                                    joinChannel = {"name":"invalid", "id":"invalid"};
-                                }else{joinChannel = textCommand.ChannelResolveFromMention(client, element.joinChannel);}
-                                if(element.leaveChannel === ""){
-                                    leaveChannel = {"name":undefined, "id":undefined};
-                                }else if(!textCommand.ChannelResolveFromMention(client, element.leaveChannel)){
-                                    leaveChannel = {"name":"invalid", "id":"invalid"};
-                                }else{leaveChannel = textCommand.ChannelResolveFromMention(client, element.leaveChannel);}
-                                
-                                if(commands[1]){return msg.channel.send("請使用指定關鍵字：\`set\` 調整狀態，\`channel\` 設定發送頻道")}
-                                msg.channel.send(`現在是：\n進入狀態：${element.joinMessage}\n` + 
-                                    `離開狀態：${element.leaveMessage}\n ` + 
-                                    `進入訊息：${element.joinMessageContent}\n` +
-                                    `進入訊息頻道名稱: #${joinChannel.name}\n進入訊息頻道ID: ${joinChannel.id}\n` + 
-                                    `送別訊息頻道名稱: #${leaveChannel.name}\n送別訊息頻道ID: ${leaveChannel.id}\n\n` +
-                                    `在指令後面輸入 \`set\` 可以調整狀態，輸入 \`channel\` 可以查看發送頻道\n\n` +
-                                    `詳細說明請查看 \`${defprea}help joinMessage\``);
-                                break;
-                        }
-                        break;
-                        //#endregion
                     
                     case 'ban':
                         //#region 停權
@@ -786,6 +646,12 @@ client.on('messageCreate', async msg =>{
                                 //#endregion
                         }
                         //#endregion
+                        break;
+                        
+                    default:
+                        await msg.channel.sendTyping();
+                        if(cmd[0].match(/[a-z]/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
+                        break;
                 }
                 break;
                 //#endregion
