@@ -475,7 +475,7 @@ client.on('messageCreate', async msg =>{
                             case 'channel':
                                 msg.channel.send("請選擇要更改設定的部分：\n" +
                                 "\`Join\` - 歡迎訊息的頻道\n" +
-                                "\`Leave\` - 離去訊息的頻道\n" +
+                                "\`Leave\` - 送別訊息的頻道\n" +
                                 "\`JoinAndLeave\` - 同時調整兩邊的頻道\n" +
                                 "請直接輸入以上3種關鍵字作為設定，不需要輸入前輟。");
                                 const collected1 = await msg.channel.awaitMessages({filter: filter,  max: 1, time: 60 * 1000 });
@@ -526,14 +526,14 @@ client.on('messageCreate', async msg =>{
                                     leaveChannel = {"name":"invalid", "id":"invalid"};
                                 }else{leaveChannel = textCommand.ChannelResolveFromMention(client, element.leaveChannel);}
                                 msg.channel.send(`已更改頻道設定:\n進入訊息頻道名稱: #${joinChannel.name}\n進入訊息頻道ID: ${joinChannel.id}\n` + 
-                                `離去訊息頻道名稱: #${leaveChannel.name}\n離去訊息頻道ID: ${leaveChannel.id}`);
+                                `送別訊息頻道名稱: #${leaveChannel.name}\n送別訊息頻道ID: ${leaveChannel.id}`);
                                 break;
                             
                             //反轉
                             case 'set':
                                 msg.channel.send("請選擇要更改設定的部分：\n" +
                                 "\`Join\` - 歡迎訊息的發送設定\n" +
-                                "\`Leave\` - 離去訊息的發送設定\n" +
+                                "\`Leave\` - 送別訊息的發送設定\n" +
                                 "\`JoinAndLeave\` - 同時調整兩邊的設定\n" +
                                 "請直接輸入以上3種關鍵字作為設定，不需要輸入前輟。")
                                 const collected = await msg.channel.awaitMessages({filter: filter, max: 1, time: 60 * 1000 });
@@ -610,7 +610,7 @@ client.on('messageCreate', async msg =>{
                                     `離開狀態：${element.leaveMessage}\n ` + 
                                     `進入訊息：${element.joinMessageContent}\n` +
                                     `進入訊息頻道名稱: #${joinChannel.name}\n進入訊息頻道ID: ${joinChannel.id}\n` + 
-                                    `離去訊息頻道名稱: #${leaveChannel.name}\n離去訊息頻道ID: ${leaveChannel.id}\n\n` +
+                                    `送別訊息頻道名稱: #${leaveChannel.name}\n送別訊息頻道ID: ${leaveChannel.id}\n\n` +
                                     `在指令後面輸入 \`set\` 可以調整狀態，輸入 \`channel\` 可以查看發送頻道\n\n` +
                                     `詳細說明請查看 \`${defprea}help joinMessage\``);
                                 break;
@@ -691,12 +691,12 @@ client.on('messageCreate', async msg =>{
                                 const embed4 = new Discord.MessageEmbed()
                                     .setColor(process.env.EMBEDCOLOR)
                                     .setTitle(`管理權限指令清單/joinMessage(進出訊息發送管理)：前輟[${defprea}](需要管理員權限)`)
-                                    .setDescription(`關於joinMessage：可以設定歡迎與離去訊息的使用與發送的頻道\n` +
+                                    .setDescription(`關於joinMessage：可以設定歡迎與送別訊息的使用與發送的頻道\n` +
                                                     `以下列出有關指令[\`${defprea}joinMessage\`]可以做的事，本權限全程需要管理員權限\n` + 
                                                     `<此為必填項> [此為選填項]`)
                                     .addField(`${defprea}joinMessage`, `顯示目前的設定檔`)
-                                    .addField(`${defprea}joinMessage set`, '調整是否要發送歡迎與離去訊息的設定')
-                                    .addField(`${defprea}joinMessage channel`, '設定發送歡迎與離去訊息的頻道')
+                                    .addField(`${defprea}joinMessage set`, '調整是否要發送歡迎與送別訊息的設定')
+                                    .addField(`${defprea}joinMessage channel`, '設定發送歡迎與送別訊息的頻道')
                                     .addField(`${defprea}joinMessage message`, '設定屬於伺服器的歡迎訊息')
                                     .addField('\n頻道狀態說明', 'undefined:頻道未設定，若此時訊息發送與否為true並存在系統訊息頻道則發送在那裡\n' + 
                                                                 'invalid:頻道已消失，若此時訊息發送與否為true時並不會發送訊息，請重新設定頻道')
@@ -932,7 +932,7 @@ client.on('messageCreate', async msg =>{
 });
 //#endregion
 
-//#region 進入、離去觸發事件guildMemberAdd、guildMemberRemove
+//#region 進入、送別觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
     console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
@@ -943,13 +943,13 @@ client.on('guildMemberAdd', member => {
     if(!element.joinChannel){
         if(!member.guild.systemChannel) return;
         if(!element.joinMessageContent)
-            member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !`);
+            member.guild.systemChannel.send(`${member} ，歡迎來到 **${member.guild.name}** !`);
         else{
             if(element.joinMessageContent.includes("<user>") && element.joinMessageContent.includes("<server>")){
                 const msg = element.joinMessageContent.split("<user>").join(` ${member} `).split("<server>").join(` **${member.guild.name}** `)
                 member.guild.systemChannel.send(msg);
             }else
-                member.guild.systemChannel.send(`${member} ，**歡迎來到 ${member.guild.name}** !\n${element.joinMessageContent}`);
+                member.guild.systemChannel.send(`${member} ，歡迎來到 **${member.guild.name}** !\n${element.joinMessageContent}`);
         }
             
     }else{
@@ -977,7 +977,7 @@ client.on('guildMemberRemove', member => {
         if(!element.leaveMessageContent)
             member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
         else{
-            const msg = element.leaveMessageContent.split("<user>").join(` ${member.user.tag} `).split("<server>").join(` **${member.guild.name}** `)
+            const msg = element.leaveMessageContent.split("<user>").join(` **${member.user.tag}** `).split("<server>").join(` **${member.guild.name}** `)
             member.guild.systemChannel.send(msg);
         }
     }else{
@@ -985,7 +985,7 @@ client.on('guildMemberRemove', member => {
         if(!element.leaveMessageContent)
             client.channels.fetch(element.leaveChannel).then(channel => channel.send(`**${member.user.tag}** 已遠離我們而去。`));
         else{
-            const msg = element.leaveMessageContent.split("<user>").join(` ${member.user.tag} `).split("<server>").join(` **${member.guild.name}** `)
+            const msg = element.leaveMessageContent.split("<user>").join(` **${member.user.tag}** `).split("<server>").join(` **${member.guild.name}** `)
             client.channels.fetch(element.leaveChannel).then(channel => channel.send(msg));
         }
     }  

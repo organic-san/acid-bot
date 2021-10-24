@@ -186,7 +186,7 @@ module.exports = {
  */
 async function playmusic(musicList, interaction, songUrl){
     try {
-        interactionReply(interaction, `正在讀取資訊...`);
+        await interactionReply(interaction, `正在讀取資訊...`);
         var a = 0;
         if(!interaction.member.voice.channel){
             return interactionReply(interaction, `找不到可以一同享受音樂的與音頻道，你要不要先找一個進去?`, true);
@@ -199,7 +199,7 @@ async function playmusic(musicList, interaction, songUrl){
         //}
         //第一個參數不是連結就搜尋
         if(!songUrl.startsWith("http")){
-            interaction.reply(`正在搜尋：\`${songUrl}\``);
+            await interactionReply(interaction, `正在搜尋: \`${songUrl}\``);
             a++;
             var opts = {
                 maxResults: 1,

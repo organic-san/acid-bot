@@ -16,6 +16,7 @@ module.exports = {
             .addChoice("機器人回應", "response")
             .addChoice("每日單字系統", "words")
             .addChoice("更新資訊", "update")
+            .addChoice("歡迎/送別訊息", "welcome")
         ),
 	tag: "interaction",
     /**
@@ -50,6 +51,7 @@ module.exports = {
                     "以下指令的詳細說明，可以在/help後選擇其他模式以取得說明\n\n" + 
                     "\`/levels\` - 等級排行系統\n" + 
                     "\`/auto-reply\` - 自動回應系統\n" + 
+                    "\`/welcome-message\` - 歡迎訊息/送別訊息系統\n" + 
                     "\`/music\` - 音樂系統\n" + 
                     "\`/response\` - 機器人回應\n" + 
                     "\`/words\` - 每日單字系統")
@@ -75,7 +77,9 @@ module.exports = {
                     "是非常方便的功能。(燦笑")
                 .addField("計時器回來了!", 
                     "\`/timer [hour:小時] [min:分鐘] [sec:秒] [message:提醒訊息]\`\n")
-                .addField("剔除非斜線的指令", 
+                .addField("歡迎訊息回來了!", 
+                    "\`/welcome-message\` 或者查看/help welcome-message以取得完整資訊\n")
+                .addField("剔除非斜線的指令",
                     "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
@@ -167,7 +171,8 @@ module.exports = {
                 .addField("基本指令", 
                     `\`/response happybeam\` - 由機器人送你一道快樂光線======)\n` +
                     `\`/response goodnight\` - 晚上了，和你說晚安.:｡+゜｡\n` + 
-                    `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n`)
+                    `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n` +
+                    `\`/response crazy-night-remove <floor:樓數>\` - 清除機器人發射的🐢🐔🥛\n`)
                 .addField('🐢🐔🥛是什麼?', 'crazy night')
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
@@ -184,6 +189,24 @@ module.exports = {
                     `\`/words searth <word:單字>\` - 搜尋該單字，請使用該單字的原型\n` +
                     `\`/words daily [amount:數量] [rank-limit-low:下等級限制] [rank-limit-high:上等級限制]\` - 產生每日單日列表，隔日更換\n`)
                 .addField('資料是哪裡來的?', '[台灣測驗中心](http://www.taiwantestcentral.com/WordList/WordListByName.aspx?MainCategoryID=25&Letter=A)')
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
+                            `https://discord.gg/hveXGk5Qmz`)
+                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+            interaction.reply({embeds: [embed]});
+        } else if (option === 'welcome') {
+            const embed = new Discord.MessageEmbed()
+                .setColor(process.env.EMBEDCOLOR)
+                .setTitle(`指令幫助清單/welcome(歡迎與送別訊息)`)
+                .setDescription(`關於歡迎與送別訊息系統: 每當有人進來/送別，機器人就會發送一則訊息以示歡迎/惋惜\n` +
+                    `<此為必填項> [此為選填項]`)
+                .addField("基本指令", 
+                    `\`/welcome-message set channel <type:設定範圍> <channel:頻道>\` - 設定要發送訊息的頻道\n` +
+                    `\`/welcome-message set message <type:設定範圍> <message:內容>\` - 設定要發送的訊息\n` +
+                    `\`/welcome-message open <type:設定範圍>\` - 開啟歡迎或送別訊息\n` +
+                    `\`/welcome-message close <type:設定範圍>\` - 關閉歡迎或送別訊息\n` +
+                    `\`/welcome-message show\` - 顯示目前的設定\n`)
+                .addField("預設模板(沒有設定訊息時將使用此版本)", 
+                    "歡迎預設訊息: \`<user> ，歡迎來到 <server> !\`\n送別預設訊息: \`<user> 已遠離我們而去。\`\n")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
