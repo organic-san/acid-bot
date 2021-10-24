@@ -19,6 +19,14 @@ module.exports = {
                     .setDescription('所要發射的高度(樓層)')
                     .setRequired(true)
             )
+        ).addSubcommand(opt => 
+            opt.setName('crazy-night-remove')
+            .setDescription('向上清除龜雞奶')
+            .addIntegerOption(opt => 
+                opt.setName('floor')
+                    .setDescription('所要清除的高度(樓層)')
+                    .setRequired(true)
+            )
         ),
     tag: "interaction",
     
@@ -63,6 +71,24 @@ module.exports = {
                         if(!beforeMessage.deleted) beforeMessage.react('🐔').catch(err => console.log(err));
                         if(!beforeMessage.deleted) beforeMessage.react('🥛').catch(err => console.log(err));
                         interaction.reply({content: "成功發射!", ephemeral: true})
+                    }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
+                }
+            }
+            else interaction.reply({content: '失敗: 數字請於合理範圍: 1-100', ephemeral: true});
+
+        } else if(interaction.options.getSubcommand() === 'crazy-night-remove') {
+            const floor = interaction.options.getInteger('floor');
+            if(floor <= 100 && floor >= 1){
+                const beforeMessage = await interaction.channel.messages.fetch({ before: interaction.id, limit: floor })
+                .then(messages => messages.last())
+                .catch(console.error)
+
+                if(beforeMessage){
+                    if(!beforeMessage.deleted){ 
+                        beforeMessage.reactions.cache.get('🐢').users.remove().catch((err)=>console.log(err));
+                        beforeMessage.reactions.cache.get('🐔').users.remove().catch((err)=>console.log(err));
+                        beforeMessage.reactions.cache.get('🥛').users.remove().catch((err)=>console.log(err));
+                        interaction.reply({content: "成功清除!", ephemeral: true})
                     }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
                 }
             }
