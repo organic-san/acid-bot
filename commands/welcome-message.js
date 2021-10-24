@@ -17,7 +17,7 @@ module.exports = {
                     .setDescription('選擇要設定的範圍')
                     .setRequired(true)
                     .addChoice("歡迎訊息", "join")
-                    .addChoice("離去訊息", "leave")
+                    .addChoice("送別訊息", "leave")
                     .addChoice("兩邊我都要!", "joinandleave")
                 ).addChannelOption(opt => 
                     opt.setName('channel')
@@ -31,7 +31,7 @@ module.exports = {
                     .setDescription('選擇要設定的範圍')
                     .setRequired(true)
                     .addChoice("歡迎訊息", "join")
-                    .addChoice("離去訊息", "leave")
+                    .addChoice("送別訊息", "leave")
                 ).addStringOption(opt => 
                     opt.setName('message')
                     .setDescription('歡迎訊息的內容，在其中輸入<user>，會轉換成加入的用戶名稱(必填)，<server>則會轉換成伺服器名稱。空格將是為換行。設為空白將使用預設文字。')
@@ -45,7 +45,7 @@ module.exports = {
                 .setDescription('選擇要設定的範圍')
                 .setRequired(true)
                 .addChoice("歡迎訊息", "join")
-                .addChoice("離去訊息", "leave")
+                .addChoice("送別訊息", "leave")
                 .addChoice("兩邊我都要!", "joinandleave")
             )
         ).addSubcommand(opt => 
@@ -56,7 +56,7 @@ module.exports = {
                 .setDescription('選擇要設定的範圍')
                 .setRequired(true)
                 .addChoice("歡迎訊息", "join")
-                .addChoice("離去訊息", "leave")
+                .addChoice("送別訊息", "leave")
                 .addChoice("兩邊我都要!", "joinandleave")
             )
         ).addSubcommand(opt => 
@@ -113,14 +113,14 @@ module.exports = {
 
                 if(!guildInformation.leaveChannel){
                     if(interaction.guild.systemChannel) 
-                        message += `離去訊息頻道名稱: 系統訊息頻道(${interaction.guild.systemChannel}) (ID: ${interaction.guild.systemChannel.id})\n`;
+                        message += `送別訊息頻道名稱: 系統訊息頻道(${interaction.guild.systemChannel}) (ID: ${interaction.guild.systemChannel.id})\n`;
                     else
-                        message += `離去訊息頻道名稱: 系統訊息頻道(未定義) (ID: 未定義)\n`;
+                        message += `送別訊息頻道名稱: 系統訊息頻道(未定義) (ID: 未定義)\n`;
                 }else if(!interaction.guild.channels.cache.get(guildInformation.leaveChannel)){
-                    message += `離去訊息頻道名稱: 頻道已消失 (ID: 未定義)\n`;
+                    message += `送別訊息頻道名稱: 頻道已消失 (ID: 未定義)\n`;
                 }else {
                     const setChannel = interaction.guild.channels.cache.get(guildInformation.leaveChannel);
-                    message += `離去訊息頻道名稱: ${setChannel} (ID: ${setChannel.id})\n`;
+                    message += `送別訊息頻道名稱: ${setChannel} (ID: ${setChannel.id})\n`;
                 }
 
                 interaction.reply(message);
@@ -148,7 +148,7 @@ module.exports = {
                 else guildInformation.leaveMessageContent = message;
                 interaction.reply(`設定完成:\n` + 
                     `歡迎訊息: ${guildInformation.joinMessageContent || "未定義(使用預設)"}\n` +
-                    `離去訊息: ${guildInformation.leaveMessageContent || "未定義(使用預設)"}`)
+                    `送別訊息: ${guildInformation.leaveMessageContent || "未定義(使用預設)"}`)
             }
         }else{
             if(['open', 'close'].includes(interaction.options.getSubcommand(false))) {
@@ -170,7 +170,7 @@ module.exports = {
                 }
                 interaction.reply(`狀態已更改為:\n` + 
                     `歡迎訊息: ${guildInformation.joinMessage ? "開啟" : "關閉"}\n` +
-                    `離去訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
+                    `送別訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
 
             }else if(interaction.options.getSubcommand(false) === 'show') {
 
@@ -205,11 +205,11 @@ module.exports = {
                     .setColor(process.env.EMBEDCOLOR)                            
                     .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
                     .addField(`系統開關`, `歡迎訊息: ${guildInformation.joinMessage ? "開啟" : "關閉"}\n` +
-                        `離去訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
+                        `送別訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
                     .addField(`歡迎訊息發送頻道`, joinChannel)
                     .addField(`歡迎訊息內容`, guildInformation.joinMessageContent || "未定義(使用預設)")
-                    .addField(`離去訊息發送頻道`, leaveChannel)
-                    .addField(`離去訊息內容`, guildInformation.leaveMessageContent || "未定義(使用預設)")
+                    .addField(`送別訊息發送頻道`, leaveChannel)
+                    .addField(`送別訊息內容`, guildInformation.leaveMessageContent || "未定義(使用預設)")
                     .setFooter(`${interaction.client.user.tag} • 相關說明請查看/help`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
                     .setTimestamp();
 
