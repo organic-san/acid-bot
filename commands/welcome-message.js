@@ -202,7 +202,7 @@ module.exports = {
 
                 const embed= new Discord.MessageEmbed()
                     .setTitle(`${interaction.guild.name} 的歡迎訊息設定`)
-                    .setColor(process.env.EMBEDCOLOR)                            
+                    .setColor(process.env.EMBEDCOLOR)                          
                     .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
                     .addField(`系統開關`, `歡迎訊息: ${guildInformation.joinMessage ? "開啟" : "關閉"}\n` +
                         `送別訊息: ${guildInformation.leaveMessage ? "開啟" : "關閉"}`)
