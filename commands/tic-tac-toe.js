@@ -20,12 +20,13 @@ module.exports = {
      * @param {Discord.CommandInteraction} interaction 
      */
 	async execute(interaction) {
+        await interaction.deferReply();
         const difficulty = interaction.options.getNumber('difficulty');
         const difficultyKey = difficulty === 1 ? '簡單' : (difficulty === 2 ? '中等' : '困難');
         let playingArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         let turn = 1;
         let row = rowCreate(playingArray, false);
-        const msg = await interaction.reply({
+        const msg = await interaction.editReply({
             content: `來下一場圈圈叉叉吧!\n玩家: ${interaction.user}\n難度: \`${difficultyKey}\``, 
             components: row, 
             fetchReply: true
@@ -51,11 +52,11 @@ module.exports = {
                 });
                 pointBlock.sort((a, b) => b.key - a.key);
                 if(difficulty == 3) {
-                    playingArray[pointBlock[0].index] = -1;
+                    if(turn === 5 && playingArray[0] === -1 &&  playingArray[4] === 1 && playingArray[8] === 1) playingArray[2] = -1;
+                    else playingArray[pointBlock[0].index] = -1;
                 }
-                console.log(9-turn);
                 if(difficulty == 2) {
-                    const ind = Math.floor(Math.random() * Math.min(4, 9 - turn));
+                    const ind = Math.floor(Math.random() * Math.min(3, 9 - turn));
                     playingArray[pointBlock[ind].index] = -1;
                 }
                 if(difficulty == 1) {
@@ -65,6 +66,7 @@ module.exports = {
 
                 const isWin = winCheck(playingArray);
                 if(isWin !== 0) {
+                    collector.stop();
                     let row = rowCreate(playingArray, true);
                     await i.update({
                         content: `遊戲已結束!\n贏家: ${interaction.client.user} / 玩家: ${interaction.user}\n難度: \`${difficultyKey}\``, 
@@ -109,23 +111,53 @@ module.exports = {
 	}
 };
 
+/**
+ * 
+ * @param {Array<number} playingArray 
+ * @returns 
+ */
 function pointCalc(playingArray) {
     let point = 0;
+    let textLine = "";
     //橫
     for(let i = 0; i < 3; i++){
-        point += 10 ** ((playingArray[i * 3 + 0] < 0 ? 1 : 0) + (playingArray[i * 3 + 1] < 0 ? 1 : 0) + (playingArray[i * 3 + 2] < 0 ? 1 : 0));
-        point += 10 ** ((playingArray[i * 3 + 0] > 0 ? 1 : 0) + (playingArray[i * 3 + 1] > 0 ? 1 : 0) + (playingArray[i * 3 + 2] > 0 ? 1 : 0));
+        textLine = (playingArray[i * 3 + 0] + 2).toString() + " " + 
+            (playingArray[i * 3 + 1] + 2).toString() + " " + 
+            (playingArray[i * 3 + 2] + 2).toString();
+        point += checkPoint(textLine);
     }
     //直
     for(let i = 0; i < 3; i++){
-        point += 10 ** ((playingArray[0 + i] < 0 ? 1 : 0) + (playingArray[3 + i] < 0 ? 1 : 0) + (playingArray[6 + i] < 0 ? 1 : 0));
-        point += 10 ** ((playingArray[0 + i] > 0 ? 1 : 0) + (playingArray[3 + i] > 0 ? 1 : 0) + (playingArray[6 + i] > 0 ? 1 : 0));
+        textLine = (playingArray[i + 0] + 2).toString() + " " + 
+            (playingArray[i + 3] + 2).toString() + " " + 
+            (playingArray[i + 6] + 2).toString();
+        point += checkPoint(textLine);
     }
     //斜
-    point += 10 ** ((playingArray[0] < 0 ? 1 : 0) + (playingArray[4] < 0 ? 1 : 0) + (playingArray[8] < 0 ? 1 : 0));
-    point += 10 ** ((playingArray[0] > 0 ? 1 : 0) + (playingArray[4] > 0 ? 1 : 0) + (playingArray[8] > 0 ? 1 : 0));
-    point += 10 ** ((playingArray[2] < 0 ? 1 : 0) + (playingArray[4] < 0 ? 1 : 0) + (playingArray[6] < 0 ? 1 : 0));
-    point += 10 ** ((playingArray[2] > 0 ? 1 : 0) + (playingArray[4] > 0 ? 1 : 0) + (playingArray[6] > 0 ? 1 : 0));
+    textLine = (playingArray[0] + 2).toString() + " " + 
+        (playingArray[4] + 2).toString() + " " + 
+        (playingArray[8] + 2).toString();
+    point += checkPoint(textLine);
+
+    textLine = (playingArray[2] + 2).toString() + " " + 
+        (playingArray[4] + 2).toString() + " " + 
+        (playingArray[6] + 2).toString();
+    point += checkPoint(textLine);
+    return point;
+}
+/**
+ * 
+ * @param {String} textLine 
+ * @returns 
+ */
+function checkPoint(textLine) {
+    let point = 0;
+    if(textLine.includes('1 1 1')) point += 10000;
+    else if(textLine.includes('1 1') && !textLine.includes('1 3') && !textLine.includes('3 1')) point += 100;
+    else if(textLine.includes('1') && !textLine.includes('3 3')) point += 10;
+    if(textLine.includes('3 3 3')) point += 10000;
+    else if(textLine.includes('3 3') && !textLine.includes('1 3') && !textLine.includes('3 1')) point += 100;
+    else if(textLine.includes('3') && !textLine.includes('1 1')) point += 10;
     return point;
 }
 

@@ -75,7 +75,7 @@ client.on('ready', () =>{
             fs.readFile(filename, async (err, text) => {
                 if (err)
                     throw err;
-                
+                console.log(element);
                 const targetGuild = await client.guilds.fetch(JSON.parse(text).id);
                 guildInformation.pushGuildInfo(
                     await guild.GuildInformation.toGuildInformation(JSON.parse(text), targetGuild)
@@ -105,7 +105,7 @@ client.on('ready', () =>{
         });
         time = new Date(Date.now());
         console.log(`Saved in ${time}`);
-        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: ${time}`)).catch(err => console.log(err));
+        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`)).catch(err => console.log(err));
     },10 * 60 * 1000)
 });
 //#endregion
@@ -894,7 +894,7 @@ client.on('messageCreate', async msg =>{
                         });
                         time = new Date(Date.now());
                         console.log(`Saved in ${time} (手動)`);
-                        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`手動存檔: ${time}`));
+                        client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`手動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`));
                         break;
                         //#endregion
                     

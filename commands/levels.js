@@ -64,7 +64,7 @@ module.exports = {
             const user = interaction.options.getUser('user') ?? interaction.user;
             
             if(user.bot) return interaction.reply({content: "哎呀！機器人並不適用等級系統！", ephemeral: true});
-            if(!guildInformation.levels) return interaction.reply({content: "哎呀！這個伺服器並沒有開啟等級系統！", ephemeral: true});
+            if(!guildInformation.levels) return interaction.reply({content: "哎呀！這個伺服器並沒有開啟等級系統！"});
 
             else{
                 var a = 0;
@@ -112,6 +112,7 @@ module.exports = {
 
         } else if(interaction.options.getSubcommand() === 'ranking') {
 
+            if(!guildInformation.levels) return interaction.reply({content: "哎呀！這個伺服器並沒有開啟等級系統！"});
             const pageShowHax = 20;
             let page = 0;
             guildInformation.sortUser();
