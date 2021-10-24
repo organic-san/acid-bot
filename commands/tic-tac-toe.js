@@ -56,8 +56,13 @@ module.exports = {
                     else playingArray[pointBlock[0].index] = -1;
                 }
                 if(difficulty == 2) {
-                    const ind = Math.floor(Math.random() * Math.min(3, 9 - turn));
-                    playingArray[pointBlock[ind].index] = -1;
+                    if(Math.random() * 2 < 1){
+                        const ind = Math.floor(Math.random() * Math.min(3, 9 - turn));
+                        playingArray[pointBlock[ind].index] = -1;
+                    }else {
+                        if(turn === 5 && playingArray[0] === -1 &&  playingArray[4] === 1 && playingArray[8] === 1) playingArray[2] = -1;
+                        else playingArray[pointBlock[0].index] = -1;
+                    }
                 }
                 if(difficulty == 1) {
                     const ind = Math.floor(Math.random() * Math.min(4, 7 - turn)) + 2;
@@ -208,7 +213,7 @@ function rowCreate(playingArray, isEndgame) {
                     .setCustomId('2')
                     .setStyle(playingArray[1] === 0 ? 'SECONDARY' : (playingArray[1] === 1 ? 'SUCCESS' : 'DANGER'))
                     .setDisabled(playingArray[1] === 0 && !isEndgame ? false : true),
-                    new Discord.MessageButton()
+                new Discord.MessageButton()
                     .setLabel(playingArray[2] === 0 ? '-' : (playingArray[2] === 1 ? '○' : '×'))
                     .setCustomId('3')
                     .setStyle(playingArray[2] === 0 ? 'SECONDARY' : (playingArray[2] === 1 ? 'SUCCESS' : 'DANGER'))
@@ -220,12 +225,12 @@ function rowCreate(playingArray, isEndgame) {
                     .setCustomId('4')
                     .setStyle(playingArray[3] === 0 ? 'SECONDARY' : (playingArray[3] === 1 ? 'SUCCESS' : 'DANGER'))
                     .setDisabled(playingArray[3] === 0 && !isEndgame ? false : true),
-                    new Discord.MessageButton()
+                new Discord.MessageButton()
                     .setLabel(playingArray[4] === 0 ? '-' : (playingArray[4] === 1 ? '○' : '×'))
                     .setCustomId('5')
                     .setStyle(playingArray[4] === 0 ? 'SECONDARY' : (playingArray[4] === 1 ? 'SUCCESS' : 'DANGER'))
                     .setDisabled(playingArray[4] === 0 && !isEndgame ? false : true),
-                    new Discord.MessageButton()
+                new Discord.MessageButton()
                     .setLabel(playingArray[5] === 0 ? '-' : (playingArray[5] === 1 ? '○' : '×'))
                     .setCustomId('6')
                     .setStyle(playingArray[5] === 0 ? 'SECONDARY' : (playingArray[5] === 1 ? 'SUCCESS' : 'DANGER'))
@@ -237,12 +242,12 @@ function rowCreate(playingArray, isEndgame) {
                     .setCustomId('7')
                     .setStyle(playingArray[6] === 0 ? 'SECONDARY' : (playingArray[6] === 1 ? 'SUCCESS' : 'DANGER'))
                     .setDisabled(playingArray[6] === 0 && !isEndgame ? false : true),
-                    new Discord.MessageButton()
+                new Discord.MessageButton()
                     .setLabel(playingArray[7] === 0 ? '-' : (playingArray[7] === 1 ? '○' : '×'))
                     .setCustomId('8')
                     .setStyle(playingArray[7] === 0 ? 'SECONDARY' : (playingArray[7] === 1 ? 'SUCCESS' : 'DANGER'))
                     .setDisabled(playingArray[7] === 0 && !isEndgame ? false : true),
-                    new Discord.MessageButton()
+                new Discord.MessageButton()
                     .setLabel(playingArray[8] === 0 ? '-' : (playingArray[8] === 1 ? '○' : '×'))
                     .setCustomId('9')
                     .setStyle(playingArray[8] === 0 ? 'SECONDARY' : (playingArray[8] === 1 ? 'SUCCESS' : 'DANGER'))
