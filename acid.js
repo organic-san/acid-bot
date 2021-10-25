@@ -219,17 +219,80 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
+        //#region 群外表情符號代為顯示功能
+        if(msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && 
+        !msg.content.startsWith('%') && 
+        !msg.content.startsWith('$') && 
+        !msg.content.startsWith('a^') && 
+        !msg.content.startsWith('b^'))
+        {
+            if(!msg.channel.isThread()){
+                const notEmoji = msg.content.split(/:\w+:/g);
+                const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
+                isEmoji.forEach((v, i) => isEmoji[i] = v[0]);
+                let isEmojiChanged = false;
+
+                if(isEmoji.length > 0) {
+                    isEmoji.forEach((emoji, index) => {
+                        if(!emoji) return;
+                        if(notEmoji[index].endsWith('<')) return;
+                        if(notEmoji[index].endsWith('<a')) return;
+                        let find = client.emojis.cache.find(e => e.name === emoji.slice(1, emoji.length - 1));
+                        if(!find) find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
+                        if(find) {
+                            if(find.guild.id !== msg.guild.id || find.animated){
+                                isEmojiChanged = true;
+                                isEmoji[index] = find.toString();
+                            }
+                        }
+                    })
+    
+                    if(isEmojiChanged){
+                        console.log("isCommand: true: isEmojiWebhook");
+    
+                        let words = [];
+                        for(let i = 0; i < notEmoji.length * 2 - 1; i++)
+                            i % 2 ? words.push(isEmoji[(i-1)/2]) : words.push(notEmoji[i/2]);
+                        words = words.join("");
+    
+                        const webhooks = await msg.channel.fetchWebhooks();
+                        let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
+                        if(!webhook) {
+                            msg.channel.createWebhook(msg.member.displayName, {
+                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                            })
+                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
+                                .catch(console.error);
+                        } else {
+                            await webhook.edit({
+                                name: msg.member.displayName,
+                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                            })
+                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
+                                .catch(console.error);
+                        }
+                        if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
+                        return;
+                    }
+                }
+            }
+        }
+        //#endregion
+
         if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.ADD_REACTIONS))   
             return console.log("isCommand: reactless");
 
         //#region 幫文字加上表情符號
         if (msg.content === '龜雞奶'){
+            console.log("isCommand: false: isEmojiReact");
             msg.react('🐢').catch(err => console.log(err));
             msg.react('🐔').catch(err => console.log(err));
             msg.react('🥛').catch(err => console.log(err));
+            return;
         }
 
         if (msg.content.includes('上龜雞奶') && msg.content.includes('樓')){
+            console.log("isCommand: false: isEmojiReact");
             const regex = /上/g;
 
             if(msg.content.match(regex).length <= 100){
@@ -252,9 +315,11 @@ client.on('messageCreate', async msg =>{
                     msg.react('😢');
                 }
             }
+            return;
         }
 
         if (msg.content.includes('下龜雞奶') && msg.content.includes('樓')){
+            console.log("isCommand: false: isEmojiReact");
             const regex = /下/g;
 
             if(msg.content.match(regex).length <= 100){
@@ -277,6 +342,7 @@ client.on('messageCreate', async msg =>{
                     msg.react('😢').catch(err => console.log(err));
                 }
             }
+            return;
         }
         //#endregion
 
@@ -293,18 +359,19 @@ client.on('messageCreate', async msg =>{
 
         if(isCommand){
             const key = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText);
-            console.log("isCommand: " + isCommand + ": " + prefix[tempPrefix].Value + key[0]);
+            console.log("isCommand: true: " + prefix[tempPrefix].Value + key[0]);
         }else{
             const isReaction = guildInformation.getGuild(msg.guild.id).findReaction(msg.content);
             if(isReaction >= 0) {
                 await msg.channel.sendTyping();
                 msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
-                console.log("isCommand: " + isCommand + ": isReaction");
-            }
+                console.log("isCommand: false: isReaction");
+            } else console.log("isCommand: false");
+            return;
         }
         //#endregion
 
-        //#region 特殊文字判定回應 笑死 晚安 快樂光線
+        //#region 特殊文字判定回應 笑死 快樂光線
         switch(msg.content){
             case '笑死':
                 if(msg.guild.id === '881520130926981172') return;
@@ -364,61 +431,6 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
-        //#region 群外表情符號代為顯示功能
-        const member = await msg.guild.members.fetch(client.user.id);
-        if(member.permissions.has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && !isCommand){
-            if(!msg.channel.isThread()){
-                const notEmoji = msg.content.split(/:\w+:/g);
-                const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
-                isEmoji.forEach((v, i) => isEmoji[i] = v[0]);
-                let isEmojiChanged = false;
-
-                if(isEmoji.length > 0) {
-                    isEmoji.forEach((emoji, index) => {
-                        if(!emoji) return;
-                        if(notEmoji[index].endsWith('<')) return;
-                        if(notEmoji[index].endsWith('<a')) return;
-                        let find = client.emojis.cache.find(e => e.name === emoji.slice(1, emoji.length - 1));
-                        if(!find) find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
-                        if(find) {
-                            if(find.guild.id !== msg.guild.id || find.animated){
-                                isEmojiChanged = true;
-                                isEmoji[index] = find.toString();
-                            }
-                        }
-                    })
-    
-                    if(isEmojiChanged){
-                        console.log("isCommand: " + isCommand + ": isEmojiWebhook");
-    
-                        let words = [];
-                        for(let i = 0; i < notEmoji.length * 2 - 1; i++)
-                            i % 2 ? words.push(isEmoji[(i-1)/2]) : words.push(notEmoji[i/2]);
-                        words = words.join("");
-    
-                        const webhooks = await msg.channel.fetchWebhooks();
-                        let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
-                        if(!webhook) {
-                            msg.channel.createWebhook(msg.member.displayName, {
-                                avatar: msg.author.displayAvatarURL({dynamic: true})
-                            })
-                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
-                                .catch(console.error);
-                        } else {
-                            webhook.edit({
-                                name: msg.member.displayName,
-                                avatar: msg.author.displayAvatarURL({dynamic: true})
-                            })
-                                .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
-                                .catch(console.error);
-                        }
-                        if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
-                    } else console.log("isCommand: " + isCommand);
-                } else console.log("isCommand: " + isCommand);
-            }
-        }
-        //#endregion
-
         //實作
         //以下預計廢除
         switch(tempPrefix.toString()){
@@ -460,12 +472,12 @@ client.on('messageCreate', async msg =>{
                 break;
                 //#endregion
             
-            case '3': //舊音樂
-            case '4':
-                const cmd = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
-                if(cmd[0].match(/[a-z]/)){
-                await msg.channel.sendTyping();
-                msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
+            case '2': //舊音樂
+            case '3':
+                const cmd2 = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
+                if(cmd2[0].match(/[a-z]/)){
+                    await msg.channel.sendTyping();
+                    msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
                 }
                 break;
 
@@ -647,10 +659,10 @@ client.on('messageCreate', async msg =>{
                         }
                         //#endregion
                         break;
-                        
+
                     default:
                         await msg.channel.sendTyping();
-                        if(cmd[0].match(/[a-z]/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
+                        if(commands[0].match(/[a-z]+/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
                         break;
                 }
                 break;
