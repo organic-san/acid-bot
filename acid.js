@@ -367,7 +367,6 @@ client.on('messageCreate', async msg =>{
                 msg.channel.send(guildInformation.getGuild(msg.guild.id).getReaction(isReaction));
                 console.log("isCommand: false: isReaction");
             } else console.log("isCommand: false");
-            return;
         }
         //#endregion
 

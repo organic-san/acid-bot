@@ -28,6 +28,7 @@ module.exports = {
 	async execute(interaction) {
         await interaction.deferReply();
         const range = interaction.options.getNumber('range');
+        const rangeKey = range === 4 ? "4個" : (range === 6 ? "6個" : (range === 8 ? "8個" : "10個"))
         const recurring = interaction.options.getBoolean('is-recurring');
         let answer = [];
         let defaultList = [];
@@ -35,7 +36,11 @@ module.exports = {
         if(range === 10) defaultList[defaultList.length - 1] = 0;
         let turn = range + 2;
         for(let i = 0; i < 4; i++){
-            if(recurring) answer.push(Math.floor(Math.random() * range + 1));
+            if(recurring) {
+                let rdCode = Math.floor(Math.random() * range + 1);
+                if(rdCode === 10) rdCode = 0;
+                answer.push(rdCode);
+            }
             else {
                 const rdCode = Math.floor(Math.random() * defaultList.length);
                 answer.push(defaultList[rdCode]);
@@ -44,29 +49,30 @@ module.exports = {
         }
         let row = await rowCreate(range, recurring, []);
         const msg = await interaction.editReply({
-            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到! \n玩家: ${interaction.user}  / 模式: ${recurring ? "會重複數字" : "不會重複數字"}`, 
+            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到! \n` + 
+                `玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}`, 
             components: row, 
             fetchReply: true
         });
-        const collector = msg.createMessageComponentCollector({time: 6 * 1000 });
+        const collector = msg.createMessageComponentCollector({time: 180 * 1000 });
         let guess = [];
         let guessd = [[]];
         let content = "";
         collector.on('collect', async i => {
             if(i.user.id !== interaction.user.id) return i.reply({content: "想參與遊戲可以用/guess-number開始喔!", ephemeral: true});
+            collector.resetTimer({ time: 180 * 1000 });
             if(!Number.isNaN(parseInt(i.customId)) || i.customId === "delete") {
                 if(!Number.isNaN(parseInt(i.customId))) guess.push(parseInt(i.customId));
                 else guess.pop(parseInt(i.customId));
 
                 let row = await rowCreate(range, recurring, guess);
                 await i.update({
-                    content: `來玩猜數字吧!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
+                    content: `來玩猜數字吧!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n` + 
                         `${content + `目前猜測: ${[...guess].join(" ").padEnd(4, ' ')}`}\n\`\`\``, 
                     components: row
                 });   
             } else if(i.customId === "complete") {
-
                 guessd[range + 2 - turn] = [...guess];
                 let copyans = [...answer];
                 let copygus = [...guess];
@@ -76,14 +82,14 @@ module.exports = {
                     if(v2 === copyans[i2]){
                         a++;
                         copyans[i2] = -1;
-                        copygus[i2] = i2 * 100;
+                        copygus[i2] = -2;
                     }
                 })
                 copygus.forEach((v2, i2) => {
                     if(copyans.includes(v2)){
                         b++;
                         copyans[copyans.findIndex(v => v === v2)] = -1;
-                        copygus[i2] = i2 * 100;
+                        copygus[i2] = -2;
                     }
                 })
                 guessd[range + 2 - turn][guessd[range + 2 - turn].length] = (a + "A" + b + "B");
@@ -91,7 +97,7 @@ module.exports = {
                 turn--;
                 if(guess.join("") === answer.join("")){
                     await i.update({
-                        content: `恭喜猜對了!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
+                        content: `恭喜猜對了!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
                         `\n成功!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                         components: []
@@ -101,13 +107,13 @@ module.exports = {
                     guess = [];
                     let row = await rowCreate(range, recurring, guess);
                     await i.update({
-                        content: `來玩猜數字吧!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
+                        content: `來玩猜數字吧!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}\n\`\`\``, 
                         components: row
                     });
                 } else {
                     await i.update({
-                        content: `挑戰失敗!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
+                        content: `挑戰失敗!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
                         `\n失敗!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                         components: []
@@ -119,7 +125,7 @@ module.exports = {
         collector.on('end', (c, r) => {
             if(r !== "messageDelete" && r !== "user"){
                 interaction.editReply({
-                    content: `玩家選擇放棄了!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
+                    content: `玩家選擇放棄了!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
                     `\n失敗!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                     components: []
