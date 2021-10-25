@@ -5,14 +5,14 @@ const { chooseFormat } = require('ytdl-core');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('guess-number')
-        .setDescription('來猜個數字吧!')
+        .setDescription('來猜個數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到!')
         .addNumberOption(opt => 
             opt.setName('range')
-            .setDescription('選擇數字的範圍')
-            .addChoice('4種', 4)
-            .addChoice('6種', 6)
-            .addChoice('8種', 8)
-            .addChoice('10種', 10)
+            .setDescription('選擇要猜測的值的範圍')
+            .addChoice('4個數字之內', 4)
+            .addChoice('6個數字之內', 6)
+            .addChoice('8個數字之內', 8)
+            .addChoice('10個數字之內', 10)
             .setRequired(true)
         ).addBooleanOption(opt => 
             opt.setName('is-recurring')
@@ -44,7 +44,7 @@ module.exports = {
         }
         let row = await rowCreate(range, recurring, []);
         const msg = await interaction.editReply({
-            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在到數結束內猜到! \n玩家: ${interaction.user}  / 模式: ${recurring ? "會重複數字" : "不會重複數字"}`, 
+            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到! \n玩家: ${interaction.user}  / 模式: ${recurring ? "會重複數字" : "不會重複數字"}`, 
             components: row, 
             fetchReply: true
         });
@@ -57,8 +57,8 @@ module.exports = {
             if(!Number.isNaN(parseInt(i.customId)) || i.customId === "delete") {
                 if(!Number.isNaN(parseInt(i.customId))) guess.push(parseInt(i.customId));
                 else guess.pop(parseInt(i.customId));
+
                 let row = await rowCreate(range, recurring, guess);
-                
                 await i.update({
                     content: `來玩猜數字吧!\n玩家: ${interaction.user} / 模式: ${recurring ? "會重複數字" : "不會重複數字"}\n` + 
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n` + 

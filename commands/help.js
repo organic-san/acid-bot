@@ -81,6 +81,8 @@ module.exports = {
                     "\`/welcome-message\` 或者查看/help welcome-message以取得完整資訊\n")
                 .addField("圈圈叉叉!", 
                     "\`/tic-tac-toe\`\n")
+                .addField("猜數字!", 
+                    "\`/guess-number\`\n")
                 .addField("剔除非斜線的指令",
                     "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
@@ -221,6 +223,7 @@ module.exports = {
                 .addField("基本指令", 
                     "\`/paper-scissors-stone <gesture:出拳>\` - 和機器人猜個拳\n" +
                     "\`/tic-tac-toe <difficulty:難度>\` - 和機器人玩一場井字遊戲\n" +
+                    "\`/guess-number <range:數目> <is-recurring:是否重複>\` - 來一局猜數字遊戲\n" +
                     "\`/dice <side:面數> [count:顆數]\` - 丟一顆骰子，結果將隨機產生\n")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
                             `https://discord.gg/hveXGk5Qmz`)
