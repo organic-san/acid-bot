@@ -31,7 +31,7 @@ module.exports = {
             components: row, 
             fetchReply: true
         });
-        const collector = msg.createMessageComponentCollector({filter: () => true, time: 60 * 1000 });
+        const collector = msg.createMessageComponentCollector({time: 60 * 1000 });
             
         collector.on('collect', async i => {
             if(i.user.id !== interaction.user.id) return i.reply({content: "想參與遊戲可以用/tic-tac-toe開始喔!", ephemeral: true});
