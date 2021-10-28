@@ -49,7 +49,9 @@ module.exports = {
         }
         let row = await rowCreate(range, recurring, []);
         const msg = await interaction.editReply({
-            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到! \n` + 
+            content: `來玩猜數字吧! 我會想一個四位數字，你要想辦法在回合結束前猜到! ` + 
+                `\n遊戲方法: 用下面的數字鍵盤湊出一組四位數字，我會回復數字和我猜想的數字之間的差距。` + 
+                `\nA代表位置、數字相同，B代表數字存在，但位置不對。` +
                 `玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}`, 
             components: row, 
             fetchReply: true
@@ -60,10 +62,10 @@ module.exports = {
         let content = "";
         collector.on('collect', async i => {
             if(i.user.id !== interaction.user.id) return i.reply({content: "想參與遊戲可以用/guess-number開始喔!", ephemeral: true});
-            collector.resetTimer({ time: 180 * 1000 });
+            if(i.customId === "cancel") collector.stop('time');
             if(!Number.isNaN(parseInt(i.customId)) || i.customId === "delete") {
                 if(!Number.isNaN(parseInt(i.customId))) guess.push(parseInt(i.customId));
-                else guess.pop(parseInt(i.customId));
+                else guess.pop();
 
                 let row = await rowCreate(range, recurring, guess);
                 await i.update({
@@ -71,7 +73,8 @@ module.exports = {
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n` + 
                         `${content + `目前猜測: ${[...guess].join(" ").padEnd(4, ' ')}`}\n\`\`\``, 
                     components: row
-                });   
+                });
+                collector.resetTimer({ time: 180 * 1000 });
             } else if(i.customId === "complete") {
                 guessd[range + 2 - turn] = [...guess];
                 let copyans = [...answer];
@@ -99,11 +102,12 @@ module.exports = {
                     await i.update({
                         content: `恭喜猜對了!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
-                        `\n成功!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
+                        `__人人人人人__\n＞   成功!  ＜\n￣Y^Y^Y^Y^Y￣\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                         components: []
                     });
                     collector.stop();
                 } else if(turn > 0) {
+                    collector.resetTimer({ time: 180 * 1000 });
                     guess = [];
                     let row = await rowCreate(range, recurring, guess);
                     await i.update({
@@ -115,19 +119,20 @@ module.exports = {
                     await i.update({
                         content: `挑戰失敗!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
-                        `\n失敗!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
+                        `__人人人人人__\n＞   失敗!  ＜\n￣Y^Y^Y^Y^Y￣\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                         components: []
                     });
+                    collector.stop();
                 }
             }
         });
 
         collector.on('end', (c, r) => {
-            if(r !== "messageDelete" && r !== "user"){
+            if(r === "time"){
                 interaction.editReply({
                     content: `玩家選擇放棄了!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
-                    `\n失敗!\n我所想的數字: ${answer.join(" ")}\`\`\``, 
+                    `__人人人人人__\n＞   放棄!  ＜\n￣Y^Y^Y^Y^Y￣\n我所想的數字: ${answer.join(" ")}\`\`\``, 
                     components: []
                 });
             }
@@ -172,10 +177,9 @@ async function rowCreate(range, recurring, choose) {
             new Discord.MessageActionRow()
                 .addComponents([
                     new Discord.MessageButton()
-                        .setLabel('取消一格')
-                        .setCustomId('delete')
-                        .setStyle('PRIMARY')
-                        .setDisabled(choose.length >= 1 ? false : true),
+                        .setLabel(choose.length >= 1 ? '取消一格' : '放棄遊戲')
+                        .setCustomId(choose.length >= 1 ? 'delete' : 'cancel')
+                        .setStyle(choose.length >= 1 ? 'PRIMARY' : 'DANGER'),
                         new Discord.MessageButton()
                         .setLabel('決定')
                         .setCustomId('complete')
@@ -224,10 +228,9 @@ async function rowCreate(range, recurring, choose) {
             new Discord.MessageActionRow()
                 .addComponents([
                     new Discord.MessageButton()
-                        .setLabel('取消一格')
-                        .setCustomId('delete')
-                        .setStyle('PRIMARY')
-                        .setDisabled(choose.length >= 1 ? false : true),
+                        .setLabel(choose.length >= 1 ? '取消一格' : '放棄遊戲')
+                        .setCustomId(choose.length >= 1 ? 'delete' : 'cancel')
+                        .setStyle(choose.length >= 1 ? 'PRIMARY' : 'DANGER'),
                     new Discord.MessageButton()
                         .setLabel('決定')
                         .setCustomId('complete')
@@ -277,7 +280,7 @@ async function rowCreate(range, recurring, choose) {
                         .setCustomId('7')
                         .setStyle('SECONDARY')
                         .setDisabled((!recurring && choose.includes(7)) || choose.length > 3 ? true : false),
-                        new Discord.MessageButton()
+                    new Discord.MessageButton()
                         .setLabel('8')
                         .setCustomId('8')
                         .setStyle('SECONDARY')
@@ -286,11 +289,10 @@ async function rowCreate(range, recurring, choose) {
             new Discord.MessageActionRow()
                 .addComponents([
                     new Discord.MessageButton()
-                        .setLabel('取消一格')
-                        .setCustomId('delete')
-                        .setStyle('PRIMARY')
-                        .setDisabled(choose.length >= 1 ? false : true),
-                        new Discord.MessageButton()
+                        .setLabel(choose.length >= 1 ? '取消一格' : '放棄遊戲')
+                        .setCustomId(choose.length >= 1 ? 'delete' : 'cancel')
+                        .setStyle(choose.length >= 1 ? 'PRIMARY' : 'DANGER'),
+                    new Discord.MessageButton()
                         .setLabel('決定')
                         .setCustomId('complete')
                         .setStyle('SUCCESS')
@@ -311,7 +313,7 @@ async function rowCreate(range, recurring, choose) {
                         .setCustomId('2')
                         .setStyle('SECONDARY')
                         .setDisabled((!recurring && choose.includes(2)) || choose.length > 3 ? true : false),
-                        new Discord.MessageButton()
+                    new Discord.MessageButton()
                         .setLabel('3')
                         .setCustomId('3')
                         .setStyle('SECONDARY')
@@ -356,10 +358,9 @@ async function rowCreate(range, recurring, choose) {
             new Discord.MessageActionRow()
                 .addComponents([
                     new Discord.MessageButton()
-                        .setLabel('取消')
-                        .setCustomId('delete')
-                        .setStyle('PRIMARY')
-                        .setDisabled(choose.length >= 1 ? false : true),
+                        .setLabel(choose.length >= 1 ? '退回' : '放棄')
+                        .setCustomId(choose.length >= 1 ? 'delete' : 'cancel')
+                        .setStyle(choose.length >= 1 ? 'PRIMARY' : 'DANGER'),
                     new Discord.MessageButton()
                         .setLabel('0')
                         .setCustomId('0')
