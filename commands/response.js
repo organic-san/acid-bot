@@ -67,10 +67,10 @@ module.exports = {
                 .catch(console.error)
 
                 if(beforeMessage){
-                    if(!beforeMessage.deleted){ beforeMessage.react('🐢').catch(err => console.log(err));
+                        interaction.reply({content: "成功發射!", ephemeral: true})
+                        if(!beforeMessage.deleted){ beforeMessage.react('🐢').catch(err => console.log(err));
                         if(!beforeMessage.deleted) beforeMessage.react('🐔').catch(err => console.log(err));
                         if(!beforeMessage.deleted) beforeMessage.react('🥛').catch(err => console.log(err));
-                        interaction.reply({content: "成功發射!", ephemeral: true})
                     }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
                 }
             }
@@ -85,10 +85,10 @@ module.exports = {
 
                 if(beforeMessage){
                     if(!beforeMessage.deleted){ 
-                        beforeMessage.reactions.cache.get('🐢').users.remove().catch((err)=>console.log(err));
-                        beforeMessage.reactions.cache.get('🐔').users.remove().catch((err)=>console.log(err));
-                        beforeMessage.reactions.cache.get('🥛').users.remove().catch((err)=>console.log(err));
                         interaction.reply({content: "成功清除!", ephemeral: true})
+                        beforeMessage.reactions.cache.get('🐢')?.users.remove().catch((err)=>console.log(err));
+                        beforeMessage.reactions.cache.get('🐔')?.users.remove().catch((err)=>console.log(err));
+                        beforeMessage.reactions.cache.get('🥛')?.users.remove().catch((err)=>console.log(err));
                     }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
                 }
             }

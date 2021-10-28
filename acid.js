@@ -739,6 +739,11 @@ client.on('messageCreate', async msg =>{
                         console.log(us.users);
                         break;
 
+                    case 'louj':
+                        us = guildInformation.getGuild(msg.guild.id);
+                        console.log(JSON.stringify(us, null, '\t'));
+                        break;
+
                     case 'lu':
                         const us2 = guildInformation.getGuild(msg.guild.id);
                         console.log(us2.getUser(msg.author.id));
