@@ -52,18 +52,24 @@ module.exports = {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR);
 
-			const user = interaction.options.getUser('user');
+			const user = interaction.options.getUser('user') ?? interaction.user;
             const size = interaction.options.getInteger('size') ?? 256;
 
             if(!user) {
                 embed.setDescription(`這是你的的頭像網址`)
-                    .addField(`頭像網址(${size}×${size})`, `[點我開啟](${interaction.user.displayAvatarURL({dynamic: true, format: "png", size: size})})`)
+                    .addField(`頭像網址(${size}×${size})`, 
+                        `[png](${user.displayAvatarURL({dynamic: true, format: "png", size: size})}) | ` +
+                        `[jpg](${user.displayAvatarURL({dynamic: true, format: "jpg", size: size})}) | ` +
+                        `[webp](${user.displayAvatarURL({dynamic: true, format: "webp", size: size})})`)
                     .setThumbnail(interaction.user.displayAvatarURL({dynamic: true, format: "png", size: size}));
                 interaction.reply({embeds: [embed]});
 
             }else {
                 embed.setDescription(`這是 ${user.tag} 的的頭像網址`)
-                    .addField(`頭像網址(${size}×${size})`, `[點我開啟](${user.displayAvatarURL({dynamic: true, format: "png", size: size})})`)
+                    .addField(`頭像網址(${size}×${size})`, 
+                        `[png](${user.displayAvatarURL({dynamic: true, format: "png", size: size})}) | ` +
+                        `[jpg](${user.displayAvatarURL({dynamic: true, format: "jpg", size: size})}) | ` +
+                        `[webp](${user.displayAvatarURL({dynamic: true, format: "webp", size: size})})`)
                     .setThumbnail(user.displayAvatarURL({dynamic: true, format: "png", size: size}));
                 interaction.reply({embeds: [embed]});
             }
