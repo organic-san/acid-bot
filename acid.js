@@ -70,7 +70,7 @@ client.on('ready', () =>{
             guildInformation.pushGuildList(element);
         });
         guildInformation.sortGuildList();
-        parseJsonlist.forEach(async (element) => {
+        guildInformation.guildList.forEach(async (element) => {
             const filename = `./data/guildInfo/${element}.json`;
             fs.readFile(filename, async (err, text) => {
                 if (err)
@@ -85,12 +85,12 @@ client.on('ready', () =>{
         });
     });
     setTimeout(() => {
-        console.log(`設定成功: ${new Date(Date.now())}`);
+        console.log(`設定成功: ${new Date()}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         if(client.user.id !== process.env.BOT_ID_ACIDTEST)
             client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         isReady = true;
-    }, 4000);
+    }, parseInt(process.env.LOADTIME) * 1000);
     setInterval(() => {
         fs.writeFile("./data/guildInfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), function (err){
             if (err)
@@ -103,7 +103,7 @@ client.on('ready', () =>{
                     return console.log(err);
             });
         });
-        time = new Date(Date.now());
+        time = new Date();
         console.log(`Saved in ${time}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`)).catch(err => console.log(err));
     },10 * 60 * 1000)
@@ -259,14 +259,14 @@ client.on('messageCreate', async msg =>{
                         let webhook = webhooks.find(webhook => webhook.owner.id === client.user.id);
                         if(!webhook) {
                             msg.channel.createWebhook(msg.member.displayName, {
-                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                                avatar: msg.author.displayAvatarURL({dynamic: true, format: "png"})
                             })
                                 .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
                                 .catch(console.error);
                         } else {
                             await webhook.edit({
                                 name: msg.member.displayName,
-                                avatar: msg.author.displayAvatarURL({dynamic: true})
+                                avatar: msg.author.displayAvatarURL({dynamic: true, format: "png"})
                             })
                                 .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
                                 .catch(console.error);
@@ -717,9 +717,70 @@ client.on('messageCreate', async msg =>{
                         )
                         break;
                         //#endregion
+
+                    case 'eval':
+                        let cont = await eval('(' + msg.content.substring(7) + ")");
+                        msg.channel.send(cont.toString());
+                        break;
                     
                     case 'cl':
                         console.log(msg);
+                        break;
+
+                    case 'clm':
+                        if(text[1]) {
+                            const message = await msg.channel.messages.fetch(text[1]);
+                            console.log(message);
+                        }
+                        break;
+                    
+                    case 'sqar':
+                        for(let k = 3; k < 46; k++) {
+                            /**
+                             * @type {Array<Array<number>>}
+                             */
+                            let square = [[1]];
+                            let squtotal = [[0]];
+                            for(let i = 1; i < k; i++) square[0][i] = 0;
+                            for(let i = 1; i < k; i++) squtotal[0][i] = 0;
+                            square[0][0] = 1;
+                            square[1] = [0];
+                            squtotal[1] = [0];
+                            for(let i = 0; i < k; i++) square[1][i] = 0;
+                            for(let i = 0; i < k; i++) squtotal[1][i] = 0;
+                            let count2 = 0;
+                            for(let i = 1; count2 <= 1; i++) {
+                                let count = 0;
+                                square[i + 1] = [0];
+                                squtotal[i + 1] = [0];
+                                for(let f = 0; f < k; f++) square[i + 1][f] = 0;
+                                for(let f = 0; f < k; f++) squtotal[i + 1][f] = 0;
+                                for(let j = 0;j < k; j++) {
+                                    if(square[i - 1][j] === 1){
+                                        square[i][j] = (square[i][j] === 1 ? 0 : 1);
+                                        squtotal[i][j]++;
+                                        count ++;
+                                        square[i - 1][j] = 0;
+                                        square[i + 1][j] = 1;
+                                        if(j - 1 >= 0)
+                                            square[i][j - 1] = (square[i][j - 1] === 1 ? 0 : 1);
+                                        if(j + 1 < k)
+                                            square[i][j + 1] = (square[i][j + 1] === 1 ? 0 : 1);
+                                    }
+                                }
+                                //console.log(count)
+                                if(count === 0) count2 ++;
+                            }
+                            let string = [];
+                            for(let i = 1; i < squtotal.length - 1; i++) {
+                                string.push(squtotal[i].join(" "));
+                            }
+                            fs.writeFile(`./data/square/${k}.json`, JSON.stringify(string, null, '\t'), async function (err) {
+                                if (err)
+                                    return console.log(err);
+                            });
+                        }
+                        
                         break;
 
                     case 'test':
@@ -774,7 +835,7 @@ client.on('messageCreate', async msg =>{
                                     return console.log(err);
                             });
                         });
-                        time = new Date(Date.now());
+                        time = new Date();
                         console.log(`Saved in ${time} (手動)`);
                         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`手動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`));
                         break;
