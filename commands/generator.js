@@ -49,14 +49,14 @@ module.exports = {
             let webhook = webhooks.find(webhook => webhook.owner.id === interaction.client.user.id);
             if(!webhook) {
                 webhook = await interaction.channel.createWebhook(interaction.member.displayName, {
-                    avatar: interaction.user.displayAvatarURL({dynamic: true})
+                    avatar: interaction.user.displayAvatarURL({dynamic: true, format: "png"})
                 })
                     .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
             }else{
                 webhook.edit({
                     name: interaction.member.displayName,
-                    avatar: interaction.user.displayAvatarURL({dynamic: true})
+                    avatar: interaction.user.displayAvatarURL({dynamic: true, format: "png"})
                 })
                     .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
@@ -83,6 +83,7 @@ const postfix = [
     " (星爆",
     " (笑死",
     " (無駄",
+    " (筆記",
     "= =",
     "peko",
     "",
@@ -96,7 +97,8 @@ const part_prefix = [
     "大家好",
     "安安 是這樣的",
     "我覺得呢",
-    "小妹我說一下"
+    "小妹我說一下",
+    "我覺得啊"
 ]
 
 const part_postfix = [
@@ -111,8 +113,6 @@ const part_postfix = [
 
 const darklize_postfix = [
     " (黑化",
-    " (射精",
-    " (勃起",
     " (gay",
     " (語彙力",
     " (憤怒",

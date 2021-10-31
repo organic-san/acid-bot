@@ -38,7 +38,8 @@ class GuildInformationArray {
      * @param {string} list 
      */
     pushGuildList(list) {
-        this.guildList.push(list);
+        if(!this.guildList.includes(list))
+            this.guildList.push(list);
     }
 
     sortGuildList() {

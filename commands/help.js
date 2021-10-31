@@ -10,14 +10,14 @@ module.exports = {
             .setDescription('要查詢的指令種類')
             .setRequired(true)
             .addChoice("基本指令(系統說明、其他指令說明)", "basic")
-            .addChoice("自動回應系統", "auto-reply")
-            .addChoice("等級排行系統", "levels")
+            .addChoice("更新資訊", "update")
+            .addChoice("遊戲類", "game")
             .addChoice("音樂系統", "music")
             .addChoice("機器人回應", "response")
             .addChoice("每日單字系統", "words")
-            .addChoice("更新資訊", "update")
+            .addChoice("自動回應系統", "auto-reply")
+            .addChoice("等級排行系統", "levels")
             .addChoice("歡迎/送別訊息", "welcome")
-            .addChoice("遊戲類", "game")
         ),
 	tag: "interaction",
     /**
@@ -61,8 +61,7 @@ module.exports = {
                     "例如: 只要輸入 \`:acidbot:\`，就會自動將訊息轉換轉換成 <:acidbot:896709436163375114>")
                 .addField("內建關鍵字反應功能", 
                     "部分關鍵字機器人也會反應\n分別為: \`笑死\`、\`快樂光線\`、\`龜雞奶\`")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
@@ -85,8 +84,7 @@ module.exports = {
                     "\`/guess-number\`\n")
                 .addField("剔除非斜線的指令",
                     "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
             
@@ -105,8 +103,7 @@ module.exports = {
                     "\`/auto-reply add <trigger-message:文字> <reply-message:文字> <mode:模式>\` - 新增自動回應的項目\n" + 
                     "\`/auto-reply remove <auto-reply-id:數字>\` - 刪除特定回應的項目\n" + 
                     "\`/auto-reply reset\` - 清空所有回應項目")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
@@ -135,8 +132,7 @@ module.exports = {
                     '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
                     '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
                     '通常頻道ID會長得像這樣：123456789012345678')
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
@@ -161,8 +157,7 @@ module.exports = {
                     "\`/music loop\` - 循環播放目前的音樂\n" + 
                     "\`/music loopqueue\` - 循環播放整個播放清單" +
                     "\`/music random\` - 隨機洗牌目前的播放清單")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
@@ -178,8 +173,7 @@ module.exports = {
                     `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n` +
                     `\`/response crazy-night-remove <floor:樓數>\` - 清除機器人發射的🐢🐔🥛\n`)
                 .addField('🐢🐔🥛是什麼?', 'crazy night')
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
@@ -193,8 +187,7 @@ module.exports = {
                     `\`/words searth <word:單字>\` - 搜尋該單字，請使用該單字的原型\n` +
                     `\`/words daily [amount:數量] [rank-limit-low:下等級限制] [rank-limit-high:上等級限制]\` - 產生每日單日列表，隔日更換\n`)
                 .addField('資料是哪裡來的?', '[台灣測驗中心](http://www.taiwantestcentral.com/WordList/WordListByName.aspx?MainCategoryID=25&Letter=A)')
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
         } else if (option === 'welcome') {
@@ -211,8 +204,7 @@ module.exports = {
                     `\`/welcome-message show\` - 顯示目前的設定\n`)
                 .addField("預設模板(沒有設定訊息時將使用此版本)", 
                     "歡迎預設訊息: \`<user> ，歡迎來到 <server> !\`\n送別預設訊息: \`<user> 已遠離我們而去。\`\n")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
         } else if (option === 'game') {
@@ -225,8 +217,7 @@ module.exports = {
                     "\`/tic-tac-toe <difficulty:難度>\` - 和機器人玩一場井字遊戲\n" +
                     "\`/guess-number <range:數目> <is-recurring:是否重複>\` - 來一局猜數字遊戲\n" +
                     "\`/dice <side:面數> [count:顆數]\` - 丟一顆骰子，結果將隨機產生\n")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                            `https://discord.gg/hveXGk5Qmz`)
+                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
         } 
