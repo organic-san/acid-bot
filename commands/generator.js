@@ -78,13 +78,23 @@ module.exports = {
             const text = interaction.options.getString('text');
             let splitText = text.split(/\s+/g);
             splitText.forEach((content, index) => {
-                if(content.length === 2) {
-                    splitText[index] = content.split(/(?:)/u).reverse().join('');
-                } else if(content.length >= 4) {
+                if(content.length >= 4 && content.length < 7) {
                     let str = content.split(/(?:)/u);
-                    for(let i = 2; i < str.length; i += 3) {
+                    for(let i = 2; i < str.length - 1; i += 3) {
                         if(str[i] && str[i + 1]) {
-                            if(!['!', '?', '.', ',', '，', '。', '！', '？'].includes(str[i + 1])){
+                            if(!['!', '?', '.', ',', '，', '。', '！', '？', ';', ':', '：', '；'].includes(str[i + 1])){
+                                const turn = str[i];
+                                str[i] = str[i + 1];
+                                str[i + 1] = turn;
+                            }
+                        }
+                    }
+                    splitText[index] = str.join('');
+                } else if(content.length >= 7) {
+                    let str = content.split(/(?:)/u);
+                    for(let i = 2; i < str.length - 3; i += 3) {
+                        if(str[i] && str[i + 1]) {
+                            if(!['!', '?', '.', ',', '，', '。', '！', '？', ';', ':', '：', '；'].includes(str[i + 1])){
                                 const turn = str[i];
                                 str[i] = str[i + 1];
                                 str[i + 1] = turn;
