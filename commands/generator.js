@@ -13,6 +13,14 @@ module.exports = {
                     .setDescription('要轉換的內文，空格會視為換行')
                     .setRequired(true)
             )
+        ).addSubcommand(opt => 
+            opt.setName('order-doesnt-matter')
+            .setDescription('文字序順不響影讀閱產器生')
+            .addStringOption(opt => 
+                opt.setName('text')
+                    .setDescription('要轉換的內文，空格會視為換行')
+                    .setRequired(true)
+            )
         ),
     tag: "interaction",
     
@@ -27,7 +35,7 @@ module.exports = {
             if(interaction.channel.isThread()) return interaction.reply({content: "不能在討論串中使用本功能!", ephemeral: true});
             interaction.reply({content: "發送中......", ephemeral: true});
             const text = interaction.options.getString('text');
-            let splitText = text.split(/\s+/);
+            let splitText = text.split(/\s+/g);
             
             splitText.forEach((content, index) => {
                 const rnd10 = Math.floor(Math.random() * 10);
@@ -61,8 +69,49 @@ module.exports = {
                     .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
                     .catch(console.error);
             }
-        }
 
+        }else if(interaction.options.getSubcommand() === 'order-doesnt-matter') {
+            if(!interaction.channel.permissionsFor(interaction.client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS))
+                return interaction.reply({content: "請先賦予我管理webhook的權限!", ephemeral: true});
+            if(interaction.channel.isThread()) return interaction.reply({content: "不能在討論串中使用本功能!", ephemeral: true});
+            interaction.reply({content: "發送中......", ephemeral: true});
+            const text = interaction.options.getString('text');
+            let splitText = text.split(/\s+/g);
+            splitText.forEach((content, index) => {
+                if(content.length === 2) {
+                    splitText[index] = content.split(/(?:)/u).reverse().join('');
+                } else if(content.length >= 4) {
+                    let str = content.split(/(?:)/u);
+                    for(let i = 2; i < str.length; i += 3) {
+                        if(str[i] && str[i + 1]) {
+                            if(!['!', '?', '.', ',', '，', '。', '！', '？'].includes(str[i + 1])){
+                                const turn = str[i];
+                                str[i] = str[i + 1];
+                                str[i + 1] = turn;
+                            }
+                        }
+                    }
+                    splitText[index] = str.join('');
+                }
+            });
+            const content = splitText.join(" ");
+            const webhooks = await interaction.channel.fetchWebhooks();
+            let webhook = webhooks.find(webhook => webhook.owner.id === interaction.client.user.id);
+            if(!webhook) {
+                webhook = await interaction.channel.createWebhook(interaction.member.displayName, {
+                    avatar: interaction.user.displayAvatarURL({dynamic: true, format: "png"})
+                })
+                    .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
+                    .catch(console.error);
+            }else{
+                webhook.edit({
+                    name: interaction.member.displayName,
+                    avatar: interaction.user.displayAvatarURL({dynamic: true, format: "png"})
+                })
+                    .then(webhook => webhook.send({content: content, allowedMentions: {repliedUser: false}}))
+                    .catch(console.error);
+            }
+        }
 	},
 };
 

@@ -45,7 +45,8 @@ module.exports = {
                     "\`/record <message-id:訊息ID> [channel:頻道]\` - 回顧一則訊息\n" + 
                     `\`/timer [hour:小時] [min:分鐘] [sec:秒] [message:提醒訊息]\` - 計時器\n` +
                     "\`/happy-birthday <user:用戶>\` - 發送生日快樂訊息給該用戶\n" + 
-                    `\`/generator fat-nerd-style <text:內文>\` - 肥宅文體產生器!\n`)
+                    `\`/generator fat-nerd-style <text:內文>\` - 肥宅文體產生器!\n` +
+                    `\`/generator order-doesnt-matter <text:內文>\` - 文字序順不響影讀閱產器生!\n`)
                 .addField(`其他系統性的指令`, 
                     "以下指令的詳細說明，可以在/help後選擇其他模式以取得說明\n\n" + 
                     "\`/levels\` - 等級排行系統\n" + 
@@ -82,6 +83,8 @@ module.exports = {
                     "\`/tic-tac-toe\`\n")
                 .addField("猜數字!", 
                     "\`/guess-number\`\n")
+                .addField("新的轉換器", 
+                    "/generator那附近找一下應該就有了(茶\n")
                 .addField("剔除非斜線的指令",
                     "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
