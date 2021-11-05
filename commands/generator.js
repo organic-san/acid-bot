@@ -94,7 +94,8 @@ module.exports = {
                     let str = content.split(/(?:)/u);
                     for(let i = 2; i < str.length - 3; i += 3) {
                         if(str[i] && str[i + 1]) {
-                            if(!['!', '?', '.', ',', '，', '。', '！', '？', ';', ':', '：', '；'].includes(str[i + 1])){
+                            if(!['!', '?', '.', ',', '，', '。', '！', '？', ';', ':', '：', '；'].includes(str[i + 1]) && 
+                                !['!', '?', '.', ',', '，', '。', '！', '？', ';', ':', '：', '；'].includes(str[i])){
                                 const turn = str[i];
                                 str[i] = str[i + 1];
                                 str[i + 1] = turn;

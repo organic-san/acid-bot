@@ -111,6 +111,7 @@ client.on('ready', () =>{
 //#endregion
 
 client.on('interactionCreate', async interaction => {
+    if(!isReady) return;
 
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
@@ -190,7 +191,7 @@ client.on('messageCreate', async msg =>{
         guildInformation.updateGuild(msg.guild);
 
         if(!msg.member.user) return; //幫bot值多拉一層，判斷上層物件是否存在
-        if(msg.member.user.bot){ return;} //訊息內bot值為正 = 此消息為bot發送
+        if(msg.member.user.bot) return; //訊息內bot值為正 = 此消息為bot發送
     }catch (err){
         return;
     }
@@ -877,6 +878,8 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、送別觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
+    if(!isReady) return;
+
     console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
         channel.send(`${member.user.tag} (${member.user.id}) 加入了 **${member.guild.name}** (${member.guild.id})。`)
@@ -911,6 +914,8 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('guildMemberRemove', member => {
+    if(!isReady) return;
+
     console.log(`${member.user.tag} 已自 ${member.guild.name} 離開。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 **${member.guild.name}** 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
@@ -937,6 +942,7 @@ client.on('guildMemberRemove', member => {
 
 //#region 機器人被加入、踢出觸發事件guildCreate、guildDelete
 client.on("guildCreate", guild2 => {
+    if(!isReady) return;
 
     if(!guildInformation.has(guild2.id)){
         const thisGI = new guild.GuildInformation(guild2, []);
@@ -960,6 +966,8 @@ client.on("guildCreate", guild2 => {
  });
 
 client.on("guildDelete", guild => {
+    if(!isReady) return;
+
     console.log(`${client.user.tag} 從 ${guild.name} 中被踢出了`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${client.user.tag} 從 **${guild.name}** 中被踢出了`));
     fs.unlink(`./data/guildInfo/${guild.id}.json`, function () {
