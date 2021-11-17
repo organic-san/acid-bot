@@ -329,7 +329,6 @@ async function playlistLoad(musicList, interaction, songUrl){
     if (listPlayable) {
         const playlist = await ytpl(songUrl);
         firstSongInList = playlist.items[0].shortUrl;
-        console.log(playlist.items);
         let isLoading = false;
         playlist.items.forEach(async (element) => {
             if (element.title !== '[Deleted video]') {
@@ -349,14 +348,17 @@ async function playlistLoad(musicList, interaction, songUrl){
                     songLength, 
                     interaction.user
                 ))
-                console.log(element);
-
             }
         });
-        //TODO: 太長的播放清單會有執行順序的問題，導致讀取音樂卻無法撥放音樂
         //判斷bot是否已經連到語音頻道 是:將歌曲加入歌單 不是:進入語音頻道並且播放歌曲
 
+        let timerCount = 0;
         let timerID = setInterval(async () => {
+            timerCount++;
+            if(timerCount >= 120) {
+                clearInterval(timerID);
+                return await interactionReply(interaction, `播放清單讀取失敗ˊ_>\ˋ`);
+            }
             if(!isLoading) return;
             clearInterval(timerID);
             await interactionReply(interaction, `播放清單讀取完畢!`);
@@ -375,7 +377,6 @@ async function playlistLoad(musicList, interaction, songUrl){
                     //創建播放器
                     musicList.createPlayer();
                     Voice.getVoiceConnection(interaction.guild.id).subscribe(musicList.player);
-                    console.log(musicList.song);
                     //讀取資源
                     resourcePlay(musicList);
     
