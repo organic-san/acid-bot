@@ -100,25 +100,37 @@ module.exports = {
                 .addComponents(
                     [
                         new Discord.MessageButton()
+                            .setCustomId('第一頁')
+                            .setLabel('<<<第一頁')
+                            .setStyle('SECONDARY'),
+                        new Discord.MessageButton()
                             .setCustomId('上一頁')
-                            .setLabel('上一頁')
+                            .setLabel('<上一頁')
                             .setStyle('PRIMARY'),
                         new Discord.MessageButton()
                             .setCustomId('下一頁')
-                            .setLabel('下一頁')
-                            .setStyle('PRIMARY')
+                            .setLabel('下一頁>')
+                            .setStyle('PRIMARY'),
+                        new Discord.MessageButton()
+                            .setCustomId('最後一頁')
+                            .setLabel('最後一頁>>>')
+                            .setStyle('SECONDARY'),
                     ]
                 );
                 const msg = await interaction.reply({embeds: [musicQueue], components: [row], fetchReply: true});
 
-                const filter = i => ['上一頁', '下一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
+                const filter = i => ['上一頁', '下一頁', '第一頁', '最後一頁'].includes(i.customId) && !i.user.bot && i.message.id === msg.id;
                 const collector = interaction.channel.createMessageComponentCollector({filter, time: 60 * 1000 });
                 
                 collector.on('collect', async i => {
                     if (i.customId === '下一頁') 
-                        if(page * pageShowHax + pageShowHax < musicList.songlength) page++;
+                        if(page * pageShowHax + pageShowHax < (musicList.songlength - 1)) page++;
                     if(i.customId === '上一頁')
                         if(page > 0) page--;
+                    if(i.customId === '第一頁')
+                        page = 0;
+                    if(i.customId === '最後一頁')
+                        page = Math.max(0, ((Math.ceil((musicList.songlength - 1) / 6) - 1)))
                     const musicQueue = queueplay(musicList, page, pageShowHax);
                     i.update({embeds: [musicQueue], components: [row]});
                     collector.resetTimer({ time: 60 * 1000 });
@@ -220,18 +232,8 @@ async function playmusic(musicList, interaction, songUrl){
         //透過library判斷連結是否可運行
         const validate = ytdl.validateURL(songUrl);
         if (!validate){
-            const listPlayable = ytpl.validateID(songUrl);
-            if (listPlayable) {
-                const playlist = await ytpl(songUrl);
-                playlist.items.forEach(async (element) => {
-                    if (element.title !== '[Deleted video]') {
-                        await playmusic(musicList, interaction, element.shortUrl);
-                    }
-                });
-                return interactionReply(interaction, "已載入播放清單。部分音樂可能因為讀取失敗而未載入，請見諒。待音樂讀取完後會開始播放。");
-            } else {
-                return interactionReply(interaction, `你確定你的連結是音樂或播放清單嗎?要不要再確認一次?`, true);
-            }
+            //找不到音樂就讀取音樂清單
+            return playlistLoad(musicList, interaction, songUrl);
         }
         //獲取歌曲資訊
         const info = await ytdl.getInfo(songUrl);
@@ -315,11 +317,91 @@ async function playmusic(musicList, interaction, songUrl){
 }
 
 /**
+ * 讀取播放清單的額外處理
+ * @param {music.MusicList} musicList 
+ * @param {Discord.CommandInteraction} interaction 
+ * @param {string} songUrl
+ */
+async function playlistLoad(musicList, interaction, songUrl){
+    musicList.channel = interaction.channel;
+    let firstSongInList = "";
+    const listPlayable = ytpl.validateID(songUrl);
+    if (listPlayable) {
+        const playlist = await ytpl(songUrl);
+        firstSongInList = playlist.items[0].shortUrl;
+        console.log(playlist.items);
+        let isLoading = false;
+        playlist.items.forEach(async (element) => {
+            if (element.title !== '[Deleted video]') {
+                const info = await ytdl.getInfo(element.shortUrl);
+                isLoading = true;
+                if(!info.videoDetails || info.videoDetails.age_restricted)
+                    return;
+                
+                const songLength = info.videoDetails.lengthSeconds;
+                if(parseInt(songLength) < 2)
+                    return;
+
+                musicList.songPush(new music.SongUnit(
+                    info.videoDetails.title, 
+                    element.shortUrl, 
+                    info.videoDetails.videoId,
+                    songLength, 
+                    interaction.user
+                ))
+                console.log(element);
+
+            }
+        });
+        //TODO: 太長的播放清單會有執行順序的問題，導致讀取音樂卻無法撥放音樂
+        //判斷bot是否已經連到語音頻道 是:將歌曲加入歌單 不是:進入語音頻道並且播放歌曲
+
+        let timerID = setInterval(async () => {
+            if(!isLoading) return;
+            clearInterval(timerID);
+            await interactionReply(interaction, `播放清單讀取完畢!`);
+            if(!Voice.getVoiceConnection(interaction.guild.id)){
+                await interactionReply(interaction, `請稍等，即將進入語音頻道...`);
+    
+                //進入語音頻道
+                Voice.joinVoiceChannel({
+                    channelId: interaction.member.voice.channel.id,
+                    guildId: musicList.guildId,
+                    adapterCreator: interaction.guild.voiceAdapterCreator,
+                    selfMute: false
+                })
+    
+                setTimeout(() => {
+                    //創建播放器
+                    musicList.createPlayer();
+                    Voice.getVoiceConnection(interaction.guild.id).subscribe(musicList.player);
+                    console.log(musicList.song);
+                    //讀取資源
+                    resourcePlay(musicList);
+    
+                    //啟動被踢出偵測器與音樂播放偵測器
+                    connectionCheck(musicList);
+                    playerCheck(musicList);
+                }, 2000);
+                
+            }else{
+                //清單為零時再次開始讀取資源
+                if(musicList.firstSong.url === firstSongInList){
+                    resourcePlay(musicList);
+                }
+            } 
+        }, 500);
+        return interactionReply(interaction, "正在載入播放清單。請稍候...");
+    } else {
+        return interactionReply(interaction, `你確定你的連結是音樂或播放清單嗎?要不要再確認一次?`, true);
+    }
+}
+
+/**
  * 讀取音樂資源
  * @param {music.MusicList} musicList 
  */
 async function resourcePlay(musicList){
-    //#region resourcePlay 音樂資源讀取函數
     try{
         if(musicList.songlength > 0){
             if(!Voice.getVoiceConnection(musicList.guildId)) return;
@@ -393,14 +475,13 @@ function playerCheck(musicList){
 }
 
 /**
- * 
+ * 播放清單列舉函數
  * @param {music.MusicList} musicList 
  * @param {number} page 所需求的頁數
  * @param {number} pageShowHax 單頁頁數
  * @returns 
  */
 function queueplay(musicList, page, pageShowHax){
-    //#region queuePlay 播放清單列舉函數(字數限制尚未處理)
     try{
         const embed = new Discord.MessageEmbed()
             .setColor(process.env.EMBEDCOLOR)
@@ -482,13 +563,12 @@ function replaymusic(musicList, interaction){
 }
 
 /**
- * 
+ * 音樂資訊顯示函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function nowplaying(musicList, interaction){
-    //#region nowPlaying 音樂資訊顯示函數
     try{
         if(!musicList) 
             return interactionReply(interaction, `我的心靈(跟清單)現在感覺非常空虛。可以放一首音樂填補我心中的洞嗎?`, true);
@@ -535,13 +615,12 @@ function nowplaying(musicList, interaction){
 }
 
 /**
- * 
+ * 暫停播放函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function pause(musicList, interaction){
-    //#region pause 暫停播放函數
     try{
         if(!musicList) return interactionReply(interaction, `咦?音樂呢?暫停按鈕去哪了?`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `咦?音樂呢?暫停按鈕去哪了?`, true);
@@ -558,13 +637,12 @@ function pause(musicList, interaction){
 }
 
 /**
- * 
+ * 循環函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function loop(musicList, interaction){
-    //#region loop 循環函數
     try{
         if(!musicList) return interactionReply(interaction, `沒有音樂，會讓我克制不住衝動不斷跳針跳針跳針......`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `沒有音樂，會讓我克制不住衝動不斷跳針跳針跳針......`, true);
@@ -578,13 +656,12 @@ function loop(musicList, interaction){
 //#endregion
 
 /**
- * 
+ * 清單循環函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function loopqueue(musicList, interaction){
-    //#region loopList 清單循環函數
     try{
         if(!musicList) return interactionReply(interaction, `看看你眼前這空如大海的清單。看來我沒有辦法循環它。`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `看看你眼前這空如大海的清單。看來我沒有辦法循環它。`, true);
@@ -597,13 +674,12 @@ function loopqueue(musicList, interaction){
 }
 
 /**
- * 
+ * 播放清單隨機排序函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function random(musicList, interaction){
-    //#region random 播放清單隨機排序函數
     try{
         if(!musicList) return interactionReply(interaction, `沒有在清單中的音樂，要如何洗牌呢?`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `沒有在清單中的音樂，要如何洗牌呢?`, true);
@@ -617,13 +693,12 @@ function random(musicList, interaction){
 }
 
 /**
- * 
+ * 跳過單首函數
  * @param {music.MusicList} musicList 
  * @param {Discord.CommandInteraction} interaction 
  * @returns 
  */
 function skip(musicList, interaction){
-    //#region skip 跳過單首函數
     try{
         if(!musicList) return interactionReply(interaction, `我剛剛跳過了......什麼都沒有?你是不是還沒開始播放音樂?`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `我剛剛跳過了......什麼都沒有?你是不是還沒開始播放音樂?`, true);
@@ -656,7 +731,7 @@ function clearqueue(musicList, interaction){
 }
 
 /**
- * 
+ * 移除音樂函數
  * @param {number} from 
  * @param {number} to 
  * @param {music.MusicList} musicList 
@@ -666,7 +741,6 @@ function clearqueue(musicList, interaction){
  * @returns 
  */
  function removemusic(from, to, musicList, interaction){
-    //#region removeMusic 移除音樂函數
     try{
         if(!musicList) return interactionReply(interaction, `清單是空的。我也找不到其中任何可以拔除的音樂。`, true);
         if(musicList.songlength <= 0) return interactionReply(interaction, `清單是空的。我也找不到其中任何可以拔除的音樂。`, true);
@@ -684,12 +758,11 @@ function clearqueue(musicList, interaction){
 }
 
 /**
- * 
+ * 斷開連接函數
  * @param {Discord.CommandInteraction} interaction  
  * @returns 
  */
  function disconnect(interaction){
-    //#region disconnect 段開連接函數
     try{
         //判斷bot是否在此群組的語音頻道
         if (!Voice.getVoiceConnection(interaction.guild.id)) return interactionReply(interaction, '不存在的語音，怎麼退呢?', true);
