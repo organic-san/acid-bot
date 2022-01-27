@@ -12,12 +12,12 @@ module.exports = {
             .addChoice("基本指令(系統說明、其他指令說明)", "basic")
             .addChoice("更新資訊", "update")
             .addChoice("遊戲類", "game")
-            .addChoice("音樂系統", "music")
-            .addChoice("機器人回應", "response")
-            .addChoice("每日單字系統", "words")
-            .addChoice("自動回應系統", "auto-reply")
-            .addChoice("等級排行系統", "levels")
-            .addChoice("歡迎/送別訊息", "welcome")
+            .addChoice("音樂系統(music)", "music")
+            .addChoice("機器人回應(response)", "response")
+            .addChoice("每日單字系統(words)", "words")
+            .addChoice("自動回應系統(auto-reply)", "auto-reply")
+            .addChoice("等級排行系統(levels)", "levels")
+            .addChoice("歡迎/送別訊息(welcome)", "welcome")
         ),
 	tag: "interaction",
     /**

@@ -32,7 +32,6 @@ const client = new Discord.Client(options);
 client.login(process.env.DCKEY_TOKEN);
 
 let guildInformation = new guild.GuildInformationArray([], []); //所有資料的中樞(會將檔案的資料撈出來放這裡)
-let isReady = false;
 
 let numberingList = new Map();
 
@@ -46,21 +45,12 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
+let isready = false;
+
 // 連上線時的事件
 //#region 連線事件
 client.on('ready', () =>{
-    time = client.readyAt;
-    month = time.getMonth() + 1;
-    date = time.getDate();
-    hours = time.getHours();
-    minutes = time.getMinutes();
-    sec = time.getSeconds();
-    if(month < 10){month = '0' + month;}
-    if(date < 10){date = '0' + date;}
-    if(hours < 10){hours = '0' + hours;}
-    if(minutes < 10){minutes = '0' + minutes;}
-    if(sec < 10){sec = '0' + sec;}
-    console.log(`登入成功: ${client.user.tag} 於 ${month}/${date} ${hours}:${minutes}:${sec}`);
+    console.log(`登入成功: ${client.user.tag} 於 ${new Date()}`);
     client.user.setActivity('/help'/*, { type: 'PLAYING' }*/);
 
     fs.readFile("./data/guildInfo/guildlist.json", (err,word) => {
@@ -89,8 +79,8 @@ client.on('ready', () =>{
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
         if(client.user.id !== process.env.BOT_ID_ACIDTEST)
             client.channels.fetch(process.env.CHECK_CH_ID2).then(channel => channel.send(`登入成功: <t:${Math.floor(client.readyTimestamp / 1000)}:F>`));
-        isReady = true;
-    }, parseInt(process.env.LOADTIME) * 1000);
+            isready = true;
+        }, parseInt(process.env.LOADTIME) * 1000);
     setInterval(() => {
         fs.writeFile("./data/guildInfo/guildlist.json", JSON.stringify(guildInformation.guildList, null, '\t'), function (err){
             if (err)
@@ -111,7 +101,7 @@ client.on('ready', () =>{
 //#endregion
 
 client.on('interactionCreate', async interaction => {
-    if(!isReady) return;
+    if(!isready) teturn;
 
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
@@ -176,7 +166,7 @@ client.on('interactionCreate', async interaction => {
 //#region 文字事件反應
 client.on('messageCreate', async msg =>{
     try{
-        if(!isReady) return;
+        if(!isready) teturn;
         if(!msg.guild || !msg.member) return; //訊息內不存在guild元素 = 非群組消息(私聊)
         if(msg.channel.type === "DM") return; 
         if(msg.webhookId) return;
@@ -878,7 +868,7 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、送別觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
-    if(!isReady) return;
+    if(!isready) teturn;
 
     console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
@@ -914,14 +904,14 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('guildMemberRemove', member => {
-    if(!isReady) return;
+    if(!isready) return;
 
     console.log(`${member.user.tag} 已自 ${member.guild.name} 離開。`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 **${member.guild.name}** 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage) return;
     if(!element.leaveChannel){
-        if(!member.guild.systemChannel){return;}
+        if(!member.guild.systemChannel) return;
         if(!element.leaveMessageContent)
             member.guild.systemChannel.send(`**${member.user.tag}** 已遠離我們而去。`);
         else{
@@ -942,7 +932,7 @@ client.on('guildMemberRemove', member => {
 
 //#region 機器人被加入、踢出觸發事件guildCreate、guildDelete
 client.on("guildCreate", guild2 => {
-    if(!isReady) return;
+    if(!isready) return;
 
     if(!guildInformation.has(guild2.id)){
         const thisGI = new guild.GuildInformation(guild2, []);
@@ -955,7 +945,7 @@ client.on("guildCreate", guild2 => {
     );
     if(guild2.systemChannel){
         const l = client.user.tag;
-        guild2.systemChannel.send(`歡迎使用${l.slice(1, l.length)}！使用斜線指令(/help)來查詢我的功能！`).catch(err => console.log(err))
+        guild2.systemChannel.send(`歡迎使用${l}！使用斜線指令(/help)來查詢我的功能！`).catch(err => console.log(err))
     }
     guild2.fetchOwner().then(owner => { 
         owner.send(
@@ -966,7 +956,7 @@ client.on("guildCreate", guild2 => {
  });
 
 client.on("guildDelete", guild => {
-    if(!isReady) return;
+    if(!isready) return;
 
     console.log(`${client.user.tag} 從 ${guild.name} 中被踢出了`);
     client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${client.user.tag} 從 **${guild.name}** 中被踢出了`));

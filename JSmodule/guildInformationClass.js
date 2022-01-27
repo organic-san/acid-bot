@@ -102,6 +102,8 @@ class GuildInformation {
      * @param {Array<User>} users
      */
     constructor(guild, users) {
+        this.joinedAt = new Date(Date.now());
+        this.recordAt = new Date(Date.now());
         this.id = guild.id;
         this.name = guild.name;
         this.joinMessage = false;
@@ -113,8 +115,7 @@ class GuildInformation {
         this.levels = true;
         this.levelsReact = "MessageChannel";
         this.levelsReactChannel = "";
-        this.joinedAt = new Date(Date.now());
-        this.recordAt = new Date(Date.now());
+        this.anonymous = true;
         this.users = users;
         this.reaction = [];
         this.reactionsCount = 1;
@@ -138,7 +139,8 @@ class GuildInformation {
         newGI.levelsReact = obj.levelsReact ?? "MessageChannel";
         newGI.levelsReactChannel = obj.levelsReactChannel ?? "";
         newGI.joinedAt = obj.joinedAt ?? new Date(Date.now());
-        newGI.recordAt = obj.recordAt ?? new Date(Date.now());
+        newGI.joinedAt = obj.joinedAt ?? new Date(Date.now());
+        newGI.recordAt = obj.anonymous ?? true;
         newGI.reaction = obj.reaction ?? [];
         newGI.reactionsCount = obj.reactionsCount ?? 1;
         obj.users.forEach(user => {

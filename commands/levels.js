@@ -168,7 +168,7 @@ module.exports = {
         } else { 
             //權限
             if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)){ 
-                return interaction.reply({content: "你沒有管理伺服器的權限，別以為能亂突破", ephemeral: true});
+                return interaction.reply({content: "你沒有管理伺服器的權限，無法使用本功能。", ephemeral: true});
             }
         }
         

@@ -326,76 +326,79 @@ async function playlistLoad(musicList, interaction, songUrl){
     musicList.channel = interaction.channel;
     let firstSongInList = "";
     const listPlayable = ytpl.validateID(songUrl);
-    if (listPlayable) {
-        const playlist = await ytpl(songUrl);
-        firstSongInList = playlist.items[0].shortUrl;
-        let isLoading = false;
-        playlist.items.forEach(async (element) => {
-            if (element.title !== '[Deleted video]') {
-                const info = await ytdl.getInfo(element.shortUrl);
-                isLoading = true;
-                if(!info.videoDetails || info.videoDetails.age_restricted)
-                    return;
-                
-                const songLength = info.videoDetails.lengthSeconds;
-                if(parseInt(songLength) < 2)
-                    return;
 
-                musicList.songPush(new music.SongUnit(
-                    info.videoDetails.title, 
-                    element.shortUrl, 
-                    info.videoDetails.videoId,
-                    songLength, 
-                    interaction.user
-                ))
-            }
-        });
-        //判斷bot是否已經連到語音頻道 是:將歌曲加入歌單 不是:進入語音頻道並且播放歌曲
-
-        let timerCount = 0;
-        let timerID = setInterval(async () => {
-            timerCount++;
-            if(timerCount >= 120) {
-                clearInterval(timerID);
-                return await interactionReply(interaction, `播放清單讀取失敗ˊ_>\ˋ`);
-            }
-            if(!isLoading) return;
-            clearInterval(timerID);
-            await interactionReply(interaction, `播放清單讀取完畢!`);
-            if(!Voice.getVoiceConnection(interaction.guild.id)){
-                await interactionReply(interaction, `請稍等，即將進入語音頻道...`);
-    
-                //進入語音頻道
-                Voice.joinVoiceChannel({
-                    channelId: interaction.member.voice.channel.id,
-                    guildId: musicList.guildId,
-                    adapterCreator: interaction.guild.voiceAdapterCreator,
-                    selfMute: false
-                })
-    
-                setTimeout(() => {
-                    //創建播放器
-                    musicList.createPlayer();
-                    Voice.getVoiceConnection(interaction.guild.id).subscribe(musicList.player);
-                    //讀取資源
-                    resourcePlay(musicList);
-    
-                    //啟動被踢出偵測器與音樂播放偵測器
-                    connectionCheck(musicList);
-                    playerCheck(musicList);
-                }, 2000);
-                
-            }else{
-                //清單為零時再次開始讀取資源
-                if(musicList.firstSong.url === firstSongInList){
-                    resourcePlay(musicList);
-                }
-            } 
-        }, 500);
-        return interactionReply(interaction, "正在載入播放清單。請稍候...");
-    } else {
+    if (!listPlayable) 
         return interactionReply(interaction, `你確定你的連結是音樂或播放清單嗎?要不要再確認一次?`, true);
-    }
+
+    const playlist = await ytpl(songUrl).catch();
+    if(!playlist.items)
+        return interactionReply(interaction, `播放清單似乎是空的。找點有料的東西來吧`, true);
+
+    firstSongInList = playlist.items[0].shortUrl;
+    let isLoading = false;
+    playlist.items.forEach(async (element) => {
+        if (element.title !== '[Deleted video]') {
+            const info = await ytdl.getInfo(element.shortUrl);
+            if(!info.videoDetails || info.videoDetails.age_restricted)
+                return;
+            
+            const songLength = info.videoDetails.lengthSeconds;
+            if(parseInt(songLength) < 2)
+                return;
+
+            musicList.songPush(new music.SongUnit(
+                info.videoDetails.title, 
+                element.shortUrl, 
+                info.videoDetails.videoId,
+                songLength, 
+                interaction.user
+            ))
+            isLoading = true;
+        }
+    });
+    //判斷bot是否已經連到語音頻道 是:將歌曲加入歌單 不是:進入語音頻道並且播放歌曲
+
+    let timerCount = 0;
+    let timerID = setInterval(async () => {
+        timerCount++;
+        if(timerCount >= 60) {
+            clearInterval(timerID);
+            return await interactionReply(interaction, `播放清單讀取失敗ˊ_>\ˋ`);
+        }
+        if(!isLoading) return;
+        clearInterval(timerID);
+        await interactionReply(interaction, `播放清單讀取完畢!`);
+        if(!Voice.getVoiceConnection(interaction.guild.id)){
+            await interactionReply(interaction, `請稍等，即將進入語音頻道...`);
+
+            //進入語音頻道
+            Voice.joinVoiceChannel({
+                channelId: interaction.member.voice.channel.id,
+                guildId: musicList.guildId,
+                adapterCreator: interaction.guild.voiceAdapterCreator,
+                selfMute: false
+            })
+
+            setTimeout(() => {
+                //創建播放器
+                musicList.createPlayer();
+                Voice.getVoiceConnection(interaction.guild.id).subscribe(musicList.player);
+                //讀取資源
+                resourcePlay(musicList);
+
+                //啟動被踢出偵測器與音樂播放偵測器
+                connectionCheck(musicList);
+                playerCheck(musicList);
+            }, 2000);
+            
+        }else{
+            //清單為零時再次開始讀取資源
+            if(musicList.firstSong.url === firstSongInList){
+                resourcePlay(musicList);
+            }
+        } 
+    }, 500);
+    return interactionReply(interaction, "正在載入播放清單。請稍候...");
 }
 
 /**

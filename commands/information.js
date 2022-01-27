@@ -204,10 +204,13 @@ module.exports = {
             }
             const startday = premium ? `${premium.getFullYear()} ${premium.getMonth()+1}/${premium.getDate()} (${day})` : "沒有加成本伺服器" ;
             let roles = '';
-            member.roles.cache.forEach(role => {
-                if(role.id !== interaction.guild.id) roles += role.toString() + ' ';
+            let rolesC = 0;
+            member.roles.cache.forEach((role) => {
+                if((role.id !== interaction.guild.id) && rolesC < 30) roles += role.toString() + ' ';
+                rolesC++;
             });
             if(!roles) roles = "沒有身分組";
+            if(rolesC >= 30) roles += "...等" + member.roles.cache.size + "個身分組";
             const embed3 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${user.tag} 的資訊`)

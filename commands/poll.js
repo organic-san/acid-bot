@@ -115,7 +115,7 @@ module.exports = {
                     const filter = (reaction, user) => reaction.emoji.name === '↩' && user.id === interaction.user.id;
                     poll.awaitReactions({filter, max: 1, time: 120 * 1000, errors: ['time'] })
                         .then(() => { poll.delete().catch((err)=>console.log(err)); })
-                        .catch(() => { poll.reactions.cache.get('↩').users.remove().catch((err)=>console.log(err)); })
+                        .catch(() => { poll.reactions.cache.get('↩')?.users.remove().catch((err)=>console.log(err)); })
                 }
             }
         

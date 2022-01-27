@@ -62,13 +62,14 @@ module.exports = {
         let content = "";
         collector.on('collect', async i => {
             if(i.user.id !== interaction.user.id) return i.reply({content: "想參與遊戲可以用/guess-number開始喔!", ephemeral: true});
+            await i.deferUpdate();
             if(i.customId === "cancel") collector.stop('time');
             if(!Number.isNaN(parseInt(i.customId)) || i.customId === "delete") {
                 if(!Number.isNaN(parseInt(i.customId))) guess.push(parseInt(i.customId));
                 else guess.pop();
 
                 let row = await rowCreate(range, recurring, guess);
-                await i.update({
+                await i.editReply({
                     content: `來玩猜數字吧!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                     `剩餘回合數: \`${turn}\`\n\`\`\`\n` + 
                         `${content + `目前猜測: ${[...guess].join(" ").padEnd(4, ' ')}`}\n\`\`\``, 
@@ -99,7 +100,7 @@ module.exports = {
                 content += `第 ${(guessd.length).toString().padStart(2, '0')} 次嘗試: ${[...guessd[range + 2 - turn]].join(" ")}\n`
                 turn--;
                 if(guess.join("") === answer.join("")){
-                    await i.update({
+                    await i.editReply({
                         content: `恭喜猜對了!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
                         `__人人人人人__\n＞   成功!  ＜\n￣Y^Y^Y^Y^Y￣\n我所想的數字: ${answer.join(" ")}\`\`\``, 
@@ -110,13 +111,13 @@ module.exports = {
                     collector.resetTimer({ time: 180 * 1000 });
                     guess = [];
                     let row = await rowCreate(range, recurring, guess);
-                    await i.update({
+                    await i.editReply({
                         content: `來玩猜數字吧!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}\n\`\`\``, 
                         components: row
                     });
                 } else {
-                    await i.update({
+                    await i.editReply({
                         content: `挑戰失敗!\n玩家: ${interaction.user}\n模式: ${recurring ? "會重複數字" : "不會重複數字"} / 數字範圍: ${rangeKey}\n` + 
                         `剩餘回合數: \`${turn}\`\n\`\`\`\n${content}` + 
                         `__人人人人人__\n＞   失敗!  ＜\n￣Y^Y^Y^Y^Y￣\n我所想的數字: ${answer.join(" ")}\`\`\``, 
