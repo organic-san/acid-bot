@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
+const guild = require('../JSmodule/guildInformationClass');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,12 +11,13 @@ module.exports = {
             .setDescription('要匿名的訊息內容')
             .setRequired(true)
         ),
-	tag: "interaction",
+	tag: "guildInfo",
     /**
      * 
      * @param {Discord.CommandInteraction} interaction 
+     * @param {guild.GuildInformation} guildInformation 
      */
-	async execute(interaction) {
+	async execute(interaction, guildInformation) {
 
         const message = interaction.options.getString('message');
 
@@ -28,7 +30,7 @@ module.exports = {
         const majiCheck = interaction.guild.id === '881520130926981172';
         
         const embed = new Discord.MessageEmbed().setColor(process.env.EMBEDCOLOR).setDescription(message).setTimestamp();
-        if(alvinChannelCheck === true || majiCheck === true) 
+        if(alvinChannelCheck || majiCheck || !guildInformation.anonymous) 
             embed.setFooter(`來自 ${interaction.user.tag} 的一則訊息(這裡不能匿名)`, interaction.user.displayAvatarURL({dynamic: true}));
         else 
             embed.setFooter(`來自不願具名的一則訊息`, interaction.client.user.displayAvatarURL({dynamic: true}))
