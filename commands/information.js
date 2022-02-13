@@ -210,7 +210,7 @@ module.exports = {
                 rolesC++;
             });
             if(!roles) roles = "沒有身分組";
-            if(rolesC >= 30) roles += "...等" + member.roles.cache.size + "個身分組";
+            if(rolesC >= 30) roles += "...等 共" + member.roles.cache.size + "個身分組";
             const embed3 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${user.tag} 的資訊`)
