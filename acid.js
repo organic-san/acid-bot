@@ -33,8 +33,6 @@ client.login(process.env.DCKEY_TOKEN);
 
 let guildInformation = new guild.GuildInformationArray([], []); //所有資料的中樞(會將檔案的資料撈出來放這裡)
 
-let numberingList = new Map();
-
 let musicList = new Map();
 
 client.commands = new Discord.Collection();
@@ -190,8 +188,6 @@ client.on('messageCreate', async msg =>{
         const splitText = /\s+/;
 
         var defpre = prefix[0].Value;
-        var defprem = prefix[2].Value;
-        var defprea = prefix[4].Value;
 
         //#region 等級系統
         const element = guildInformation.getGuild(msg.guild.id);
@@ -212,9 +208,6 @@ client.on('messageCreate', async msg =>{
 
         //#region 群外表情符號代為顯示功能
         if(msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && 
-        !msg.content.startsWith('%') && 
-        !msg.content.startsWith('$') && 
-        !msg.content.startsWith('a^') && 
         !msg.content.startsWith('b^'))
         {
             if(!msg.channel.isThread()){
@@ -399,265 +392,12 @@ client.on('messageCreate', async msg =>{
                     else text = '{\\\\__/}\n(⊙ω⊙)\n/ >▄︻̷̿┻̿═━一   =========))';}
                 msg.reply(text);
                 break;
-            
-            case '我要加入':
-                if(msg.channel.id === "851841312360890369"){
-                    msg.guild.members.cache.get(msg.author.id).roles.add('848903846990577674');
-                    msg.delete();
-                }
-        }
-        //#endregion
-
-        //#region 數數字part1
-        if(parseInt(msg.content) === parseInt(msg.content) && numberingList.get(msg.channel.id) !== undefined){
-            numberingList.set(msg.channel.id, numberingList.get(msg.channel.id) + 1);
-            if(parseInt(msg.content) === (numberingList.get(msg.channel.id))){
-                msg.react('✅');
-            }else{
-                msg.react('❌');
-                msg.channel.send(`數數字結束！成績：${numberingList.get(msg.channel.id) - 1}`);
-                numberingList.delete(msg.channel.id);
-            }
         }
         //#endregion
 
         //實作
         //以下預計廢除
         switch(tempPrefix.toString()){
-            case '0': //文字回應功能
-            case '1':
-                //#region 文字指令(全)
-                const cmd = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
-
-                switch (cmd[0]) {
-                    
-                    case 'numbercount':
-                    case '數數字':
-                    case 'countnumber':
-                    case 'numbering':
-                    case 'cn':
-                    case 'nc':
-                        //#region 數數字part2
-                        await msg.channel.sendTyping();
-                        if(numberingList.get(msg.channel.id) === undefined){
-                            msg.channel.send('開始數數字！下一個數字：1');
-                            numberingList.set(msg.channel.id, 0);
-                        }else{
-                            msg.channel.send(`下一個數字：${numberingList.get(msg.channel.id) + 1}`);
-                        }
-                        break;
-                        //#endregion
-
-                    case 'invite':
-                    case '邀請':
-                        await msg.channel.sendTyping();
-                        msg.channel.send({embeds: [textCommand.invite(client.user, msg.channel)]});
-                        break;
-                    
-                    default:
-                        await msg.channel.sendTyping();
-                        if(cmd[0].match(/[a-z]/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
-                        break;
-                }
-                break;
-                //#endregion
-            
-            case '2': //舊音樂
-            case '3':
-                const cmd2 = msg.content.substring(prefix[tempPrefix].Value.length).split(splitText); //以空白分割前綴以後的字串
-                if(cmd2[0].match(/[a-z]/)){
-                    await msg.channel.sendTyping();
-                    msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
-                }
-                break;
-
-            case '4': //管理指令
-            case '5':
-                //#region 管理指令(全)
-                await msg.channel.sendTyping();
-
-                const commands = msg.content.substring(prefix[4].Value.length).split(splitText); //以空白分割前綴以後的字串
-                const filter = message => message.author.id === msg.author.id;
-                switch(commands[0]){
-                    
-                    case 'ban':
-                        //#region 停權
-                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)){
-                            return msg.reply("無法執行指令：權限不足：需要具有停權權限");
-                        }
-                        if (!commands[1]) return msg.reply("未指定成員，請重試");
-                        const member = textCommand.MemberResolveFromMention(msg.guild, commands[1]);
-                        if (!member) return msg.reply("該用戶不存在，請重試");
-                        if (!member.bannable) return msg.reply('我沒辦法停權這位用戶 :(\n');
-                        let reasonb = commands.slice(2).join(' ');
-                        let banmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 停權。`;
-                        if(!reasonb){
-                            await textCommand.MemberResolveFromMention(msg.guild, member.id).send(banmessage);
-                            await msg.guild.members.ban(member);
-                        }
-                        else{
-                            banmessage += `\n原因：${reasonb}`;
-                            await textCommand.MemberResolveFromMention(client, member.id).send(banmessage);
-                            await msg.guild.members.ban(member, {reason:reasonb});
-                        }
-                        msg.channel.send(`已停權 ${member.user.tag} (ID ${memberk.user.id})`);
-                        //#endregion
-                        break;
-                    
-                    case 'kick':
-                        //#region 踢出
-                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.KICK_MEMBERS)){ 
-                            return msg.reply("無法執行指令：權限不足：需要具有踢出權限");
-                        }
-                        if (!commands[1]) return msg.reply("未指定成員，請重試");
-                        const memberk = textCommand.MemberResolveFromMention(msg.guild, commands[1]);
-                        if (!memberk) return msg.reply("該用戶不存在，請重試");
-                        if (!memberk.kickable) return msg.reply("我沒辦法踢出這位用戶 :(");
-                        let reasonk = commands.slice(2).join(' ');
-                        let kickmessage = `您已由 **${msg.author.tag}** 自 **${msg.guild.name}** 踢出。`;
-                        if(!reasonk){
-                            await textCommand.MemberResolveFromMention(msg.guild, memberk.id).send(kickmessage);
-                            await memberk.kick();
-                        }else{
-                            kickmessage += `\n原因：${reasonk}`;
-                            await textCommand.MemberResolveFromMention(msg.guild, memberk.id).send(kickmessage);
-                            await memberk.kick(reasonk);
-                        }
-                        msg.channel.send(`已踢出 ${memberk.user.tag} (ID ${memberk.user.id})`);
-                        //#endregion
-                        break;
-                    
-                    case 'levels':
-                    case 'level':
-                        msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
-                            '但請別擔心! 我們已經準備新的斜線指令(/levels)來取代這裡原有的功能!')
-                        break;
-                        //#endregion
-
-                    case 'reactions': 
-                    case 'reaction': 
-                    msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
-                    '但請別擔心! 我們已經準備新的斜線指令(/auto-reply)來取代這裡原有的功能!')
-                        break;
-                        //#endregion
-
-                    case 'help':
-                    case 'h':
-                    case '幫助':
-                        //#region 幫助清單
-                        switch(commands[1]){
-                            
-                            //#region h/joinMessage
-                            case 'joinmessage':
-                            case 'joinMessage':
-                                const embed4 = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單/joinMessage(進出訊息發送管理)：前輟[${defprea}](需要管理員權限)`)
-                                    .setDescription(`關於joinMessage：可以設定歡迎與送別訊息的使用與發送的頻道\n` +
-                                                    `以下列出有關指令[\`${defprea}joinMessage\`]可以做的事，本權限全程需要管理員權限\n` + 
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField(`${defprea}joinMessage`, `顯示目前的設定檔`)
-                                    .addField(`${defprea}joinMessage set`, '調整是否要發送歡迎與送別訊息的設定')
-                                    .addField(`${defprea}joinMessage channel`, '設定發送歡迎與送別訊息的頻道')
-                                    .addField(`${defprea}joinMessage message`, '設定屬於伺服器的歡迎訊息')
-                                    .addField('\n頻道狀態說明', 'undefined:頻道未設定，若此時訊息發送與否為true並存在系統訊息頻道則發送在那裡\n' + 
-                                                                'invalid:頻道已消失，若此時訊息發送與否為true時並不會發送訊息，請重新設定頻道')
-                                    .addField('系統訊息頻道是什麼?', '會發送 \"有機酸 已加入隊伍。\" 這種訊息的頻道。')
-                                    .addField('頻道ID是什麼?', '\"使用者設定->進階->開啟開發者模式\"\n' +
-                                                '(行動版： \"使用者設定->行為->開啟開發者模式\" )\n' +
-                                                '之後，右鍵/長按頻道時最下方會有個 \"複製ID\" 選項\n可以使用此方法複製頻道ID\n'+
-                                                '通常頻道ID會長得像這樣：123456789012345678')
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                                `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                msg.channel.send({embeds: [embed4]});
-                                break;
-                                //#endregion
-                            
-                            //#region h/ban
-                            case 'ban':
-                                const embedban = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單/ban(對用戶停權)：前輟[${defprea}](需要停權權限)`)
-                                    .setDescription(`以下列出有關機器人的[\`${defprea}ban\`]功能\n` +
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField(`${defprea}ban <提及(@)要被停權的用戶> [理由]`,
-                                              `停權被提及的用戶(需要賦予機器人停權或管理員權限)，可選擇附上理由\n同時也會向被停權的用戶發送私人通知訊息`)
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                            `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                    .setTimestamp()
-                                msg.channel.send({embeds: [embedban]});
-                                break;
-                                //#endregion 
-
-                            //#region h/kick
-                            case 'kick':
-                                const embedkick = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單/kick(對用戶踢出)：前輟[${defprea}](需要踢出權限)`)
-                                    .setDescription(`以下列出有關機器人的[\`${defprea}kick\`]功能\n` +
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField(`${defprea}kick <提及(@)要被踢出的用戶> [理由]`,
-                                            `踢出被提及的用戶(需要賦予機器人踢出或管理員權限)，可選擇附上理由\n同時也會向被踢出的用戶發送私人通知訊息`)
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                            `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                    .setTimestamp()                                
-                                msg.channel.send({embeds: [embedkick]});
-                                break;
-                                //#endregion 
-
-                            //#region h/levels
-                            case 'levels':
-                                msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
-                                    '但請別擔心! 我們已經準備新的斜線指令(/levels)來取代這裡原有的功能!')
-                                break;
-                                //#endregion
-
-                            //#region h/reactions
-                            case 'reactions':
-                                msg.reply('指令已經開始轉移向斜線指令，或許近日內就會不能再使用不是斜線的指令。\n' +
-                                    '但請別擔心! 我們已經準備新的斜線指令(/auto-reply)來取代這裡原有的功能!')
-                                break;
-                                //#endregion
-
-
-                            default:
-                                //#region h/預設
-                                const embed = new Discord.MessageEmbed()
-                                    .setColor(process.env.EMBEDCOLOR)
-                                    .setTitle(`管理權限指令清單：前輟[${defprea}]`)
-                                    .setDescription(`以下列出有關機器人於管理員權限處理的指令(依指令需要指定權限)\n`+ 
-                                                    `<此為必填項> [此為選填項]`)
-                                    .addField('管理權限指令', 
-                                    `\`${defprea}joinMessage\` - 歡迎/道別訊息的設定，請先閱讀\`${defprea}help joinMessage\`\n` + 
-                                    `\`${defprea}levels\` - 等級系統設定，請先閱讀\`${defprea}help levels\`\n` + 
-                                    `\`${defprea}reactions\` - 反應系統設定，請先閱讀\`${defprea}help reactions\`\n` + 
-                                    `\`${defprea}kick <@用戶> [理由]\` - 踢出指定用戶並向該用戶告知\n` +
-                                    `\`${defprea}ban <@用戶> [理由]\` - 停權指定用戶並向該用戶告知\n\n` +
-                                    `\`${defprea}help <指令>\` - 召喚詳細的幫助清單，例如\`${defprea}help joinMessage\``)
-                                    .addField('文字指令', `請使用\`${defpre}help\`查詢`)
-                                    .addField('音樂播放指令', `請使用\`${defprem}help\`查詢`)
-                                    .addField(`加入有機酸伺服器`,`如果有任何問題或需求，請加入此伺服器並聯絡organic_san_2#0500\n` + 
-                                            `https://discord.gg/hveXGk5Qmz`)
-                                    .setFooter(`${client.user.tag}`,`${client.user.displayAvatarURL({dynamic: true})}`)
-                                    .setTimestamp()
-                                msg.channel.send({embeds: [embed]});
-                                break;
-                                //#endregion
-                        }
-                        //#endregion
-                        break;
-
-                    default:
-                        await msg.channel.sendTyping();
-                        if(commands[0].match(/[a-z]+/)) msg.reply('原有的指令不再提供支援，取而代之的是，您可以使用斜線指令(/slash command)!');
-                        break;
-                }
-                break;
-                //#endregion
-
             case '6':
             case '7':
                 //#region 有機酸專用指令(全)
@@ -723,55 +463,6 @@ client.on('messageCreate', async msg =>{
                             const message = await msg.channel.messages.fetch(text[1]);
                             console.log(message);
                         }
-                        break;
-                    
-                    case 'sqar':
-                        for(let k = 3; k < 46; k++) {
-                            /**
-                             * @type {Array<Array<number>>}
-                             */
-                            let square = [[1]];
-                            let squtotal = [[0]];
-                            for(let i = 1; i < k; i++) square[0][i] = 0;
-                            for(let i = 1; i < k; i++) squtotal[0][i] = 0;
-                            square[0][0] = 1;
-                            square[1] = [0];
-                            squtotal[1] = [0];
-                            for(let i = 0; i < k; i++) square[1][i] = 0;
-                            for(let i = 0; i < k; i++) squtotal[1][i] = 0;
-                            let count2 = 0;
-                            for(let i = 1; count2 <= 1; i++) {
-                                let count = 0;
-                                square[i + 1] = [0];
-                                squtotal[i + 1] = [0];
-                                for(let f = 0; f < k; f++) square[i + 1][f] = 0;
-                                for(let f = 0; f < k; f++) squtotal[i + 1][f] = 0;
-                                for(let j = 0;j < k; j++) {
-                                    if(square[i - 1][j] === 1){
-                                        square[i][j] = (square[i][j] === 1 ? 0 : 1);
-                                        squtotal[i][j]++;
-                                        count ++;
-                                        square[i - 1][j] = 0;
-                                        square[i + 1][j] = 1;
-                                        if(j - 1 >= 0)
-                                            square[i][j - 1] = (square[i][j - 1] === 1 ? 0 : 1);
-                                        if(j + 1 < k)
-                                            square[i][j + 1] = (square[i][j + 1] === 1 ? 0 : 1);
-                                    }
-                                }
-                                //console.log(count)
-                                if(count === 0) count2 ++;
-                            }
-                            let string = [];
-                            for(let i = 1; i < squtotal.length - 1; i++) {
-                                string.push(squtotal[i].join(" "));
-                            }
-                            fs.writeFile(`./data/square/${k}.json`, JSON.stringify(string, null, '\t'), async function (err) {
-                                if (err)
-                                    return console.log(err);
-                            });
-                        }
-                        
                         break;
 
                     case 'test':
@@ -870,10 +561,6 @@ client.on('messageCreate', async msg =>{
 client.on('guildMemberAdd', member => {
     if(!isready) teturn;
 
-    console.log(`${member.user.tag} (${member.user.id}) 加入了 ${member.guild.name} (${member.guild.id})。`);
-    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => 
-        channel.send(`${member.user.tag} (${member.user.id}) 加入了 **${member.guild.name}** (${member.guild.id})。`)
-    );
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage) return;
     if(!element.joinChannel){
@@ -906,8 +593,6 @@ client.on('guildMemberAdd', member => {
 client.on('guildMemberRemove', member => {
     if(!isready) return;
 
-    console.log(`${member.user.tag} 已自 ${member.guild.name} 離開。`);
-    client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`${member.user.tag} 已自 **${member.guild.name}** 離開。`));
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.leaveMessage) return;
     if(!element.leaveChannel){
