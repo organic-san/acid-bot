@@ -10,7 +10,6 @@ module.exports = {
             .setDescription('要查詢的指令種類')
             .setRequired(true)
             .addChoice("基本指令(系統說明、其他指令說明)", "basic")
-            .addChoice("更新資訊", "update")
             .addChoice("遊戲類", "game")
             .addChoice("音樂系統(music)", "music")
             .addChoice("機器人回應(response)", "response")
@@ -53,7 +52,7 @@ module.exports = {
                     "\`/auto-reply\` - 自動回應系統\n" + 
                     "\`/welcome-message\` - 歡迎訊息/送別訊息系統\n" + 
                     "\`/music\` - 音樂系統\n" + 
-                    "\`/game\` - 遊戲相關功能" +
+                    "\`/game\` - 遊戲相關功能\n" +
                     "\`/response\` - 機器人回應\n" + 
                     "\`/words\` - 每日單字系統")
                 .addField("表情符號轉換功能", 
@@ -62,35 +61,14 @@ module.exports = {
                     "例如: 只要輸入 \`:acidbot:\`，就會自動將訊息轉換轉換成 <:acidbot:896709436163375114>")
                 .addField("內建關鍵字反應功能", 
                     "部分關鍵字機器人也會反應\n分別為: \`笑死\`、\`快樂光線\`、\`龜雞奶\`")
+                .addField("如何刪除伺服器中儲存的資料?", 
+                    "只要將機器人退出伺服器，就會自動刪除所有儲存的資料。")
+                .addField("如何邀請機器人進入伺服器?",
+                    "使用 \`/invite\` 指令，或者點擊我的頭像。")
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
 
-        } else if (option === 'update') {
-            const embed = new Discord.MessageEmbed()
-                .setColor(process.env.EMBEDCOLOR)
-                .setTitle(`指令幫助清單/update(最近更新)`)
-                .setDescription(`來看看有機酸又加了什麼東西!`)
-                .addField("新增肥宅文體產生器!", 
-                    "\`/generator fat-nerd-style <text:內文>\`\n" + 
-                    "將自動轉換您輸入的言論，並轉譯成肥宅體\n" + 
-                    "是非常方便的功能。(燦笑")
-                .addField("計時器回來了!", 
-                    "\`/timer [hour:小時] [min:分鐘] [sec:秒] [message:提醒訊息]\`\n")
-                .addField("歡迎訊息回來了!", 
-                    "\`/welcome-message\` 或者查看/help welcome-message以取得完整資訊\n")
-                .addField("圈圈叉叉!", 
-                    "\`/tic-tac-toe\`\n")
-                .addField("猜數字!", 
-                    "\`/guess-number\`\n")
-                .addField("新的轉換器", 
-                    "/generator那附近找一下應該就有了(茶\n")
-                .addField("剔除非斜線的指令",
-                    "將於近期之內無法再使用原先的指令，大部分都已轉換完畢，請注意。")
-                .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
-            interaction.reply({embeds: [embed]});
-            
         } else if (option === 'auto-reply') {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
@@ -172,7 +150,6 @@ module.exports = {
                     `<此為必填項> [此為選填項]`)
                 .addField("基本指令", 
                     `\`/response happybeam\` - 由機器人送你一道快樂光線======)\n` +
-                    `\`/response goodnight\` - 晚上了，和你說晚安.:｡+゜｡\n` + 
                     `\`/response up-crazy-night <floor:樓數>\` - 向上面的訊息貼上🐢🐔🥛\n` +
                     `\`/response crazy-night-remove <floor:樓數>\` - 清除機器人發射的🐢🐔🥛\n`)
                 .addField('🐢🐔🥛是什麼?', 'crazy night')
@@ -193,6 +170,7 @@ module.exports = {
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
+
         } else if (option === 'welcome') {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
@@ -210,6 +188,7 @@ module.exports = {
                 .addField(`加入有機酸伺服器`,`如果有任何問題或需求，麻煩請[點擊加入伺服器](https://discord.gg/hveXGk5Qmz)並聯絡organic_san_2#0500\n`)
                 .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
             interaction.reply({embeds: [embed]});
+
         } else if (option === 'game') {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
