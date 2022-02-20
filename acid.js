@@ -3,17 +3,13 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
 const prefix = require('./JSONHome/prefix.json');
-const characters = require("./data/characters/testEnglishCharacters.json")
 
-const music = require('./JSmodule/musicModule');
 const textCommand = require('./JSmodule/textModule');
 const musicbase = require('./JSmodule/musicListClass');
 const guild = require('./JSmodule/guildInformationClass');
 const abyss = require('./JSmodule/abyssModule');
 
 const fs = require('fs');
-const { connect } = require('http2');
-const { time } = require('console');
 require('dotenv').config();
 
 const options = {
@@ -92,7 +88,7 @@ client.on('ready', () =>{
                     return console.log(err);
             });
         });
-        time = new Date();
+        let time = new Date();
         console.log(`Saved in ${time}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`)).catch(err => console.log(err));
     },10 * 60 * 1000)
