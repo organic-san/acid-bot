@@ -13,6 +13,7 @@ const abyss = require('./JSmodule/abyssModule');
 
 const fs = require('fs');
 const { connect } = require('http2');
+const { time } = require('console');
 require('dotenv').config();
 
 const options = {
@@ -99,7 +100,7 @@ client.on('ready', () =>{
 //#endregion
 
 client.on('interactionCreate', async interaction => {
-    if(!isready) teturn;
+    if(!isready) return;
 
     if(!interaction.guild && interaction.isCommand()) return interaction.reply("無法在私訊中使用斜線指令!");
 
@@ -155,8 +156,17 @@ client.on('interactionCreate', async interaction => {
 		if(command.tag === "musicList") await command.execute(interaction, musicList.get(interaction.guild.id));
 
 	} catch (error) {
+        //console.log("err1")
 		console.error(error);
-		await interaction.reply({ content: '糟糕! 好像出了點錯誤!', ephemeral: true });
+        try {
+            if(interaction.replied) 
+                interaction.editReply({ content: '糟糕! 好像出了點錯誤!', embeds: [], components: [] });
+            else
+                interaction.reply({ content: '糟糕! 好像出了點錯誤!', ephemeral: true });
+        }catch(err) {
+            console.log(err);
+        }
+		
 	}
 });
 
@@ -164,7 +174,7 @@ client.on('interactionCreate', async interaction => {
 //#region 文字事件反應
 client.on('messageCreate', async msg =>{
     try{
-        if(!isready) teturn;
+        if(!isready) return;
         if(!msg.guild || !msg.member) return; //訊息內不存在guild元素 = 非群組消息(私聊)
         if(msg.channel.type === "DM") return; 
         if(msg.webhookId) return;
@@ -255,7 +265,7 @@ client.on('messageCreate', async msg =>{
                                 .then(webhook => webhook.send({content: words, allowedMentions: {repliedUser: false}}))
                                 .catch(console.error);
                         }
-                        if(!msg.deleted && msg.deletable) msg.delete().catch((err) => console.log(err));
+                        if(msg.deletable) msg.delete().catch((err) => console.log(err));
                         return;
                     }
                 }
@@ -285,18 +295,25 @@ client.on('messageCreate', async msg =>{
                 .catch(console.error)
 
                 if(beforeMessage){
-                    if(!beforeMessage.deleted){beforeMessage.react('🐢').catch(err => console.log(err));
-                        if(!beforeMessage.deleted){beforeMessage.react('🐔').catch(err => console.log(err));}
-                        if(!beforeMessage.deleted){beforeMessage.react('🥛').catch(err => console.log(err));}
-                    }else{
-                        if(!msg.deleted){
-                                msg.react('😢').catch(err => console.log(err));
+                    try{
+                        beforeMessage.react('🐢');
+                        beforeMessage.react('🐔');
+                        beforeMessage.react('🥛');
+
+                    } catch (err) {
+                        if(err) console.error(err);
+                        try{
+                            msg.react('😢');
+                        } catch(err) {
+                            if(err) console.error(err);
                         }
                     }
             }
             }else{
-                if(!msg.deleted){
+                try{
                     msg.react('😢');
+                } catch(err) {
+                    if(err) console.error(err);
                 }
             }
             return;
@@ -313,17 +330,26 @@ client.on('messageCreate', async msg =>{
                 const responser = collected.last();
 
                 if(responser !== undefined){
-                    responser.react('🐢').catch(err => console.log(err));
-                    if(!responser.deleted){ responser.react('🐔').catch(err => console.log(err));}
-                    if(!responser.deleted){ responser.react('🥛').catch(err => console.log(err));}
+                    try{
+                        responser.react('🐢');
+                        responser.react('🐔');
+                        responser.react('🥛');
+
+                    } catch (err) {
+                        if(err) console.error(err);
+                    }
                 }else{
-                    if(!msg.deleted){
-                        msg.react('😢').catch(err => console.log(err));
+                    try{
+                        msg.react('😢');
+                    } catch(err) {
+                        if(err) console.error(err);
                     }
                 }
             }else{
-                if(!msg.deleted){
-                    msg.react('😢').catch(err => console.log(err));
+                try{
+                    msg.react('😢');
+                } catch(err) {
+                    if(err) console.error(err);
                 }
             }
             return;
@@ -403,7 +429,7 @@ client.on('messageCreate', async msg =>{
                 //#region 有機酸專用指令(全)
                 if(msg.author.id !== process.env.OWNER1ID && msg.author.id !== process.env.OWNER2ID){return;}
                 const text = msg.content.substring(prefix[6].Value.length).split(splitText);
-                if(msg.deletable && !msg.deleted){msg.delete().catch(console.error);}
+                if(msg.deletable){msg.delete().catch(console.error);}
                 switch(text[0]){
                     case "CTS": //channel ID to send
                     case "cts":
@@ -425,8 +451,12 @@ client.on('messageCreate', async msg =>{
                         if(!text[1]) return;
                         msg.channel.messages.fetch(text[1]).then(async message => 
                             {
-                                if(message.deletable && !message.deleted){
-                                    message.delete();
+                                if(message.deletable){
+                                    try{
+                                        message.delete();
+                                    } catch(err) {
+                                        if(err) console.error(err);
+                                    }
                                 }
                             }
                         );
@@ -441,8 +471,12 @@ client.on('messageCreate', async msg =>{
                         //#region 指定頻道->指定言論刪除
                         const channelc = textCommand.ChannelResolveFromMention(client, text[1])
                         channelc.messages.fetch(text[2]).then(message => {
-                                if(message.deletable && !message.deleted){
-                                    message.delete();
+                                if(message.deletable){
+                                    try{
+                                        message.delete();
+                                    } catch(err) {
+                                        if(err) console.error(err);
+                                    }
                                 }
                             }
                         )
@@ -559,7 +593,7 @@ client.on('messageCreate', async msg =>{
 
 //#region 進入、送別觸發事件guildMemberAdd、guildMemberRemove
 client.on('guildMemberAdd', member => {
-    if(!isready) teturn;
+    if(!isready) return;
 
     const element = guildInformation.getGuild(member.guild.id);
     if(!element.joinMessage) return;
@@ -568,7 +602,7 @@ client.on('guildMemberAdd', member => {
         if(!element.joinMessageContent)
             member.guild.systemChannel.send(`${member} ，歡迎來到 **${member.guild.name}** !`);
         else{
-            if(element.joinMessageContent.includes("<user>") && element.joinMessageContent.includes("<server>")){
+            if(element.joinMessageContent.includes("<user>") || element.joinMessageContent.includes("<server>")){
                 const msg = element.joinMessageContent.split("<user>").join(` ${member} `).split("<server>").join(` **${member.guild.name}** `)
                 member.guild.systemChannel.send(msg);
             }else
@@ -580,7 +614,7 @@ client.on('guildMemberAdd', member => {
         if(!element.joinMessageContent)
             client.channels.fetch(element.joinChannel).then(channel => channel.send(`${member} ，歡迎來到 **${member.guild.name}** !`));
         else{
-            if(element.joinMessageContent.includes("<user>") && element.joinMessageContent.includes("<server>")){
+            if(element.joinMessageContent.includes("<user>") || element.joinMessageContent.includes("<server>")){
                 const msg = element.joinMessageContent.split("<user>").join(` ${member} `).split("<server>").join(` **${member.guild.name}** `)
                 client.channels.fetch(element.joinChannel).then(channel => channel.send(msg));
             }else

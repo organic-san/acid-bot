@@ -143,7 +143,6 @@ module.exports = {
                 if(serverMatch?.length > 1) return interaction.reply({content: '<server>至多請只加入一組。', ephemeral: true});
                 message = message.split(userMatch[0]).join('<user>');
                 if(serverMatch) message = message.split(serverMatch[0]).join('<server>');
-                message = message.split(" ").join('\n');
                 if(setType === 0) guildInformation.joinMessageContent = message;
                 else guildInformation.leaveMessageContent = message;
                 interaction.reply(`設定完成:\n` + 
