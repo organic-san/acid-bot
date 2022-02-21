@@ -555,7 +555,7 @@ client.on('messageCreate', async msg =>{
                     
                     case "SendInformationToEveryOwner": //Send Information To Every Owner
                         //#region 向伺服器擁有者發言
-                        const chance = "NO";
+                        const chance = "YES";
                         if(chance === "YES"){
                             guildInformation.guilds.forEach(async (element) => {
                                 const ownerId = client.guilds.cache.get(element.id).ownerId;
@@ -592,6 +592,7 @@ client.on('guildMemberAdd', member => {
     if(!isready) return;
 
     const element = guildInformation.getGuild(member.guild.id);
+    if(!element) return;
     if(!element.joinMessage) return;
     if(!element.joinChannel){
         if(!member.guild.systemChannel) return;
@@ -624,6 +625,7 @@ client.on('guildMemberRemove', member => {
     if(!isready) return;
 
     const element = guildInformation.getGuild(member.guild.id);
+    if(!element) return;
     if(!element.leaveMessage) return;
     if(!element.leaveChannel){
         if(!member.guild.systemChannel) return;
