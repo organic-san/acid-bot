@@ -92,7 +92,7 @@ module.exports = {
                             rankBar += firstMark;
                         }
                         embed.addField(`${exps - backlevel} / ${nextlevel - backlevel} exp. to next level`, rankBar, true)
-                            .setFooter(`total: ${item.exp} exp. ${item.msgs} message(s). `/*${item.chips} chip(s)*/)
+                            .setFooter({text: `total: ${item.exp} exp. ${item.msgs} message(s). `/*${item.chips} chip(s)*/})
                             //TODO: 在未來有金錢系統後記得改掉這裡的顯示，讓chips顯示
                     }
                 });
@@ -102,9 +102,15 @@ module.exports = {
                     levelsList.sort(function(a, b) {return b - a;});
                     let rankshow = `\n🔹 RANK: #${levelsList.indexOf(exps) + 1} 🔹 LEVEL: ${lvls} 🔹`;
                     if(interaction.guild.members.cache.get(user.id).nickname){
-                        embed.setAuthor(`${interaction.guild.members.cache.get(user.id).nickname} (${user.tag}) ${rankshow}`, user.displayAvatarURL({dynamic: true}));
+                        embed.setAuthor({
+                            name: `${interaction.guild.members.cache.get(user.id).nickname} (${user.tag}) ${rankshow}`,
+                            iconURL: user.displayAvatarURL({dynamic: true})
+                        });
                     }else{
-                        embed.setAuthor(`${user.tag} ${rankshow}`, user.displayAvatarURL({dynamic: true}));
+                        embed.setAuthor({
+                            name: `${user.tag} ${rankshow}`,
+                            iconURL: user.displayAvatarURL({dynamic: true})
+                        });
                     }
                     interaction.reply({embeds: [embed]});
                 }
@@ -233,7 +239,10 @@ module.exports = {
                 .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
                 .addField("等級排行系統", levelsisworking, true)
                 .addField("升級訊息發送模式", guildInformation.levelsReact, true)
-                .setFooter(`${interaction.client.user.tag} • 相關說明請查看/help`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({
+                    text: `${interaction.client.user.tag} • 相關說明請查看/help`,
+                    iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`
+                })
                 .setTimestamp();
             
             if(guildInformation.levelsReact === "SpecifyChannel") {

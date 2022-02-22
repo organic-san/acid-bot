@@ -303,7 +303,7 @@ async function playmusic(musicList, interaction, songUrl){
         const longmin = musicList.lastSong.longmin;
         const embed = new Discord.MessageEmbed()
             .setColor(process.env.EMBEDCOLOR)
-            .setAuthor(`音樂已加入歌單`, `${interaction.user.displayAvatarURL({dynamic: true})}`)
+            .setAuthor({name: `音樂已加入歌單`, iconURL: `${interaction.user.displayAvatarURL({dynamic: true})}`})
             .setTitle(`${musicList.lastSong.title}`)
             .setURL(`${songUrl}`)
             .addField('頻道名稱', `${info.videoDetails.author.name}`, true)
@@ -431,12 +431,14 @@ async function resourcePlay(musicList){
             const longmin = musicList.firstSong.longmin;
             const embed = new Discord.MessageEmbed()
                     .setColor(process.env.EMBEDCOLOR)
-                    .setAuthor('現正播放', `${musicList.getClientUserAvatar()}`)
+                    .setAuthor({name: '現正播放', iconURL: `${musicList.getClientUserAvatar()}`})
                     .setTitle(`${title} [${longmin}分 ${longsec}秒]`)
                     .setURL(`${musicList.firstSong.url}`)
                     .setThumbnail(musicList.firstSong.getThumbnail())
-                    .setFooter(`由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
-                            `${musicList.firstSong.getPlayerAvatar()}`);
+                    .setFooter({
+                        text: `由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
+                        iconURL: `${musicList.firstSong.getPlayerAvatar()}`
+                    });
             await musicList.channel.send({embeds: [embed]}).then(message => {
                 if(musicList.songlength > 0){
                     musicList.setPlayingMessage(message);
@@ -518,7 +520,7 @@ function queueplay(musicList, page, pageShowHax){
         }
         if(musicList.isLoop){footer += '[looping: ⭕]';}else{footer += '[looping: ❌]';}
         if(musicList.isLoopList){footer += ' [loopList: ⭕]';}else{footer += ' [loopList: ❌]';}
-        embed.setFooter(footer);
+        embed.setFooter({text: footer});
         return embed;
 
     }catch(err){
@@ -611,7 +613,7 @@ function nowplaying(musicList, interaction){
             .setThumbnail(musicList.firstSong.getThumbnail())
             .setDescription(`[播放者：${musicList.firstSong.userPlayer}]`) 
             .addField(`[ ${nowLongmin}:${nowLongsec} / ${longmin}:${longsec} ]`,`${timebar}`,false)
-            .setFooter(footer);
+            .setFooter({text: footer});
             interactionReply(interaction, undefined, false, [embed]);
     }catch (err){
         console.log(err, 'nowPlayMusicError');

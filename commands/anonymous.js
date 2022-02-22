@@ -31,9 +31,9 @@ module.exports = {
         
         const embed = new Discord.MessageEmbed().setColor(process.env.EMBEDCOLOR).setDescription(message).setTimestamp();
         if(alvinChannelCheck || majiCheck || !guildInformation.anonymous) 
-            embed.setFooter(`來自 ${interaction.user.tag} 的一則訊息(這裡不能匿名)`, interaction.user.displayAvatarURL({dynamic: true}));
+            embed.setFooter({text: `來自 ${interaction.user.tag} 的一則訊息(這裡不能匿名)`, iconURL: interaction.user.displayAvatarURL({dynamic: true})});
         else 
-            embed.setFooter(`來自不願具名的一則訊息`, interaction.client.user.displayAvatarURL({dynamic: true}))
+            embed.setFooter({text: `來自不願具名的一則訊息`, iconURL: interaction.client.user.displayAvatarURL({dynamic: true})})
 
         await interaction.reply({content: '已發送。點選❌可以刪除訊息。', ephemeral: true});
 

@@ -29,24 +29,26 @@ module.exports = {
                 if(message.author.bot) return interaction.reply({content: "噢，無法記錄機器人的訊息:(", ephemeral: true});
 
                 const fileimage = message.attachments.first();
-                const embeedrecord = new Discord.MessageEmbed()
+                const embeed = new Discord.MessageEmbed()
                     .setColor(process.env.EMBEDCOLOR)
                     .setTimestamp()
                     .setDescription(message.content)
-                    .setFooter(`${interaction.client.user.tag} 記其志於此`, interaction.client.user.displayAvatarURL({dynamic: true}))
+                    .setFooter({text: `${interaction.client.user.tag} 記其志於此`, iconURL: interaction.client.user.displayAvatarURL({dynamic: true})})
                     .addField(`原文`, `[點一下這裡](${message.url})`)
                 if (fileimage){
                     if (fileimage.height || fileimage.width)
-                    { embeedrecord.setImage(fileimage.url); }
+                    { embeed.setImage(fileimage.url); }
                 }
                 if(channel.type !== 'PartialDMChannel'){
-                    embeedrecord.setAuthor(`${message.author.tag} 曾經在 #${channel.name} 這麼說過：`, 
-                        message.author.displayAvatarURL({dynamic: true}))
+                    embeed.setAuthor({
+                        name: `${message.author.tag} 曾經在 #${channel.name} 這麼說過：`, 
+                        iconURL: message.author.displayAvatarURL({dynamic: true})
+                    })
                 }else{
-                    embeedrecord.setAuthor(`${message.author.tag} 曾經這麼說過：`, 
-                        message.author.displayAvatarURL({dynamic: true}))
+                    embeed.setAuthor({name: `${message.author.tag} 曾經這麼說過：`, 
+                    iconURL: message.author.displayAvatarURL({dynamic: true})})
                 }
-                interaction.reply({embeds: [embeedrecord]});
+                interaction.reply({embeds: [embeed]});
             }
         ).catch(() => interaction.reply({content: "噢，找不到訊息來記錄:(", ephemeral: true}));
     }

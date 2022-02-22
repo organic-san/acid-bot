@@ -159,7 +159,7 @@ module.exports = {
             const embedhelp = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTimestamp()
-                .setFooter(`${client.tag}`,`${client.displayAvatarURL({dynamic: true})}`);
+                .setFooter({text: `${client.tag}`, iconURL: `${client.displayAvatarURL({dynamic: true})}`});
 
             return channel.send({embeds:[this.helpTimer(defpre, embedhelp)]});
         }

@@ -68,7 +68,7 @@ module.exports = {
                 .addField('參與伺服器數量', `${interaction.client.guilds.cache.size}`, true)
                 .addField('延遲', `${interaction.client.ws.ping}ms`, true)
                 .setThumbnail(interaction.client.user.displayAvatarURL({dynamic: true}))
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({text: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`})
                 .setTimestamp()
             interaction.reply({embeds: [embed3]});
 
@@ -158,7 +158,7 @@ module.exports = {
                 .addField(`等級系統參與 - ${guildInformation.levels ? guildInformation.usersMuch : "尚未啟動"}`, 
                             `小於10等 - ${lo10}\n11-20等 - ${lo20}\n21-30等 - ${lo30}\n31-60等 - ${lo60}\n大於60等 - ${bg60}\n`, true)
                 
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({text: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`})
                 .setThumbnail(`https://cdn.discordapp.com/icons/${interaction.guild.id}/${interaction.guild.icon}.jpg`)
                 .setTimestamp()
             interaction.reply({embeds: [embed4]});
@@ -223,7 +223,7 @@ module.exports = {
                 .addField('開始加成時間', startday, true)
                 .addField('身分組', roles)
                 .setThumbnail(user.displayAvatarURL({dynamic: true}))
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({text: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`})
                 .setTimestamp()
             interaction.reply({embeds: [embed3]});
         }

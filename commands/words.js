@@ -70,12 +70,12 @@ module.exports = {
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTimestamp()
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({text: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`})
                 .setTitle(`每日單字 ${wordAmount} 個\n`);
             const embed2 = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTimestamp()
-                .setFooter(`${interaction.client.user.tag}`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                .setFooter({text: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`})
             let wordList = [];
 
             for(let i = 0; i < wordAmount; i++){

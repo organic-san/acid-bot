@@ -209,7 +209,10 @@ module.exports = {
                     .addField(`歡迎訊息內容`, guildInformation.joinMessageContent || "未定義(使用預設)")
                     .addField(`送別訊息發送頻道`, leaveChannel)
                     .addField(`送別訊息內容`, guildInformation.leaveMessageContent || "未定義(使用預設)")
-                    .setFooter(`${interaction.client.user.tag} • 相關說明請查看/help`,`${interaction.client.user.displayAvatarURL({dynamic: true})}`)
+                    .setFooter({
+                        text: `${interaction.client.user.tag} • 相關說明請查看/help`,
+                        iconURL: `${interaction.client.user.displayAvatarURL({dynamic: true})}`
+                    })
                     .setTimestamp();
 
                 interaction.reply({embeds: [embed]});

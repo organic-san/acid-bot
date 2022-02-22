@@ -88,9 +88,9 @@ module.exports = {
             const embedlPoll = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(title)
-                .setAuthor(`由 ${interaction.user.tag} 提出本次投票`, interaction.user.displayAvatarURL({dynamic: true}))
+                .setAuthor({name: `由 ${interaction.user.tag} 提出本次投票`, iconURL: interaction.user.displayAvatarURL({dynamic: true})})
                 .setTimestamp()
-                .setFooter("poll:點選與選項相同的表情符號即可投票");
+                .setFooter({text: "poll:點選與選項相同的表情符號即可投票"});
             
             if(description) {
                 embedlPoll.setDescription(description);
@@ -134,7 +134,7 @@ module.exports = {
             const embedlPollresult = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
                 .setTitle(`${pollResult.embeds[0].title} 的投票結果`)
-                .setAuthor(pollResult.embeds[0].author.name, pollResult.embeds[0].author.iconURL)
+                .setAuthor({name: pollResult.embeds[0].author.name, iconURL: pollResult.embeds[0].author.iconURL})
                 .setTimestamp()
 
             let maxCount = 0;

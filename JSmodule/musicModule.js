@@ -142,7 +142,7 @@ module.exports = {
             const longmin = musicList.lastSong.longmin;
             const embed = new Discord.MessageEmbed()
                 .setColor(process.env.EMBEDCOLOR)
-                .setAuthor(`音樂已加入歌單`, `${msg.author.displayAvatarURL({dynamic: true})}`)
+                .setAuthor({name: `音樂已加入歌單`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                 .setTitle(`${musicList.lastSong.title}`)
                 .setURL(`${songUrl}`)
                 .addField('頻道名稱', `${info.videoDetails.author.name}`, true)
@@ -189,12 +189,14 @@ module.exports = {
                 const longmin = musicList.firstSong.longmin;
                 const embed = new Discord.MessageEmbed()
                         .setColor(process.env.EMBEDCOLOR)
-                        .setAuthor('現正播放', `${musicList.getClientUserAvatar()}`)
+                        .setAuthor({name: '現正播放', iconURL: musicList.getClientUserAvatar()})
                         .setTitle(`${title} [${longmin}分 ${longsec}秒]`)
                         .setURL(`${musicList.firstSong.url}`)
                         .setThumbnail(musicList.firstSong.getThumbnail())
-                        .setFooter(`由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
-                                `${musicList.firstSong.getPlayerAvatar()}`);
+                        .setFooter({
+                            text: `由 ${musicList.firstSong.getPlayerTag()} 點播這首音樂`,
+                            iconURL: `${musicList.firstSong.getPlayerAvatar()}`
+                        });
                 await musicList.channel.send({embeds: [embed]}).then(message => {
                     if(musicList.songlength > 0){
                         musicList.setPlayingMessage(message);
@@ -344,7 +346,7 @@ module.exports = {
             }
             if(musicList.isLoop){footer += '[looping: ⭕]';}else{footer += '[looping: ❌]';}
             if(musicList.isLoopList){footer += ' [loopList: ⭕]';}else{footer += ' [loopList: ❌]';}
-            embed.setFooter(footer);
+            embed.setFooter({text: footer});
             return embed;
 
         }catch(err){
@@ -417,7 +419,7 @@ module.exports = {
                 .setThumbnail(musicList.firstSong.getThumbnail())
                 .setDescription(`[播放者：${musicList.firstSong.userPlayer}]`) 
                 .addField(`[ ${nowLongmin}:${nowLongsec} / ${longmin}:${longsec} ]`,`${timebar}`,false)
-                .setFooter(footer);
+                .setFooter({text: footer});
                 msg.channel.send({embeds: [embed]});
         }catch (err){
             console.log(err, 'nowPlayMusicError');
@@ -514,7 +516,7 @@ module.exports = {
                 const embedhelp = new Discord.MessageEmbed()
                     .setColor(process.env.EMBEDCOLOR)
                     .setTimestamp()
-                    .setFooter(`${user.tag}`,`${user.displayAvatarURL({dynamic: true})}`);
+                    .setFooter({text: `${user.tag}`, iconURL: `${user.displayAvatarURL({dynamic: true})}`});
                     msg.channel.send({embeds: [this.helpRemove(embedhelp, defprem)]});
             }
             from = parseInt(from);
