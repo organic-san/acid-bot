@@ -110,7 +110,7 @@ module.exports = {
             if(poll instanceof Discord.Message) {
                 emojisSelect.forEach(emoji => poll.react(emoji));
 
-                if(!poll.deleted){
+                if(!poll.deletable){
                     await poll.react('↩');
                     const filter = (reaction, user) => reaction.emoji.name === '↩' && user.id === interaction.user.id;
                     poll.awaitReactions({filter, max: 1, time: 120 * 1000, errors: ['time'] })

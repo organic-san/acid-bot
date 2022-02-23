@@ -36,7 +36,7 @@ class MusicList {
      */
     deletePlayingMessage(){
         if(this.playingMessage){
-            if(!this.playingMessage.deleted){
+            if(!this.playingMessage.deletable){
                 this.playingMessage.delete().catch((err) => console.log(err));
             }
         }
