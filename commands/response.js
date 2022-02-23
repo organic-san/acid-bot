@@ -60,10 +60,9 @@ module.exports = {
                             if(!beforeMessage.deletable){ beforeMessage.react('🐢').catch(err => console.log(err));
                             if(!beforeMessage.deletable) beforeMessage.react('🐔').catch(err => console.log(err));
                             if(!beforeMessage.deletable) beforeMessage.react('🥛').catch(err => console.log(err));
-                        }else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
-                    }
-                }
-                else interaction.reply({content: '失敗: 數字請於合理範圍: 1-100', ephemeral: true});
+                        }
+                    } else interaction.reply({content: '失敗: 它好像已經被刪除了', ephemeral: true});
+                } else interaction.reply({content: '失敗: 數字請於合理範圍: 1-100', ephemeral: true});
     
             } else if(interaction.options.getSubcommand() === 'crazy-night-remove') {
                 const floor = interaction.options.getInteger('floor');
