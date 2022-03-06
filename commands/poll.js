@@ -140,7 +140,7 @@ module.exports = {
             let maxCount = 0;
             let total = 0;
             let pollOptions = [[""]];
-            if(pollResult.embeds[0].fields.length === 0){
+            if(pollResult.embeds[0].fields.length === 1){d
                 const circle = pollResult.reactions.cache.get('⭕').count - 1;
                 const cross = pollResult.reactions.cache.get('❌').count - 1;
                 pollOptions = [['⭕', "", circle], ['❌', "", cross]];
