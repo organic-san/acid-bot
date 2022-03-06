@@ -229,6 +229,7 @@ client.on('messageCreate', async msg =>{
                         if(notEmoji[index].endsWith('<a')) return;
                         let find = client.emojis.cache.find(e => e.name === emoji.slice(1, emoji.length - 1));
                         if(!find) find = client.emojis.cache.find(e => e.name.includes(emoji.slice(1, emoji.length - 1)));
+                        if(!find) find = client.emojis.resolve(emoji.slice(1, emoji.length - 1));
                         if(find) {
                             if(find.guild.id !== msg.guild.id || find.animated){
                                 isEmojiChanged = true;
@@ -269,7 +270,8 @@ client.on('messageCreate', async msg =>{
         }
         //#endregion
 
-        if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.ADD_REACTIONS))   
+        if(!msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.ADD_REACTIONS) ||
+            !msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.VIEW_CHANNEL))
             return console.log("isCommand: reactless");
 
         //#region 幫文字加上表情符號

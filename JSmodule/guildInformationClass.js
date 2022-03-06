@@ -311,7 +311,7 @@ class GuildInformation {
                     user.send(`您在 **${guild.name}** 的等級已升級到 **${this.getUser(user.id).levels}** 等了！`)
                         .catch((err) => console.log(err))
                     if(this.getUser(user.id).levels === 1){
-                        user.send(`在伺服器中輸入 \`${defpre}noDM\` 可以不再接收該伺服器的提升等級訊息`)
+                        user.send(`在伺服器中輸入 \`/levels no-dm\` 可以不再接收該伺服器的提升等級訊息`)
                             .catch((err) => console.log(err))
                     }
                 }
