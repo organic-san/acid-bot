@@ -1,7 +1,7 @@
 程式開發者 Developer
 =
 
-Discord: organic_san_2#0500
+Discord: organic_san_2#2202
 <br>
 Discord Server: [快樂光線基地](https://discord.gg/hveXGk5Qmz) 
 <br>
@@ -12,7 +12,7 @@ acid-bot 使用與隱私權條款
 =
 本條款描述Discord機器人 acid bot#7812 (ID: 848896873414524954) (下稱本機器人) 與使用其服務的規則。
 
-本機器人由organic_san_2#0500 (ID: 810382984958967808) (下稱製作方) 製作。
+本機器人由organic_san_2#2202 (ID: 810382984958967808) (下稱製作方) 製作。
 
 將機器人加入伺服器即代表同意本使用條款。
 
