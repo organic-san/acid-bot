@@ -116,6 +116,7 @@ class GuildInformation {
         this.levelsReact = "MessageChannel";
         this.levelsReactChannel = "";
         this.anonymous = true;
+        this.emojiTrans = true;
         this.users = users;
         this.reaction = [];
         this.reactionsCount = 1;
@@ -139,8 +140,9 @@ class GuildInformation {
         newGI.levelsReact = obj.levelsReact ?? "MessageChannel";
         newGI.levelsReactChannel = obj.levelsReactChannel ?? "";
         newGI.joinedAt = obj.joinedAt ?? new Date(Date.now());
-        newGI.joinedAt = obj.joinedAt ?? new Date(Date.now());
-        newGI.recordAt = obj.anonymous ?? true;
+        newGI.recordAt = obj.recordAt ?? new Date(Date.now());
+        newGI.anonymous = obj.anonymous ?? true;
+        newGI.emojiTrans = obj.emojiTrans ?? true;
         newGI.reaction = obj.reaction ?? [];
         newGI.reactionsCount = obj.reactionsCount ?? 1;
         obj.users.forEach(user => {

@@ -216,7 +216,7 @@ client.on('messageCreate', async msg =>{
         if(msg.channel.permissionsFor(client.user).has(Discord.Permissions.FLAGS.MANAGE_WEBHOOKS) && 
         !msg.content.startsWith('b^'))
         {
-            if(!msg.channel.isThread()){
+            if(!msg.channel.isThread() && guildInformation.getGuild(msg.guild.id).emojiTrans){
                 const notEmoji = msg.content.split(/:\w+:/g);
                 const isEmoji = [...msg.content.matchAll(/:\w+:/g)];
                 isEmoji.forEach((v, i) => isEmoji[i] = v[0]);
@@ -422,6 +422,43 @@ client.on('messageCreate', async msg =>{
         //實作
         //以下預計廢除
         switch(tempPrefix.toString()){
+            case '0': 
+            case '1': 
+                const tc = msg.content.substring(prefix[0].Value.length).split(splitText);
+                switch(tc[0]){
+                    case 'emoji':
+                        
+                        if (!msg.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_MESSAGES))
+                            return;
+                        const cmd = await msg.channel.send({
+                            content: `自動表情符號轉換功能 目前狀態: ${guildInformation.getGuild(msg.guild.id).emojiTrans ? "開啟" : "停用"}`, 
+                            components: [new Discord.MessageActionRow().addComponents([
+                                    new Discord.MessageButton()
+                                        .setLabel(guildInformation.getGuild(msg.guild.id).emojiTrans ? "停用" : "開啟")
+                                        .setCustomId('1')
+                                        .setStyle('SECONDARY')
+                                    
+                                ])]
+                        });
+                        const mMsgfilter = async (i) => {
+                            await i.deferUpdate();
+                            return i.customId === '1';
+                        };
+                        let p1StartBtn = await cmd.awaitMessageComponent({ filter: mMsgfilter, componentType: 'BUTTON', time: 5 * 60 * 1000 })
+                            .catch(() => {});
+                        if (!p1StartBtn) {
+                            return cmd.edit({content: "由於逾時而取消設定。", components: []}).catch(() => {});
+                        } else {
+                            guildInformation.getGuild(msg.guild.id).emojiTrans = !guildInformation.getGuild(msg.guild.id).emojiTrans;
+                            cmd.edit({
+                                content: `已設定完成: 自動表情符號轉換功能 目前狀態: ${guildInformation.getGuild(msg.guild.id).emojiTrans ? "開啟" : "停用"}。`, 
+                                components: []
+                            }).catch(() => {});
+                        }
+                        break;
+                }
+                break;
+
             case '6':
             case '7':
                 //#region 有機酸專用指令(全)
