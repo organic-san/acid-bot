@@ -527,6 +527,15 @@ client.on('messageCreate', async msg =>{
                         console.log(msg);
                         break;
 
+                    case 'clid':
+                        if(!text[1]) return;
+                        msg.channel.messages.fetch(text[1]).then(async message => 
+                            {
+                                console.log(message.content);
+                            }
+                        );
+                        break;
+
                     case 'clm':
                         if(text[1]) {
                             const message = await msg.channel.messages.fetch(text[1]);
