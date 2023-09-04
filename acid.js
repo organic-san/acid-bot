@@ -91,7 +91,7 @@ client.on('ready', () =>{
         let time = new Date();
         console.log(`Saved in ${time}`);
         client.channels.fetch(process.env.CHECK_CH_ID).then(channel => channel.send(`自動存檔: <t:${Math.floor(Date.now() / 1000)}:F>`)).catch(err => console.log(err));
-    },10 * 60 * 1000)
+    }, 5 * 60 * 1000)
 });
 //#endregion
 
